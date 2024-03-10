@@ -7,10 +7,9 @@ import {
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/core/adapters/prisma";
-import { generateUsername } from "@/core/lib/utils";
 
 interface IUser extends DefaultUser {
-  username?: string;
+  isNewUser?: boolean;
 }
 declare module "next-auth" {
   interface User extends IUser {}
@@ -31,45 +30,21 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.username = user.username;
+    async jwt({ token, trigger }) {
+      const isNewUser = trigger === "signUp";
+      if (isNewUser) {
+        token.isNewUser = isNewUser;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.username = token.username;
+        session.user.isNewUser = token.isNewUser;
       }
       return session;
     },
-  },
-  events: {
-    async createUser({ user }) {
-      for (let i = 0; i < 10; i++) {
-        try {
-          await prisma.user.update({
-            where: {
-              id: user.id,
-            },
-            data: {
-              username: generateUsername(user.name),
-            },
-          });
-          return;
-        } catch (e) {
-          console.log(e);
-        }
-      }
-
-      await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          username: generateUsername(),
-        },
-      });
+    async redirect({ baseUrl }) {
+      return baseUrl + "/register";
     },
   },
   session: {
