@@ -19,7 +19,10 @@ export default function AuthBar() {
           <Popover>
             <PopoverTrigger asChild>
               <Avatar className="w-9 h-9">
-                <AvatarImage src={session?.user?.image ?? undefined} />
+                <AvatarImage
+                  src={session?.user?.image ?? undefined}
+                  referrerPolicy="no-referrer"
+                />
                 <AvatarFallback>{session?.user?.name}</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
