@@ -37,12 +37,16 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  username      String?   @unique
   email         String?   @unique
   emailVerified DateTime?
+  phone         String?
+  phoneVerified Boolean
   image         String?
 
-  merchant Merchant[]
+  addresses     Address[]
+  merchant      Merchant?
+  appointments  Appointment[]
+  reviews       Review[]
   accounts      Account[]
   sessions      Session[]
 }
@@ -55,41 +59,89 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Address {
+  addressId       String @id @default(cuid())
+  addressDetail   String
+  addressZipCode  Int
+  addressCity     String
+  addressProvince String
+
+  userId          String
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  appointments    Appointment[]
+}
+
 model Merchant {
-  merchantId String @id
-  merchantName String
-  merchantDesc String
-  merchantPhotoUrl String
-  merchantCity String
-  merchantProvince String
-  merchantRating Float
-  merchantReviewCt Int
-  merchantVerified Boolean
+  merchantId        String             @id @default(cuid())
+  merchantName      String
+  merchantDesc      String
+  merchantPhotoUrl  String
+  merchantCity      String
+  merchantProvince  String
+  merchantRating    Float
+  merchantReviewCt  Int
+  merchantVerified  Boolean
   merchantAvailable Boolean
-  merchantCreatedAt DateTime
+  merchantCreatedAt DateTime           @default(now())
   
-  userId String
-  user User @relation(fields: [userId], references: [id])
+  userId            String             @unique
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  merchantAlbums MerchantAlbum[]
-  merchantIdentity MerchantIdentity[]
+  merchantAlbums    MerchantAlbum[]
+  merchantIdentity  MerchantIdentity?
+  appointments      Appointment[]
+  reviews           Review[]
 }
 
 model MerchantAlbum {
-  merchantAlbumId String @id
-  album_photoUrl String
+  merchantAlbumId String   @id @default(cuid())
+  album_photoUrl  String
 
-  merchantId String
-  merchant Merchant @relation(fields: [merchantId], references: [merchantId])
+  merchantId      String
+  merchant        Merchant @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
 }
 
 model MerchantIdentity {
-  merchantIdentityId String @id
-  identityKtp String
-  identitySkck String
-  identityCert String
-  identityStatus String
+  merchantIdentityId String   @id @default(cuid())
+  identityKtp        String?
+  identitySkck       String?
+  identityCert       String?
+  identityStatus     String?
 
-  merchantId String
-  merchant Merchant @relation(fields: [merchantId], references: [merchantId])
+  merchantId         String   @unique
+  merchant           Merchant @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
+}
+
+model Appointment {
+  apptId        String   @id @default(cuid())
+  apptPhotoUrl  String?
+  apptComplain  String
+  apptSchedule  DateTime
+  apptStatus    String
+  apptReason    String?
+  apptPrice     Int?
+  apptCreatedAt DateTime @default(now())
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  merchantId    String
+  merchant      Merchant @relation(fields: [merchantId], references: [merchantId])
+  addressId     String
+  address       Address  @relation(fields: [addressId], references: [addressId])
+
+  review Review?
+}
+
+model Review {
+  reviewId    String   @id @default(cuid())
+  reviewStars Float
+  reviewBody  String
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [merchantId])
+  apptId      String @unique
+  appointment Appointment @relation(fields: [apptId], references: [apptId])
 }
