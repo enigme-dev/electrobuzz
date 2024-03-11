@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 interface ErrorResponse {
-  code: ErrorCodeStrings;
-  message?: any;
+  status: ErrorCodeStrings;
+  data?: any;
 }
 
 export enum ErrorCode {
@@ -12,6 +12,7 @@ export enum ErrorCode {
   ErrUnknown = "unknown error occurred",
   ErrValidation = "error in parsing input data",
   ErrForbidden = "request forbidden",
+  ErrConflict = "request conflict",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;
@@ -21,14 +22,14 @@ export function buildErr(
   status: number,
   message?: string | z.ZodError
 ) {
-  const err: ErrorResponse = { code: code, message: ErrorCode[code] };
+  const err: ErrorResponse = { status: code, data: ErrorCode[code] };
   if (message) {
     if (typeof message === "string") {
-      err.message = message;
+      err.data = message;
     } else {
-      err.message = message.flatten().fieldErrors;
+      err.data = message.flatten().fieldErrors;
     }
   }
 
-  return Response.json({ error: err }, { status: status });
+  return Response.json(err, { status: status });
 }

@@ -35,11 +35,11 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
-  phone         String?   @unique
+  phone         String?       @unique
   phoneVerified Boolean?
   image         String?
 
@@ -60,20 +60,20 @@ model VerificationToken {
 }
 
 model Address {
-  addressId       String @id @default(cuid())
+  addressId       String        @id @default(cuid())
   addressDetail   String
   addressZipCode  Int
   addressCity     String
   addressProvince String
 
   userId          String
-  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   appointments    Appointment[]
 }
 
 model Merchant {
-  merchantId        String             @id @default(cuid())
+  merchantId        String            @id @default(cuid())
   merchantName      String
   merchantDesc      String
   merchantPhotoUrl  String
@@ -83,10 +83,10 @@ model Merchant {
   merchantReviewCt  Int
   merchantVerified  Boolean
   merchantAvailable Boolean
-  merchantCreatedAt DateTime           @default(now())
+  merchantCreatedAt DateTime          @default(now())
   
-  userId            String             @unique
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String            @unique
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   merchantAlbums    MerchantAlbum[]
   merchantIdentity  MerchantIdentity?
@@ -134,14 +134,14 @@ model Appointment {
 }
 
 model Review {
-  reviewId    String   @id @default(cuid())
+  reviewId    String      @id @default(cuid())
   reviewStars Float
   reviewBody  String
 
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
   merchantId  String
-  merchant    Merchant @relation(fields: [merchantId], references: [merchantId])
-  apptId      String @unique
+  merchant    Merchant    @relation(fields: [merchantId], references: [merchantId])
+  apptId      String      @unique
   appointment Appointment @relation(fields: [apptId], references: [apptId])
 }
