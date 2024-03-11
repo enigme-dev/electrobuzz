@@ -11,6 +11,7 @@ export enum ErrorCode {
   ErrUnauthorized = "sign in to continue",
   ErrUnknown = "unknown error occurred",
   ErrValidation = "error in parsing input data",
+  ErrForbidden = "request forbidden",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;

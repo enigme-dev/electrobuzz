@@ -1,0 +1,17 @@
+import { prisma } from "@/core/adapters/prisma";
+import { UpdateProfileModel } from "../types";
+
+export default async function UpdateProfile(
+  data: UpdateProfileModel,
+  userId: string
+) {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      name: data.name,
+      phone: data.phone,
+    },
+  });
+}

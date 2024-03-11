@@ -39,8 +39,8 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
-  phone         String?
-  phoneVerified Boolean
+  phone         String?   @unique
+  phoneVerified Boolean?
   image         String?
 
   addresses     Address[]
