@@ -3,6 +3,7 @@ import getAddresses from "@/addresses/queries/getAddresses";
 import { AddressSchema } from "@/addresses/types";
 import { buildErr } from "@/core/lib/errors";
 import getAddressCount from "@/users/queries/getAddressCount";
+import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -15,12 +16,14 @@ export async function GET(req: NextRequest) {
     return buildErr("ErrUnauthorized", 401);
   }
 
-  const addresses = await getAddresses(userId.data);
-  if (addresses) {
-    return Response.json({ data: addresses });
+  let result;
+  try {
+    result = await getAddresses(userId.data);
+  } catch (e) {
+    return buildErr("ErrUnknown", 500);
   }
 
-  return buildErr("ErrUnknown", 500);
+  return Response.json({ data: result });
 }
 
 export async function POST(req: NextRequest) {
@@ -44,22 +47,33 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrValidation", 400, data.error);
   }
 
-  const counter = await getAddressCount(userId.data);
-  if (counter._count.addresses === 3) {
-    return buildErr(
-      "ErrConflict",
-      409,
-      "maximum number of addresses has reached"
-    );
+  try {
+    const counter = await getAddressCount(userId.data);
+    if (counter._count.addresses === 3) {
+      return buildErr(
+        "ErrConflict",
+        409,
+        "maximum number of addresses has reached"
+      );
+    }
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2001") {
+        return buildErr("ErrNotFound", 404, "invalid user id");
+      }
+    }
+    return buildErr("ErrUnknown", 500);
   }
 
-  const added = await addAddress(userId.data, data.data);
-  if (added) {
-    return Response.json({
-      status: "added successfully",
-      data: { id: added.addressId },
-    });
+  let added;
+  try {
+    added = await addAddress(userId.data, data.data);
+  } catch (e) {
+    return buildErr("ErrUnknown", 500);
   }
 
-  return buildErr("ErrUnknown", 500);
+  return Response.json({
+    status: "added successfully",
+    data: { id: added.addressId },
+  });
 }

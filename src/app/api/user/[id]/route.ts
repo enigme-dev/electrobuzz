@@ -2,9 +2,10 @@ import { NextRequest } from "next/server";
 import { buildErr } from "@/core/lib/errors";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
-import UpdateProfile from "@/users/mutations/updateProfile";
+import updateProfile from "@/users/mutations/updateProfile";
 import GetPrivateProfile from "@/users/queries/getPrivateProfile";
 import GetPublicProfile from "@/users/queries/getPublicProfile";
+import { Prisma } from "@prisma/client";
 
 interface IdParams {
   params: { id: string };
@@ -19,11 +20,19 @@ export async function GET(req: NextRequest, { params }: IdParams) {
     return Response.json({ data: find });
   }
 
-  const find = await GetPublicProfile(params.id);
-  if (!find) {
-    return buildErr("ErrNotFound", 404);
+  let result;
+  try {
+    result = await GetPublicProfile(params.id);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2001") {
+        return buildErr("ErrNotFound", 404);
+      }
+    }
+    return buildErr("ErrUnknown", 500);
   }
-  return Response.json({ data: find });
+
+  return Response.json({ data: result });
 }
 
 export async function PATCH(req: NextRequest, { params }: IdParams) {
@@ -50,7 +59,16 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
     );
   }
 
-  await UpdateProfile(body, params.id);
+  try {
+    await updateProfile(body, params.id);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        return buildErr("ErrConflict", 409, "phone number already registered");
+      }
+    }
+    return buildErr("ErrUnknown", 500);
+  }
 
   return Response.json({ status: "updated successfully" });
 }

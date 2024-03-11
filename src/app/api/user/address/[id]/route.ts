@@ -6,6 +6,7 @@ import getAddress from "@/addresses/queries/getAddress";
 import { AddressModel, AddressSchema } from "@/addresses/types";
 import editAddress from "@/addresses/mutations/editAddress";
 import deleteAddress from "@/addresses/mutations/deleteAddress";
+import { Prisma } from "@prisma/client";
 
 interface IdParams {
   params: { id: string };
@@ -24,9 +25,19 @@ export async function GET(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrValidation", 400, "invalid address id");
   }
 
-  const address = await getAddress(addressId.data);
-  if (!address || address.userId !== userId.data) {
-    return buildErr("ErrNotFound", 404);
+  let address;
+  try {
+    address = await getAddress(addressId.data);
+    if (address?.userId !== userId.data) {
+      return buildErr("ErrNotFound", 404, "invalid address id");
+    }
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2001") {
+        return buildErr("ErrNotFound", 404, "invalid address id");
+      }
+    }
+    return buildErr("ErrUnknown", 500);
   }
 
   const result: AddressModel = {
@@ -66,13 +77,24 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrValidation", 400, data.error);
   }
 
-  const address = await getAddress(addressId.data);
-  if (!address || address.userId !== userId.data) {
-    return buildErr("ErrNotFound", 404);
+  let address;
+  try {
+    address = await getAddress(addressId.data);
+    if (address?.userId !== userId.data) {
+      return buildErr("ErrNotFound", 404, "invalid address id");
+    }
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2001") {
+        return buildErr("ErrNotFound", 404, "invalid address id");
+      }
+    }
+    return buildErr("ErrUnknown", 500);
   }
 
-  const edited = await editAddress(userId.data, addressId.data, data.data);
-  if (!edited) {
+  try {
+    await editAddress(userId.data, addressId.data, data.data);
+  } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
@@ -92,13 +114,24 @@ export async function DELETE(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrValidation", 400, "invalid address id");
   }
 
-  const address = await getAddress(addressId.data);
-  if (!address || address.userId !== userId.data) {
-    return buildErr("ErrNotFound", 404);
+  let address;
+  try {
+    address = await getAddress(addressId.data);
+    if (address?.userId !== userId.data) {
+      return buildErr("ErrNotFound", 404, "invalid address id");
+    }
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2001") {
+        return buildErr("ErrNotFound", 404, "invalid address id");
+      }
+    }
+    return buildErr("ErrUnknown", 500);
   }
 
-  const deleted = await deleteAddress(addressId.data);
-  if (!deleted) {
+  try {
+    await deleteAddress(addressId.data);
+  } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 

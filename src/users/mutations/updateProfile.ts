@@ -1,7 +1,7 @@
 import { prisma } from "@/core/adapters/prisma";
 import { UpdateProfileModel } from "../types";
 
-export default async function UpdateProfile(
+export default async function updateProfile(
   data: UpdateProfileModel,
   userId: string
 ) {
