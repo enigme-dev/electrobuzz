@@ -12,6 +12,7 @@ export default async function updateProfile(
     data: {
       name: data.name,
       phone: data.phone,
+      image: data.image,
     },
   });
 }
