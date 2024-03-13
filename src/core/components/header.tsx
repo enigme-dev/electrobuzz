@@ -21,7 +21,7 @@ export default function Header() {
       <div className="wrapper flex justify-between">
         <div className="flex gap-6 items-center">
           <Link href="/" className="select-none">
-            <h1 className="font-bold text-xl">axara</h1>
+            <h1 className="font-bold text-xl">electroBuzz</h1>
           </Link>
           <ul className="flex gap-6 items-center text-sm leading-[inherit] font-medium">
             <li>
