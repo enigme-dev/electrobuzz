@@ -13,3 +13,11 @@ export const UpdateProfileSchema = z.object({
 });
 
 export type UpdateProfileModel = z.infer<typeof UpdateProfileSchema>;
+
+export const VerifyOTPSchema = z.object({
+  code: z
+    .string({ required_error: "code cannot be empty" })
+    .regex(/^\d{6}$/, "code must consist of 6-digits number"),
+});
+
+export type VerifyOTPModel = z.infer<typeof VerifyOTPSchema>;
