@@ -7,6 +7,7 @@ import {
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/core/adapters/prisma";
+import { PrismaClient } from "@prisma/client";
 
 interface IUser extends DefaultUser {
   isNewUser?: boolean;
@@ -22,7 +23,7 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma as unknown as PrismaClient),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
