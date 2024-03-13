@@ -19,6 +19,8 @@
     "algoliasearch": "^4.22.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "embla-carousel-autoplay": "^8.0.0",
+    "embla-carousel-react": "^8.0.0",
     "lucide-react": "^0.292.0",
     "minio": "^7.1.3",
     "next": "14.0.3",
