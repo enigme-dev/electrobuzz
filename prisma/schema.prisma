@@ -37,10 +37,12 @@ model Session {
 model User {
   id            String        @id @default(cuid())
   name          String?
-  email         String?       @unique
+  email         String?       @unique /// @encrypted
+  emailHash     String?       @unique /// @encryption:hash(email)
   emailVerified DateTime?
-  phone         String?       @unique
-  phoneVerified Boolean?
+  phone         String?       @unique /// @encrypted
+  phoneHash     String?       @unique /// @encryption:hash(phone)
+  phoneVerified Boolean       @default(false)
   image         String?
 
   addresses     Address[]
@@ -61,8 +63,8 @@ model VerificationToken {
 
 model Address {
   addressId       String        @id @default(cuid())
-  addressDetail   String
-  addressZipCode  Int
+  addressDetail   String        /// @encrypted
+  addressZipCode  String        /// @encrypted
   addressCity     String
   addressProvince String
 
@@ -82,7 +84,7 @@ model Merchant {
   merchantCategory  String[]
   merchantRating    Float?
   merchantReviewCt  Int?
-  merchantVerified  Boolean?
+  merchantVerified  Boolean           @default(false)
   merchantAvailable Boolean?
   merchantCreatedAt DateTime          @default(now())
   
