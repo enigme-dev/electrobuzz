@@ -7,8 +7,8 @@ export const UpdateProfileSchema = z.object({
     .max(128, "name must be between 3 and 128 characters"),
   phone: z
     .string({ required_error: "phone cannot be empty" })
-    .min(10, "phone must be between 10 and 14 characters")
-    .max(14, "name must be between 10 and 14 characters"),
+    .regex(/^\d{10,14}$/, "phone must consist of 10-14 digits number"),
+  phoneVerified: z.boolean().optional(),
   image: z.string({ required_error: "image cannot be empty" }),
 });
 

@@ -7,13 +7,8 @@ export const AddressSchema = z.object({
     .min(3, "detail must be between 3 and 128 characters")
     .max(128, "detail must be between 3 and 128 characters"),
   addressZipCode: z
-    .number({
-      invalid_type_error: "zip code must be an integer",
-      required_error: "zip code cannot be empty",
-    })
-    .int()
-    .gte(10000, "zip code must be 5 digits")
-    .lte(99999, "zip code must be 5 digits"),
+    .string({ required_error: "zip code cannot be empty" })
+    .regex(/^\d{5}$/, "zip code must consist of 5-digits number"),
   addressCity: z
     .string({ required_error: "city name cannot be empty" })
     .min(3, "city name must be between 3 and 128 characters")
