@@ -79,10 +79,11 @@ model Merchant {
   merchantPhotoUrl  String
   merchantCity      String
   merchantProvince  String
-  merchantRating    Float
-  merchantReviewCt  Int
-  merchantVerified  Boolean
-  merchantAvailable Boolean
+  merchantCategory  String[]
+  merchantRating    Float?
+  merchantReviewCt  Int?
+  merchantVerified  Boolean?
+  merchantAvailable Boolean?
   merchantCreatedAt DateTime          @default(now())
   
   userId            String            @unique
