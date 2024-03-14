@@ -8,6 +8,7 @@ import getPublicProfile from "@/users/queries/getPublicProfile";
 import { Prisma } from "@prisma/client";
 import { UpdateProfileSchema } from "@/users/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
+import { removeImagePrefix } from "@/merchants/lib/utils";
 
 interface IdParams {
   params: { id: string };
@@ -97,9 +98,8 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
       input.data.phoneVerified = false;
     }
   } catch (e) {
-    await deleteImg(
-      imageUrl.replace(process.env.ASSETS_URL as string, "") + "/"
-    );
+    deleteImg(removeImagePrefix(imageUrl));
+
     return buildErr("ErrUnknown", 500);
   }
 
@@ -108,9 +108,8 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   try {
     await updateProfile(input.data, params.id);
   } catch (e) {
-    await deleteImg(
-      imageUrl.replace(process.env.ASSETS_URL as string, "") + "/"
-    );
+    deleteImg(removeImagePrefix(imageUrl));
+
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
         return buildErr("ErrConflict", 409, "phone number already registered");
