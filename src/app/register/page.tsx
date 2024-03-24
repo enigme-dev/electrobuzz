@@ -5,10 +5,12 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const { data: session } = useSession();
-  console.log(session?.user?.isNewUser);
-
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
 
   if (session?.user?.isNewUser)
     return (
