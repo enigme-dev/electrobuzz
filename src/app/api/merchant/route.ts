@@ -1,7 +1,8 @@
 import { buildErr } from "@/core/lib/errors";
 import { deleteImg, uploadImg } from "@/core/lib/image";
+import { removeImagePrefix } from "@/merchants/lib/utils";
 import { addMerchant } from "@/merchants/mutations/addMerchant";
-import { MerchantModel } from "@/merchants/types";
+import { MerchantSchema } from "@/merchants/types";
 import getPrivateProfile from "@/users/queries/getPrivateProfile";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnauthorized", 401);
   }
 
-  const input = MerchantModel.safeParse(body);
+  const input = MerchantSchema.safeParse(body);
   if (!input.success) {
     return buildErr("ErrValidation", 400, input.error);
   }
@@ -34,7 +35,6 @@ export async function POST(req: NextRequest) {
       return buildErr("ErrForbidden", 403, "phone has not been verified");
     }
   } catch (e) {
-    console.error(e);
     return buildErr("ErrUnknown", 500);
   }
 
@@ -44,12 +44,8 @@ export async function POST(req: NextRequest) {
 
     await addMerchant(userId.data, input.data);
   } catch (e) {
-    await deleteImg(
-      input.data.merchantPhotoUrl.replace(
-        process.env.ASSETS_URL as string,
-        ""
-      ) + "/"
-    );
+    deleteImg(removeImagePrefix(input.data.merchantPhotoUrl));
+
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2014") {
         return buildErr(

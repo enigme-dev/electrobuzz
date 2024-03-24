@@ -20,9 +20,9 @@ export default function AuthDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Sign in to be an author in Axara</DialogTitle>
+          <DialogTitle>Sign in</DialogTitle>
         </DialogHeader>
-        <div>
+        <div className="flex justify-center items-center">
           <Button onClick={() => signIn("google")}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

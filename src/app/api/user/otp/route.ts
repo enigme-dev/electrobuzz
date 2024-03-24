@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
 
     await sendOTP(user?.phone);
   } catch (e) {
-    console.error(e);
     return buildErr("ErrUnknown", 500);
   }
 
