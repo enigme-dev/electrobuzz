@@ -45,7 +45,7 @@ jobs:
       - name: Spin up docker image
         uses: appleboy/ssh-action@v0.1.10
         env:
-          TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
+          CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
