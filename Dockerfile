@@ -14,9 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN --mount=type=secret,id=prisma_key \ setenv PRISMA_FIELD_ENCRYPTION_KEY $(cat /run/secrets/prisma_key)
-
-RUN npm run build
+RUN --mount=type=secret,id=PRISMA_FIELD_ENCRYPTION_KEY cat /run/secrets/PRISMA_FIELD_ENCRYPTION_KEY > .env.production && npm run build && rm .env.production
 
 FROM base AS runner
 WORKDIR /app
