@@ -27,7 +27,9 @@ jobs:
           context: .
           push: true
           tags: alkuinvito/electrobuzz:latest
-          secrets: "PRISMA_FIELD_ENCRYPTION_KEY=${{ secrets.PRISMA_FIELD_ENCRYPTION_KEY }}"
+          secrets: |
+          "PRISMA_FIELD_ENCRYPTION_KEY=${{ secrets.PRISMA_FIELD_ENCRYPTION_KEY }}"
+          "ASSETS_URL=${{ secrets.ASSETS_URL }}"
 
   deploy:
     needs: build
