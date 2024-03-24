@@ -99,7 +99,7 @@ model Merchant {
 
 model MerchantAlbum {
   merchantAlbumId String   @id @default(cuid())
-  album_photoUrl  String
+  albumPhotoUrl   String
 
   merchantId      String
   merchant        Merchant @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
