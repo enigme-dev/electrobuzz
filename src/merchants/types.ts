@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const MerchantModel = z.object({
+export const MerchantSchema = z.object({
   merchantId: z.string().cuid().optional(),
   merchantName: z.string(),
   merchantDesc: z.string(),
@@ -16,4 +16,4 @@ export const MerchantModel = z.object({
   userId: z.string().cuid().optional(),
 });
 
-export type MerchantSchema = z.infer<typeof MerchantModel>;
+export type MerchantModel = z.infer<typeof MerchantSchema>;

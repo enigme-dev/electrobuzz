@@ -1,8 +1,8 @@
 import { prisma } from "@/core/adapters/prisma";
-import { MerchantSchema } from "../types";
+import { MerchantModel } from "../types";
 import { AlgoliaClient } from "@/core/adapters/algolia";
 
-export async function addMerchant(userId: string, data: MerchantSchema) {
+export async function addMerchant(userId: string, data: MerchantModel) {
   return prisma.$transaction(async (tx) => {
     const created = await tx.merchant.create({
       data: {
