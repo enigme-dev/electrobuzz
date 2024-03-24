@@ -30,6 +30,9 @@ jobs:
           secrets: |
            "PRISMA_FIELD_ENCRYPTION_KEY=${{ secrets.PRISMA_FIELD_ENCRYPTION_KEY }}"
            "ASSETS_URL=${{ secrets.ASSETS_URL }}"
+           "MINIO_ENDPOINT=${{ secrets.MINIO_ENDPOINT }}"
+           "MINIO_ACCESS_KEY=${{ secrets.MINIO_ACCESS_KEY }}"
+           "MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY }}"
 
   deploy:
     needs: build
