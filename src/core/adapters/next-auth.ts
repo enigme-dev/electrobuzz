@@ -37,12 +37,8 @@ export const authOptions: NextAuthOptions = {
       const profile = await getPrivateProfile(token.sub as string);
       const addressCt = await getAddressCount(token.sub as string);
 
-      const isRegistered =
+      token.isNewUser =
         Boolean(profile?.phone) && addressCt._count.addresses >= 1;
-
-      if (isRegistered) {
-        token.isNewUser = isRegistered;
-      }
 
       return token;
     },
