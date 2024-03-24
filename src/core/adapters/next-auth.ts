@@ -8,6 +8,8 @@ import {
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/core/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
+import getPrivateProfile from "@/users/queries/getPrivateProfile";
+import getAddressCount from "@/users/queries/getAddressCount";
 
 interface IUser extends DefaultUser {
   isNewUser?: boolean;
@@ -31,11 +33,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, trigger }) {
-      const isNewUser = trigger === "signUp";
-      if (isNewUser) {
-        token.isNewUser = isNewUser;
+    async jwt({ token }) {
+      const profile = await getPrivateProfile(token.sub as string);
+      const addressCt = await getAddressCount(token.sub as string);
+
+      const isRegistered = profile?.phone && addressCt._count.addresses >= 1;
+
+      if (isRegistered) {
+        token.isNewUser = isRegistered;
       }
+
       return token;
     },
     async session({ session, token }) {
