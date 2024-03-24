@@ -15,35 +15,35 @@ export default function Header() {
     const selectedTheme = toggleTheme(theme);
     setTheme(selectedTheme);
   };
+  const navbarItems = [
+    { label: "Home", link: "/" },
+    { label: "Bookings", link: "/bookings" },
+  ];
 
   return (
     <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838]">
       <div className="wrapper flex justify-between">
         <div className="flex gap-6 items-center">
           <Link href="/" className="select-none">
-            <h1 className="font-bold text-xl">electroBuzz</h1>
+            <h1 className="font-bold text-xl">electroBu⚡z</h1>
           </Link>
-          <ul className="flex gap-6 items-center text-sm leading-[inherit] font-medium">
-            <li>
-              <Link
-                href="/trending"
-                className="opacity-80 hover:opacity-100 transition-opacity select-none"
-              >
-                Trending
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/topics"
-                className="opacity-80 hover:opacity-100 transition-opacity select-none"
-              >
-                Topics
-              </Link>
-            </li>
-          </ul>
+          {navbarItems.map((value, key) => (
+            <div key={key}>
+              <ul className="flex gap-6 items-center text-sm leading-[inherit] font-medium">
+                <li>
+                  <Link
+                    href={value.link}
+                    className="opacity-80 hover:opacity-100 transition-opacity select-none"
+                  >
+                    {value.label}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          ))}
         </div>
         <div className="flex gap-2">
-          <Input type="text" placeholder="Search any post..." />
+          <Input type="text" placeholder="Search any services..." />
           <AuthBar />
           <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
             <SunMoon className="mx-2 h-6 w-6" />
