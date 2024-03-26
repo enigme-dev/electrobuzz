@@ -15,6 +15,7 @@ export default function Header() {
     const selectedTheme = toggleTheme(theme);
     setTheme(selectedTheme);
   };
+
   const navbarItems = [
     { label: "Home", link: "/" },
     { label: "Bookings", link: "/bookings" },

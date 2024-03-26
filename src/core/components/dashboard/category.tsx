@@ -17,7 +17,7 @@ const Category = () => {
       <div className="pt-10 w-full overflow-visible">
         <div className="flex flex-row gap-6  overflow-x-scroll">
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer transition duration-500">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-500">
               <CardContent className="flex items-center justify-center p-6">
                 <AirVentIcon size={100} strokeWidth={1} />
               </CardContent>
@@ -25,7 +25,7 @@ const Category = () => {
             <p>Air Conditioner</p>
           </div>
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer  transition duration-500">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer  transition duration-500">
               <CardContent className="flex items-center justify-center p-6">
                 <WashingMachineIcon size={100} strokeWidth={1} />
               </CardContent>
@@ -33,7 +33,7 @@ const Category = () => {
             <p>Washing Machine</p>
           </div>
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer  transition duration-500">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer  transition duration-500">
               <CardContent className="flex items-center justify-center p-6">
                 <SmartphoneIcon size={100} strokeWidth={1} />
               </CardContent>
@@ -41,7 +41,7 @@ const Category = () => {
             <p>Smartphone</p>
           </div>
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer transition duration-500">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-500">
               <CardContent className="flex items-center justify-center p-6">
                 <RefrigeratorIcon size={100} strokeWidth={1} />
               </CardContent>
@@ -49,7 +49,7 @@ const Category = () => {
             <p>Refrigator</p>
           </div>
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer transition duration-500">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-500">
               <CardContent className="flex items-center justify-center p-6">
                 <Laptop size={100} strokeWidth={1} />
               </CardContent>
@@ -57,7 +57,7 @@ const Category = () => {
             <p>Laptop</p>
           </div>
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer transition duration-500">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-500">
               <CardContent className="flex items-center justify-center p-6">
                 <Tv size={100} strokeWidth={1} />
               </CardContent>
@@ -65,7 +65,7 @@ const Category = () => {
             <p>Television</p>
           </div>
           <div className="grid place-items-center items-center gap-5">
-            <Card className="hover:shadow-lg cursor-pointer transition duration-300">
+            <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-300">
               <CardContent className="flex items-center justify-center p-6">
                 <MicrowaveIcon size={100} strokeWidth={1} />
               </CardContent>
