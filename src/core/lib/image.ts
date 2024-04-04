@@ -1,5 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { MinioClient } from "../adapters/minio";
+import * as openpgp from "openpgp";
 
 const sharp = require("sharp");
 
@@ -41,13 +42,32 @@ export async function uploadImg(image: string, size = 320): Promise<string> {
   }
 }
 
-export async function deleteImg(imageUrl: string) {
-  const filename = imageUrl.replace(
-    (process.env.ASSETS_URL as string) + "/",
-    ""
-  );
+export async function uploadEncryptedImg(image: string, filename: string) {
+  const publicKey = await openpgp.readKey({
+    armoredKey: process.env.PGP_PUBLIC_KEY as string,
+  });
+  const encrypted = await openpgp.encrypt({
+    message: await openpgp.createMessage({ text: image }),
+    encryptionKeys: publicKey,
+  });
+
   try {
-    await MinioClient.removeObject("assets", filename);
+    await MinioClient.putObject("vault", filename, encrypted);
+    return filename;
+  } catch (e) {
+    console.error(e);
+    throw new Error("Failed to upload image");
+  }
+}
+
+export async function deleteImg(imageUrl: string, bucket = "assets") {
+  let filename;
+  if (bucket === "assets") {
+    filename = imageUrl.replace((process.env.ASSETS_URL as string) + "/", "");
+  }
+
+  try {
+    await MinioClient.removeObject(bucket, filename);
   } catch (e) {
     console.error(e);
     throw new Error("Failed to delete image");
