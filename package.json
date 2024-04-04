@@ -1,5 +1,5 @@
 {
-  "name": "axara",
+  "name": "electrobuzz",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -29,12 +29,13 @@
     "next": "14.0.3",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
+    "openpgp": "^5.11.1",
     "prisma-field-encryption": "^1.5.2",
     "radix": "^0.0.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.1",
-    "sharp": "^0.33.2",
+    "sharp": "^0.33.3",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "twilio": "^5.0.0",
