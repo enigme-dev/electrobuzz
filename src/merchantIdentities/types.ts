@@ -12,3 +12,18 @@ export const MerchantIdentitiesSchema = z.object({
 });
 
 export type MerchantIdentitiesModel = z.infer<typeof MerchantIdentitiesSchema>;
+
+export const EditMerchantIdentitySchema = z.object({
+  identityStatus: IdentityStatuses,
+});
+
+export type EditMerchantIdentityModel = z.infer<
+  typeof EditMerchantIdentitySchema
+>;
+
+export const IdentitiesParam = z.object({
+  name: z.string().optional(),
+  id: z.string().optional(),
+});
+
+export type IdentitiesParam = z.infer<typeof IdentitiesParam>;
