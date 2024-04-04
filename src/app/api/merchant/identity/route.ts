@@ -1,12 +1,11 @@
 import { buildErr } from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { deleteImg, uploadEncryptedImg } from "@/core/lib/image";
 import addMerchantIdentities from "@/merchantIdentities/mutations/addMerchantIdentities";
+import getIdentitiesByMerchantId from "@/merchantIdentities/queries/getIdentitiesByMerchantId";
 import {
   IdentityStatuses,
   MerchantIdentitiesSchema,
 } from "@/merchantIdentities/types";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
-import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -14,7 +13,6 @@ import { z } from "zod";
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
   let body,
-    merchant,
     images = [];
 
   try {
@@ -28,30 +26,49 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnauthorized", 401);
   }
 
+  const merchantId = z.string().cuid().safeParse(token?.merchantId);
+  if (!merchantId.success) {
+    return buildErr("ErrForbidden", 403, "not registered as merchant");
+  }
+
   const input = MerchantIdentitiesSchema.safeParse(body);
   if (!input.success) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr("ErrNotFound", 404, "merchant not found");
-      }
+    const merchantIdentities = await getIdentitiesByMerchantId(merchantId.data);
+    if (merchantIdentities) {
+      return buildErr(
+        "ErrConflict",
+        409,
+        "identities has been submitted and being verified"
+      );
     }
+  } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
   input.data.identityStatus = IdentityStatuses.Enum.pending;
-  input.data.merchantId = merchant.merchantId;
+  input.data.merchantId = merchantId.data;
 
   try {
-    images.push(await uploadImg(input.data.identityKtp));
-    images.push(await uploadImg(input.data.identitySkck));
+    input.data.identityKtp = await uploadEncryptedImg(
+      input.data.identityKtp,
+      `ktp-${merchantId.data}`
+    );
+    images.push(input.data.identityKtp);
+    input.data.identitySkck = await uploadEncryptedImg(
+      input.data.identitySkck,
+      `skck-${merchantId.data}`
+    );
+    images.push(input.data.identitySkck);
     if (input.data.identityCert) {
-      images.push(await uploadImg(input.data.identityCert));
+      input.data.identityCert = await uploadEncryptedImg(
+        input.data.identityCert,
+        `sertifikat-${merchantId.data}`
+      );
+      images.push(input.data.identityCert);
     }
   } catch (e) {
     images.map(async (image) => {
