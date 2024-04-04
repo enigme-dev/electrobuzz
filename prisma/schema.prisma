@@ -44,6 +44,7 @@ model User {
   phoneHash     String?       @unique /// @encryption:hash(phone)
   phoneVerified Boolean       @default(false)
   image         String?
+  isAdmin       Boolean       @default(false)
 
   addresses     Address[]
   merchant      Merchant?
