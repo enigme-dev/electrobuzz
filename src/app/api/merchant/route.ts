@@ -8,6 +8,7 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
@@ -57,6 +58,8 @@ export async function POST(req: NextRequest) {
     }
     return buildErr("ErrUnknown", 500);
   }
+
+  cookies().delete("next-auth.session-token");
 
   return Response.json({ status: "merchant registered successfully" });
 }
