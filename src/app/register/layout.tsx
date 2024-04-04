@@ -2,9 +2,8 @@
 
 import FormLoader from "@/core/components/loader/formLoader";
 import { useSession } from "next-auth/react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import { URLSearchParams } from "url";
 
 export const RegisterLayout = ({ children }: any) => {
   const { data: session, status } = useSession();

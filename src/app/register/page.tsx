@@ -8,143 +8,76 @@ import { Card, CardContent, CardHeader } from "@/core/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/core/components/ui/form";
 import { Input } from "@/core/components/ui/input";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/core/components/ui/input-otp";
+import {
+  UpdateProfileModel,
+  UpdateProfileSchema,
+  VerifyOTPModel,
+  VerifyOTPSchema,
+} from "@/users/types";
+import { AddressModel, AddressSchema } from "@/addresses/types";
+import Stepper from "@/core/components/stepper";
+import RegisterForm from "@/users/components/registerForm";
+import OTPVerification from "@/users/components/otpVerification";
+import AddressForm from "@/users/components/addressForm";
 
 export default function Page() {
   const { data: session } = useSession();
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [step, setStep] = useState(0);
+  const [view, setView] = useState(<></>);
+  const labels = ["Data Diri", "Verifikasi Nomor Telepon", "Alamat"];
 
-  const formSchema = z.object({
-    username: z.string().min(2),
-    email: z.string().min(2),
-    region: z.string(),
-    noTelepon: z.string().min(10, {
-      message: "Nomor telepon kurang dari 10 digit",
-    }),
-  });
+  const handlePrev = () => {
+    if (step > 0) setStep((prev) => prev - 1);
+  };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: session?.user?.name || "",
-      email: session?.user?.email || "",
-      region: "+62",
-    },
-  });
+  const handleNext = () => {
+    if (step < labels.length - 1) setStep((prev) => prev + 1);
+  };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    if (values) setIsSubmitted(true);
-  }
+  useEffect(() => {
+    switch (step) {
+      case 0:
+        setView(<RegisterForm onNext={() => handleNext()} />);
+        break;
+      case 1:
+        setView(
+          <OTPVerification
+            onPrevious={() => handlePrev()}
+            onNext={() => handleNext()}
+          />
+        );
+        break;
+      case 2:
+        setView(<AddressForm onPrevious={() => handlePrev()} />);
+        break;
+    }
+  }, [step]);
 
   return (
     <div className="wrapper py-20 w-fit ">
       <Card>
         {" "}
         <CardHeader>
-          <h1 className="font-bold text-lg">New User Form</h1>
+          <h1 className="font-bold text-lg">Form Pengguna Baru</h1>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              {isSubmitted ? (
-                <>
-                  <div>test</div>
-                </>
-              ) : (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="pt-5 flex-col justify-between md:flex ">
-                          <div>
-                            <h1 className="pb-2 font-semibold">Nama</h1>
-                            <FormControl>
-                              <Input disabled {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex-col justify-between md:flex pt-10">
-                          <div>
-                            <h1 className="pb-2 font-semibold">Email</h1>
-                            <FormControl>
-                              <Input disabled {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <h1 className="font-semibold pt-10 pb-2">Nomor Telepon</h1>
-                  <div className="flex justify-start items-center  gap-5 w-fit">
-                    <FormField
-                      control={form.control}
-                      name="region"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className=" flex-col justify-between md:flex ">
-                            <div>
-                              <div className="flex gap-4 max-w-fit">
-                                <FormControl>
-                                  <Input disabled {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </div>
-                            </div>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="noTelepon"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex-col justify-between md:flex ">
-                            <div>
-                              <div className="flex gap-4">
-                                <FormControl>
-                                  <Input {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </div>
-                            </div>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </>
-              )}
-              <div className="text-right pt-5">
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  className="hover:shadow-md hover:shadow-yellow-200 transition duration-500 "
-                >
-                  Submit
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <Stepper activeStep={step} labels={labels} />
+          {view}
         </CardContent>
       </Card>
     </div>

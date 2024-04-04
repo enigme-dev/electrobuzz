@@ -16,11 +16,6 @@ export default function Header() {
     setTheme(selectedTheme);
   };
 
-  const navbarItems = [
-    { label: "Home", link: "/" },
-    { label: "Bookings", link: "/bookings" },
-  ];
-
   return (
     <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838]">
       <div className="wrapper flex justify-between">
@@ -28,20 +23,6 @@ export default function Header() {
           <Link href="/" className="select-none">
             <h1 className="font-bold text-xl">electroBu⚡z</h1>
           </Link>
-          {navbarItems.map((value, key) => (
-            <div key={key}>
-              <ul className="flex gap-6 items-center text-sm leading-[inherit] font-medium">
-                <li>
-                  <Link
-                    href={value.link}
-                    className="opacity-80 hover:opacity-100 transition-opacity select-none"
-                  >
-                    {value.label}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          ))}
         </div>
         <div className="flex gap-2">
           <Input type="text" placeholder="Search any services..." />
