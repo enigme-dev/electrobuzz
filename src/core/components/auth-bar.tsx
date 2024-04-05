@@ -23,7 +23,7 @@ export const navList = [
 
 export default function AuthBar() {
   const { data: session, status } = useSession();
-  const [isVerified, setIsVerified] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
   const pathname = usePathname();
 
   const handleSignOut = () => {
@@ -64,7 +64,7 @@ export default function AuthBar() {
                     {isVerified ? (
                       <Button
                         variant="outline"
-                        className="text-xs px-3 py-2 text-white bg-green-500 hover:text-white hover:bg-green-500 cursor-default"
+                        className="text-xs px-2 rounded-full text-white bg-green-500 hover:text-white hover:bg-green-500 cursor-default"
                       >
                         Verified
                       </Button>
@@ -72,7 +72,7 @@ export default function AuthBar() {
                       <Link href="/register">
                         <Button
                           variant="outline"
-                          className="text-xs px-3 py-2 text-gray-600 outline-none"
+                          className="text-xs px-2 py-1 rounded-full text-gray-600 outline-none"
                         >
                           Verify now
                         </Button>
