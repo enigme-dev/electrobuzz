@@ -10,7 +10,7 @@ export default function Stepper(props: StepperProps) {
   return (
     <div className="pb-10">
       <Separator />
-      <div className="flex gap-10">
+      <div className="flex gap-10 pt-2">
         {props.labels.map((label, i) =>
           i === props.activeStep ? (
             <span className="text-sm" key={label}>
