@@ -5,26 +5,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Separator } from "./ui/separator";
+import { HomeIcon, NotepadText } from "lucide-react";
+import { useState } from "react";
 
 export const navList = [
   {
     label: "Dashboard",
     link: "/",
+    icon: <HomeIcon size="20" />,
   },
   {
     label: "Bookings",
     link: "/bookings",
-  },
-  {
-    label: "Data Verification",
-    link: "/register",
+    icon: <NotepadText size="20" />,
   },
 ];
 
 export default function AuthBar() {
   const { data: session, status } = useSession();
-
+  const [isVerified, setIsVerified] = useState(true);
   const pathname = usePathname();
 
   const handleSignOut = () => {
@@ -50,23 +49,51 @@ export default function AuthBar() {
             </PopoverTrigger>
             <PopoverContent align="end" className="w-fit">
               <ul>
-                <li>
-                  <h2 className="text-sm">{session.user.name}</h2>
-                </li>
-                <li>
-                  <h2 className="text-gray-400 text-sm">
-                    {session.user.email}
-                  </h2>
-                </li>
-                {navList.map((value, index) => (
-                  <div key={index} className="grid gap-2 text-center">
-                    <li className="pt-5 text-sm">
-                      <Link href={value.link}>{value.label}</Link>
+                <div className="flex gap-5">
+                  <div>
+                    <li>
+                      <h2 className="text-sm">{session.user.name}</h2>
                     </li>
-                    <Separator />
+                    <li>
+                      <h2 className="text-gray-400 text-sm">
+                        {session.user.email}
+                      </h2>
+                    </li>
+                  </div>
+                  <div>
+                    {isVerified ? (
+                      <Button
+                        variant="outline"
+                        className="text-xs px-3 py-2 text-white bg-green-500 hover:text-white hover:bg-green-500 cursor-default"
+                      >
+                        Verified
+                      </Button>
+                    ) : (
+                      <Link href="/register">
+                        <Button
+                          variant="outline"
+                          className="text-xs px-3 py-2 text-gray-600 outline-none"
+                        >
+                          Verify now
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+                {navList.map((value, index) => (
+                  <div key={index} className="grid gap-2 text-start">
+                    <Link className="flex gap-4 pt-2" href={value.link}>
+                      <Button
+                        variant="ghost"
+                        className="w-full flex justify-start gap-5"
+                      >
+                        <span>{value.icon}</span>
+                        <span>{value.label}</span>
+                      </Button>
+                    </Link>
                   </div>
                 ))}
-                <ul className="flex gap-2">
+                <ul className="flex justify-between">
                   <li className="pt-5 text-center">
                     <Button variant="outline">
                       <Link href="/bookings">Register as merchant</Link>
