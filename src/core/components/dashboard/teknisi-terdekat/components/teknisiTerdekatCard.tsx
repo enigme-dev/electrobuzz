@@ -1,6 +1,9 @@
+"use client";
 import { Card } from "@/core/components/ui/card";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode } from "react";
+import StatusMerchant from "../../../merchant/statusMerchant";
 
 interface Props {
   imgSource: string;
@@ -9,6 +12,7 @@ interface Props {
   serviceCategory: string;
   location: string;
   status: "online" | "offline";
+  merchantId: string;
 }
 
 const TeknisiTerdekatCard: React.FC<Props> = ({
@@ -18,10 +22,18 @@ const TeknisiTerdekatCard: React.FC<Props> = ({
   serviceCategory,
   status,
   location,
+  merchantId,
 }: Props) => {
+  const router = useRouter();
+  const pathname = usePathname();
   return (
     <div>
-      <Card className="p-6 w-full hover:shadow-lg cursor-pointer transition duration-500">
+      <Card
+        onClick={() => {
+          router.push(`/${merchantId}`);
+        }}
+        className="p-6 w-full hover:shadow-lg cursor-pointer transition duration-500"
+      >
         <div className="flex justify-start items-center gap-10">
           <div>
             <Image
@@ -39,15 +51,7 @@ const TeknisiTerdekatCard: React.FC<Props> = ({
                 {serviceCategory}
               </Card>
               <Card className="px-4 py-2 ">{location}</Card>
-              <Card className=" px-4 py-2 flex justify-center items-center gap-2">
-                {status === "online" && (
-                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                )}
-                {status === "offline" && (
-                  <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                )}
-                {status}
-              </Card>
+              <StatusMerchant status={status} />
             </div>
           </div>
         </div>

@@ -9,33 +9,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 interface SelectProps {
   selectLabel: string;
   defaultSelectValue: string;
   categoryList: { item: string; value: string }[];
-  params: { slug: string };
 }
 
 export function SelectOption({
   selectLabel,
   defaultSelectValue,
   categoryList,
-  params,
 }: SelectProps) {
-  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useParams();
 
-  const handleCategorySelect = (selectedValue: string) => {
-    const onParams = new URLSearchParams(searchParams.toString());
-    onParams.set(params.slug, selectedValue);
-    console.log(onParams);
-    window.history.pushState(null, "", `?${onParams.toString()}`);
+  const onSelect = (categoryValue: any) => {
+    if (params.categoryValue) {
+      router.push(pathname.replace(pathname, categoryValue));
+    } else {
+      router.push(`${categoryValue}`);
+    }
   };
 
   return (
-    <Select defaultValue={defaultSelectValue}>
+    <Select
+      defaultValue={defaultSelectValue}
+      onValueChange={(e) => onSelect(e)}
+    >
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select category" />
       </SelectTrigger>
@@ -43,9 +46,9 @@ export function SelectOption({
         <SelectGroup>
           <SelectLabel>{selectLabel}</SelectLabel>
           {categoryList.map((value, index) => (
-            <Link key={index} href={`/merchant/`}>
-              <SelectItem value={value.value}>{value.item}</SelectItem>
-            </Link>
+            <SelectItem key={index} value={value.value}>
+              {value.item}
+            </SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>

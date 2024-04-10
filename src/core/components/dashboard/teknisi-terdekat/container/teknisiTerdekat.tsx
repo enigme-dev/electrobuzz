@@ -1,8 +1,6 @@
 import React from "react";
 import TeknisiTerdekatCard from "../components/teknisiTerdekatCard";
 import { MapPinIcon } from "lucide-react";
-import Image from "next/image";
-import { Card } from "@/core/components/ui/card";
 
 const TeknisiTerdekat = () => {
   return (
@@ -21,6 +19,7 @@ const TeknisiTerdekat = () => {
           serviceCategory={"#service-ac"}
           location={"Bogor"}
           status={"offline"}
+          merchantId="asdasda-asfsa-fafs-safs"
         />
       </div>
       <div className="pt-10">
@@ -32,6 +31,7 @@ const TeknisiTerdekat = () => {
           serviceCategory={"#service-ac"}
           location={"Bogor"}
           status={"online"}
+          merchantId="asdasda-asfsa-fafs"
         />
       </div>
       <div className="pt-10">
@@ -43,6 +43,7 @@ const TeknisiTerdekat = () => {
           location={"Bogor"}
           serviceCategory={"#service-ac"}
           status={"online"}
+          merchantId="asdasda-fafs-safs"
         />
       </div>
       <div className="pt-10">
@@ -54,6 +55,7 @@ const TeknisiTerdekat = () => {
           location={"Bogor"}
           serviceCategory={"#service-ac"}
           status={"online"}
+          merchantId="asfsa-fafs-safs"
         />
       </div>
     </div>

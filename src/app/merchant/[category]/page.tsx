@@ -34,8 +34,12 @@ const categoryList = [
   },
 ];
 
-export default function MerchantPage({ params }: { params: { slug: string } }) {
-  const categoryParams = params.slug
+export default function MerchantPage({
+  params,
+}: {
+  params: { category: string };
+}) {
+  const categoryParams = params.category
     ?.toString()
     .replace(/%20/g, "-")
     .toLowerCase();
@@ -44,7 +48,6 @@ export default function MerchantPage({ params }: { params: { slug: string } }) {
     <main className="wrapper py-20">
       <div className="flex justify-between">
         <SelectOption
-          params={params}
           selectLabel="Service Category"
           categoryList={categoryList}
           defaultSelectValue={categoryParams}
@@ -60,36 +63,7 @@ export default function MerchantPage({ params }: { params: { slug: string } }) {
           serviceCategory={"#service-ac"}
           location={"Bogor"}
           status={"offline"}
-        />
-      </div>
-      <div className="pt-10">
-        <TeknisiTerdekatCard
-          imgSource={"/AdamSucipto.svg"}
-          imgAlt={"AdamSucipto"}
-          merchName={"Adam Sucipto"}
-          serviceCategory={"#service-ac"}
-          location={"Bogor"}
-          status={"offline"}
-        />
-      </div>
-      <div className="pt-10">
-        <TeknisiTerdekatCard
-          imgSource={"/AdamSucipto.svg"}
-          imgAlt={"AdamSucipto"}
-          merchName={"Adam Sucipto"}
-          serviceCategory={"#service-ac"}
-          location={"Bogor"}
-          status={"offline"}
-        />
-      </div>
-      <div className="pt-10">
-        <TeknisiTerdekatCard
-          imgSource={"/AdamSucipto.svg"}
-          imgAlt={"AdamSucipto"}
-          merchName={"Adam Sucipto"}
-          serviceCategory={"#service-ac"}
-          location={"Bogor"}
-          status={"offline"}
+          merchantId={"qowriq-1i1iwjf-qpojr1"}
         />
       </div>
     </main>
