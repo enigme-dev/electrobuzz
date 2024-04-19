@@ -30,7 +30,7 @@ const TeknisiTerdekatCard: React.FC<Props> = ({
     <div>
       <Card
         onClick={() => {
-          router.push(`/${merchantId}`);
+          router.push(`/merchant/${merchantId}`);
         }}
         className="p-6 w-full hover:shadow-lg cursor-pointer transition duration-500"
       >

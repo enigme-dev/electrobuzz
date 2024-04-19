@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HomeIcon, NotepadText } from "lucide-react";
+import { HomeIcon, NotepadText, Settings } from "lucide-react";
 import { useState } from "react";
 
 export const navList = [
@@ -18,6 +18,11 @@ export const navList = [
     label: "Bookings",
     link: "/bookings",
     icon: <NotepadText size="20" />,
+  },
+  {
+    label: "Edit Profile",
+    link: "/",
+    icon: <Settings size="20" />,
   },
 ];
 
@@ -96,7 +101,9 @@ export default function AuthBar() {
                 <ul className="flex justify-between">
                   <li className="pt-5 text-center">
                     <Button variant="outline">
-                      <Link href="/bookings">Register as merchant</Link>
+                      <Link href="/register-user-as-merchant">
+                        Register as merchant
+                      </Link>
                     </Button>
                   </li>
                   <li className="pt-5 text-center">
