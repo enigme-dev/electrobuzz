@@ -25,22 +25,31 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/core/components/ui/calendar";
 import { cn } from "@/core/lib/shadcn";
 import { format } from "date-fns";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/core/components/ui/input-otp";
+
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 const FormSchema = z.object({
   keluhan: z.string({
     required_error: "tolong deskripsikan keluhanmu",
   }),
-  foto: z.any({
-    required_error: "tolong isi foto keluhanmu",
-  }),
-  lokasi: z.string({
-    required_error: "tolong isi lokasimu",
+  foto: z.string().refine(
+    (value) => {
+      // Regular expression to match JPG and PNG file extensions
+      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+      return allowedExtensions.test(value);
+    },
+    {
+      message: "Foto keluhanmu harus berupa file JPG atau PNG",
+      path: ["foto"],
+    }
+  ),
+  Alamat: z.string({
+    required_error: "tolong isi alamatmu",
   }),
   tanggal: z.date({
     required_error: "tolong isi tanggal perjanjianmu",
@@ -102,12 +111,12 @@ const BuatJanjiPage = () => {
           />
           <FormField
             control={form.control}
-            name="lokasi"
+            name="Alamat"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Lokasi</FormLabel>
+                <FormLabel>Alamat</FormLabel>
                 <FormControl>
-                  <Input placeholder="lokasi" {...field} />
+                  <Input placeholder="Alamat" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,6 +159,10 @@ const BuatJanjiPage = () => {
                     />
                   </PopoverContent>
                 </Popover>
+                <FormDescription>
+                  Kamu dapat memilih tanggal minimal satu hari setelah pembuatan
+                  janji
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -166,12 +179,14 @@ const BuatJanjiPage = () => {
                     id="time"
                     className="rounded-md border border-input w-fit text-gray-900 leading-none focus:ring-blue-500 focus:border-blue-500 block flex-1 text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     min="09:00"
-                    max="18:00"
+                    max="17:00"
                     required
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>isi waktu perjanjianmu</FormDescription>
+                <FormDescription>
+                  Waktu perjanjian hanya dari jam 09.00 sampai 17.00 WIB
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
