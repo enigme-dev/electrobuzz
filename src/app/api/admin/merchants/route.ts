@@ -1,21 +1,22 @@
 import { buildErr } from "@/core/lib/errors";
-import getIdentities from "@/merchantIdentities/queries/getIdentities";
+import { buildRes, parseParams } from "@/core/lib/utils";
+import countMerchants from "@/merchants/queries/countMerchants";
+import getMerchants from "@/merchants/queries/getMerchants";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  let merchants;
+  let merchants, merchantsCt;
 
   const searchParams = req.nextUrl.searchParams;
-  const query = searchParams.get("query");
+  const { query, page, skip } = parseParams(searchParams);
 
   try {
-    merchants = await getIdentities(query ?? "");
+    merchants = await getMerchants({ query, page: skip });
+    merchantsCt = await countMerchants({ query });
   } catch (e) {
+    console.error(e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({
-    status: "merchants retrieved successfully",
-    data: merchants,
-  });
+  return buildRes({ data: merchants, total: merchantsCt, page });
 }

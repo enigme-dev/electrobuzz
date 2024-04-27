@@ -1,5 +1,5 @@
 import { buildErr } from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import addMerchantAlbums from "@/merchantAlbums/mutations/addMerchantAlbums";
 import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
 import { AlbumsSchema } from "@/merchantAlbums/types";
@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
 
   try {
     for (const album of data.data.albums) {
-      const imageUrl = await uploadImg(album.albumPhotoUrl, 640);
+      const compressed = await compressImg(album.albumPhotoUrl, 640);
+      const imageUrl = await uploadImg(compressed);
       photos.push(imageUrl);
     }
 

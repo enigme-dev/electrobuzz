@@ -27,17 +27,13 @@ export const navList = [
 ];
 
 export default function AuthBar() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [isVerified, setIsVerified] = useState(false);
-  const pathname = usePathname();
 
   const handleSignOut = () => {
     signOut();
   };
 
-  if (status === "loading" && pathname == "/") {
-    return <div className="wrapper pt-60"></div>;
-  }
   return (
     <>
       {session?.user ? (

@@ -7,7 +7,7 @@ import getPrivateProfile from "@/users/queries/getPrivateProfile";
 import getPublicProfile from "@/users/queries/getPublicProfile";
 import { Prisma } from "@prisma/client";
 import { UpdateProfileSchema } from "@/users/types";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 
 interface IdParams {
@@ -89,7 +89,8 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
         await deleteImg(user?.image);
       }
 
-      imageUrl = await uploadImg(input.data.image);
+      const compressed = await compressImg(input.data.image);
+      imageUrl = await uploadImg(compressed);
     }
   } catch (e) {
     return buildErr("ErrUnknown", 500);

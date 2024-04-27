@@ -1,5 +1,6 @@
 import { buildErr } from "@/core/lib/errors";
-import { deleteImg, uploadEncryptedImg } from "@/core/lib/image";
+import { deleteImg, uploadImg } from "@/core/lib/image";
+import { encrypt } from "@/core/lib/security";
 import addMerchantIdentities from "@/merchantIdentities/mutations/addMerchantIdentities";
 import getIdentitiesByMerchantId from "@/merchantIdentities/queries/getIdentitiesByMerchantId";
 import {
@@ -53,21 +54,22 @@ export async function POST(req: NextRequest) {
   input.data.merchantId = merchantId.data;
 
   try {
-    input.data.identityKtp = await uploadEncryptedImg(
-      input.data.identityKtp,
-      `ktp-${merchantId.data}`
-    );
+    const encryptedKtp = await encrypt(input.data.identityKtp);
+    input.data.identityKtp = await uploadImg(encryptedKtp, {
+      filename: `ktp-${merchantId.data}`,
+      bucket: "vault",
+    });
     images.push(input.data.identityKtp);
-    input.data.identitySkck = await uploadEncryptedImg(
-      input.data.identitySkck,
-      `skck-${merchantId.data}`
-    );
+    input.data.identitySkck = await uploadImg(input.data.identitySkck, {
+      filename: `skck-${merchantId.data}`,
+      bucket: "vault",
+    });
     images.push(input.data.identitySkck);
     if (input.data.identityCert) {
-      input.data.identityCert = await uploadEncryptedImg(
-        input.data.identityCert,
-        `sertifikat-${merchantId.data}`
-      );
+      input.data.identityCert = await uploadImg(input.data.identityCert, {
+        filename: `sertifikat-${merchantId.data}`,
+        bucket: "vault",
+      });
       images.push(input.data.identityCert);
     }
   } catch (e) {

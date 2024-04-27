@@ -1,3 +1,4 @@
+import { MerchantIdentitiesSchema } from "@/merchantIdentities/types";
 import { z } from "zod";
 
 export const MerchantSchema = z.object({
@@ -13,6 +14,9 @@ export const MerchantSchema = z.object({
   merchantVerified: z.boolean().optional(),
   merchantAvailable: z.boolean().optional(),
   merchantCreatedAt: z.date().optional(),
+  merchantIdentity: MerchantIdentitiesSchema.pick({
+    identityStatus: true,
+  }).optional(),
   userId: z.string().cuid().optional(),
 });
 

@@ -1,5 +1,5 @@
 import { buildErr } from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 import { addMerchant } from "@/merchants/mutations/addMerchant";
 import { MerchantSchema } from "@/merchants/types";
@@ -40,7 +40,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const imageUrl = await uploadImg(input.data.merchantPhotoUrl, 512);
+    const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
+    const imageUrl = await uploadImg(compressed);
     input.data.merchantPhotoUrl = imageUrl;
 
     await addMerchant(userId.data, input.data);
