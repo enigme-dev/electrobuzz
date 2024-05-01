@@ -7,6 +7,8 @@ import {
   EditMerchantIdentitySchema,
   IdentityStatuses,
 } from "@/merchantIdentities/types";
+import addMerchantIndex from "@/merchants/mutations/addMerchantIndex";
+import getMerchant from "@/merchants/queries/getMerchant";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -79,6 +81,11 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
       if (identity?.identityCert) {
         await deleteImg(identity.identityCert, "vault");
       }
+    }
+
+    if (input.data.identityStatus === IdentityStatuses.Enum.verified) {
+      const merchant = await getMerchant(merchantId.data);
+      await addMerchantIndex(merchant);
     }
   } catch (e) {
     return buildErr("ErrUnknown", 500);
