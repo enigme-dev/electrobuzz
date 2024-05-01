@@ -5,7 +5,11 @@ import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
-export const RegisterLayout = ({ children }: any) => {
+export default function RegisterLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
 
@@ -21,6 +25,4 @@ export const RegisterLayout = ({ children }: any) => {
 
   if (session?.user?.isNewUser) return <div>{children}</div>;
   return router.push("/");
-};
-
-export default RegisterLayout;
+}
