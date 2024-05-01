@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
     const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
     const imageUrl = await uploadImg(compressed);
     input.data.merchantPhotoUrl = imageUrl;
+    input.data.merchantAvailable = true;
 
     await addMerchant(userId.data, input.data);
   } catch (e) {
@@ -60,7 +61,11 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  cookies().delete("next-auth.session-token");
+  const cookieName =
+    process.env.NODE_ENV === "production"
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
+  cookies().delete(cookieName);
 
   return Response.json({ status: "merchant registered successfully" });
 }
