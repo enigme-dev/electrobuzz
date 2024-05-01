@@ -55,21 +55,27 @@ export async function POST(req: NextRequest) {
 
   try {
     const encryptedKtp = await encrypt(input.data.identityKtp);
-    input.data.identityKtp = await uploadImg(encryptedKtp, {
+    input.data.identityKtp = await uploadImg(Buffer.from(encryptedKtp), {
       filename: `ktp-${merchantId.data}`,
       bucket: "vault",
     });
     images.push(input.data.identityKtp);
-    input.data.identitySkck = await uploadImg(input.data.identitySkck, {
-      filename: `skck-${merchantId.data}`,
-      bucket: "vault",
-    });
+    input.data.identitySkck = await uploadImg(
+      Buffer.from(input.data.identitySkck),
+      {
+        filename: `skck-${merchantId.data}`,
+        bucket: "vault",
+      }
+    );
     images.push(input.data.identitySkck);
     if (input.data.identityCert) {
-      input.data.identityCert = await uploadImg(input.data.identityCert, {
-        filename: `sertifikat-${merchantId.data}`,
-        bucket: "vault",
-      });
+      input.data.identityCert = await uploadImg(
+        Buffer.from(input.data.identityCert),
+        {
+          filename: `sertifikat-${merchantId.data}`,
+          bucket: "vault",
+        }
+      );
       images.push(input.data.identityCert);
     }
   } catch (e) {
