@@ -3,19 +3,18 @@ import { Card } from "@/core/components/ui/card";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode } from "react";
-import StatusMerchant from "../../../merchant/statusMerchant";
 
 interface Props {
   imgSource: string;
   imgAlt: string;
   merchName: string;
-  serviceCategory: string;
+  serviceCategory: string[];
   location: string;
   status: "online" | "offline";
   merchantId: string;
 }
 
-const TeknisiTerdekatCard: React.FC<Props> = ({
+const MerchantCard: React.FC<Props> = ({
   imgSource,
   imgAlt,
   merchName,
@@ -31,26 +30,23 @@ const TeknisiTerdekatCard: React.FC<Props> = ({
         onClick={() => {
           router.push(`/merchant/${merchantId}`);
         }}
-        className="p-6 w-full hover:shadow-lg cursor-pointer transition duration-500"
+        className="w-full hover:shadow-lg cursor-pointer transition duration-500"
       >
         <div className="flex justify-start items-center gap-10">
           <div>
             <Image
-              className="rounded-full flex justify-center items-center"
+              className="p-3 rounded-full flex justify-center items-center"
               src={imgSource}
               alt={imgAlt}
-              width={100}
-              height={100}
+              width={70}
+              height={70}
             />
           </div>
-          <div className="grid place-items-start gap-3">
-            <h1 className="text-xl font-semibold">{merchName}</h1>
+          <div className="grid place-items-start gap-1">
+            <h1 className="text-md font-semibold">{merchName}</h1>
             <div className="flex gap-4">
-              <Card className="border border-gra px-4 py-2 rounded-lg">
-                {serviceCategory}
-              </Card>
-              <Card className="px-4 py-2 ">{location}</Card>
-              <StatusMerchant status={status} />
+              <h2 className="rounded-lg text-sm">{serviceCategory}</h2>
+              <h2 className="text-sm ">{location}</h2>
             </div>
           </div>
         </div>
@@ -59,4 +55,4 @@ const TeknisiTerdekatCard: React.FC<Props> = ({
   );
 };
 
-export default TeknisiTerdekatCard;
+export default MerchantCard;

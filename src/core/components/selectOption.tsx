@@ -30,7 +30,7 @@ export function SelectOption({
     if (params.categoryValue) {
       router.push(pathname.replace(pathname, categoryValue));
     } else {
-      router.push(`${categoryValue}`);
+      router.push(`/merchant-list/${categoryValue}`);
     }
   };
 

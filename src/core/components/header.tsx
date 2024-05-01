@@ -25,7 +25,9 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-2">
-          <Input type="text" placeholder="Search any services..." />
+          <Link href="/merchant-list">
+            <Button variant="default">Cari Jasa Favoritmu</Button>
+          </Link>
           <AuthBar />
           <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
             <SunMoon className="mx-2 h-6 w-6" />

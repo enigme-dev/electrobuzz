@@ -11,7 +11,7 @@ const CategoryCard = ({ categoryName, categoryIcon }: CategoryProps) => {
   const categoryParamsName = categoryName.toLowerCase().replace(" ", "-");
   return (
     <div className="grid place-items-center items-center gap-5">
-      <Link href={`/category-merchant/${categoryParamsName}`}>
+      <Link href={`/merchant-list/${categoryParamsName}`}>
         <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-500">
           <CardContent className="flex items-center justify-center p-6">
             {categoryIcon}

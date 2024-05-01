@@ -1,6 +1,7 @@
 import React from "react";
-import TeknisiTerdekatCard from "../components/teknisiTerdekatCard";
+import TeknisiTerdekatCard from "../components/merchantCard";
 import { MapPinIcon } from "lucide-react";
+import MerchantCard from "../components/merchantCard";
 
 const TeknisiTerdekat = () => {
   return (
@@ -12,11 +13,11 @@ const TeknisiTerdekat = () => {
         </h3>
       </div>
       <div className="pt-10">
-        <TeknisiTerdekatCard
+        <MerchantCard
           imgSource={"/AdamSucipto.svg"}
           imgAlt={"AdamSucipto"}
           merchName={"Adam Sucipto"}
-          serviceCategory={"#service-ac"}
+          serviceCategory={["serviceAC"]}
           location={"Bogor"}
           status={"offline"}
           merchantId="asdasda-asfsa-fafs-safs"
@@ -24,11 +25,11 @@ const TeknisiTerdekat = () => {
       </div>
       <div className="pt-10">
         {" "}
-        <TeknisiTerdekatCard
+        <MerchantCard
           imgSource={"/AdamSucipto.svg"}
           imgAlt={"AdamSucipto"}
           merchName={"Adam Sucipto"}
-          serviceCategory={"#service-ac"}
+          serviceCategory={["serviceAC"]}
           location={"Bogor"}
           status={"online"}
           merchantId="asdasda-asfsa-fafs"
@@ -36,24 +37,24 @@ const TeknisiTerdekat = () => {
       </div>
       <div className="pt-10">
         {" "}
-        <TeknisiTerdekatCard
+        <MerchantCard
           imgSource={"/AdamSucipto.svg"}
           imgAlt={"AdamSucipto"}
           merchName={"Adam Sucipto"}
           location={"Bogor"}
-          serviceCategory={"#service-ac"}
+          serviceCategory={["serviceAC"]}
           status={"online"}
           merchantId="asdasda-fafs-safs"
         />
       </div>
       <div className="pt-10">
         {" "}
-        <TeknisiTerdekatCard
+        <MerchantCard
           imgSource={"/AdamSucipto.svg"}
           imgAlt={"AdamSucipto"}
           merchName={"Adam Sucipto"}
           location={"Bogor"}
-          serviceCategory={"#service-ac"}
+          serviceCategory={["serviceAC"]}
           status={"online"}
           merchantId="asfsa-fafs-safs"
         />
