@@ -26,7 +26,12 @@ export default function Header() {
         </div>
         <div className="flex gap-2">
           <Link href="/merchant-list">
-            <Button variant="default">Cari Jasa Favoritmu</Button>
+            <Button
+              variant="link"
+              className="text-black hover:text-yellow-400 hover:no-underline dark:text-white dark:hover:text-yellow-400 "
+            >
+              Cari Teknisimu
+            </Button>
           </Link>
           <AuthBar />
           <Button variant="ghost" size="icon" onClick={handleToggleTheme}>

@@ -1,4 +1,4 @@
-import BookingCard from "@/core/components/booking-history/component/bookingCard";
+import BookingCard from "@/booking-history/component/bookingCard";
 import React from "react";
 
 const BookingPage = () => {

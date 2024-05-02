@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card } from "../../ui/card";
+import { Card } from "../../core/components/ui/card";
 import Image from "next/image";
 import StatusMerchant from "../../merchant/statusMerchant";
 import { useRouter } from "next/navigation";

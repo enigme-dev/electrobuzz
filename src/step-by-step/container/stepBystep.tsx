@@ -1,5 +1,5 @@
 import React from "react";
-import { Separator } from "../../../ui/separator";
+import { Separator } from "../../core/components/ui/separator";
 import StepperCard from "../component/stepperCard";
 import {
   CameraIcon,

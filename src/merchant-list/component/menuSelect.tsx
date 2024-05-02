@@ -13,7 +13,7 @@ export function MenuSelect(props: UseMenuProps) {
       onChange={(event) => {
         refine((event.target as HTMLSelectElement).value);
       }}
-      className="border rounded-lg p-2"
+      className="border rounded-lg p-2 w-full"
     >
       <option value={""}>All</option>
       {items.map((item, index) => (

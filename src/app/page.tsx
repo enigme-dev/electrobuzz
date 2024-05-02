@@ -1,25 +1,24 @@
 "use client";
 
-import { Banner } from "@/core/components/dashboard/banner";
-import Category from "@/core/components/dashboard/category/container/category";
-import StepByStep from "@/core/components/dashboard/step-by-step/container/stepBystep";
-import TeknisiTerdekat from "@/core/components/dashboard/teknisi-terdekat/container/teknisiTerdekat";
-import { Separator } from "@/core/components/ui/separator";
+import { Banner } from "@/dashboard/banner";
+import Category from "@/category/container/category";
+import StepByStep from "@/step-by-step/container/stepBystep";
+import PopularMerchants from "@/popular-merchants/container/popularMerchants";
 
 export default function Home() {
   return (
-    <main className="wrapper py-4">
-      <section className=" pt-20 flex justify-center">
+    <main className="">
+      <section className="wrapper pt-20 flex justify-center">
         <Banner />
       </section>
-      <section className="pt-20">
+      <section className="wrapper pt-20">
         <StepByStep />
       </section>
-      <section className="pt-20">
+      <section className="wrapper pt-20">
         <Category />
       </section>
-      <section className="pt-20">
-        <TeknisiTerdekat />
+      <section className="wrapper pt-20">
+        <PopularMerchants />
       </section>
     </main>
   );

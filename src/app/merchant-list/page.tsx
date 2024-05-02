@@ -1,10 +1,11 @@
 "use client";
 
-import MerchantCard from "@/core/components/dashboard/teknisi-terdekat/components/merchantCard";
+import MerchantCard from "@/popular-merchants/components/popularMerchantsCard";
 import { Hit } from "@/merchant-list/component/hit";
 import { MenuSelect } from "@/merchant-list/component/menuSelect";
 import algoliasearch from "algoliasearch/lite";
 import { Search, SearchCheckIcon } from "lucide-react";
+import Image from "next/image";
 import {
   InstantSearch,
   SearchBox,
@@ -13,6 +14,8 @@ import {
   RefinementList,
   useInstantSearch,
 } from "react-instantsearch";
+import { NoResultsBoundary } from "@/merchant-list/component/noResultBondaries";
+import { NoResults } from "@/merchant-list/component/noResult";
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
@@ -21,28 +24,19 @@ const searchClient = algoliasearch(
 
 export default function Page() {
   return (
-    <div className="grid wrapper h-[100vh] py-10 ">
-      <InstantSearch searchClient={searchClient} indexName="merchants" routing>
-        <div className="flex gap-10 w-full rounded-md shadow-xl px-8 border">
-          <div className="py-6 h-full">
-            <h2 className="pb-3 text-xl">Kota</h2>
-            <MenuSelect attribute="merchantCity" />
-            <h2 className="py-3 text-xl">Kategori</h2>
-            <RefinementList
-              attribute="_tags"
-              classNames={{
-                count: "bg-yellow-100 p-1 rounded-md ml-3",
-                labelText: "ml-3",
-                item: "mb-3",
-              }}
-            />
-          </div>
-          <div className="flex flex-col gap-6 py-6 w-full">
-            <div className="flex border gap-2 items-center rounded-lg px-6">
+    <div className="flex flex-col wrapper">
+      <div className="rounded-lg p-10 h-[100vh]">
+        <InstantSearch
+          searchClient={searchClient}
+          indexName="merchants"
+          routing
+        >
+          <div className=" rounded-lg w-full flex justify-center items-center">
+            <div className="flex gap-2 items-center rounded-lg px-6 shadow-md border w-full justify-center">
               <SearchBox
                 placeholder="Search for any services"
                 classNames={{
-                  root: "rounded-lg w-full h-fit ",
+                  root: "rounded-lg w-full h-fit",
                   form: "flex",
                   input: "grow py-3 outline-none",
                   submitIcon: "hidden",
@@ -52,38 +46,31 @@ export default function Page() {
               />
               <Search />
             </div>
-            <NoResultsBoundary fallback={<NoResults />}>
-              <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
-            </NoResultsBoundary>
           </div>
-        </div>
-      </InstantSearch>
-    </div>
-  );
-}
+          <div className="flex gap-10 pt-10 h-full">
+            <div className="py-6 h-full w-[30%]">
+              <h2 className="pb-3 text-xl">Kota</h2>
+              <MenuSelect attribute="merchantCity" />
+              <h2 className="py-3 text-xl">Kategori</h2>
+              <RefinementList
+                attribute="_tags"
+                classNames={{
+                  count: " p-1 rounded-md ml-3",
+                  labelText: "ml-3",
+                  item: "mb-3",
+                }}
+              />
+              <h2 className="py-3 text-xl">Rating</h2>
+            </div>
 
-function NoResultsBoundary({ children, fallback }: any) {
-  const { results } = useInstantSearch();
-  if (!results.__isArtificial && results.nbHits === 0) {
-    return (
-      <>
-        {fallback}
-        <div hidden>{children}</div>
-      </>
-    );
-  }
-
-  return children;
-}
-
-function NoResults() {
-  const { indexUiState } = useInstantSearch();
-
-  return (
-    <div className="">
-      <p>
-        No results for <q>{indexUiState.query}</q>.
-      </p>
+            <div className="flex flex-col gap-6 w-full  max-h-full overflow-auto p-6 rounded-lg">
+              <NoResultsBoundary fallback={<NoResults />}>
+                <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
+              </NoResultsBoundary>
+            </div>
+          </div>
+        </InstantSearch>
+      </div>
     </div>
   );
 }

@@ -5,10 +5,12 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../ui/carousel";
-import { Card, CardContent } from "../ui/card";
+} from "../core/components/ui/carousel";
+import { Card, CardContent } from "../core/components/ui/card";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
+import { Button } from "../core/components/ui/button";
+import Link from "next/link";
 
 export function Banner() {
   return (
@@ -17,7 +19,7 @@ export function Banner() {
         <div className="">
           <Image
             className="rounded-full "
-            src="/Banner.svg"
+            src="/Online world-cuate.svg"
             alt="banner"
             width={420}
             height={420}
@@ -35,6 +37,16 @@ export function Banner() {
             </span>{" "}
             hanya di <br /> <span className="text-">Electrobuzz</span>
           </h1>
+          <div className="text-center pt-5">
+            <Link href="/merchant-list">
+              <Button
+                variant="default"
+                className="bg-yellow-400 hover:bg-yellow-500 text-lg text-black"
+              >
+                Cari Teknisi Favoritmu
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

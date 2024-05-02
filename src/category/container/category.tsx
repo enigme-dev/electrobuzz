@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "../../../ui/card";
+import { Card, CardContent } from "../../core/components/ui/card";
 import {
   AirVentIcon,
   Laptop,
@@ -16,14 +16,14 @@ const Category = () => {
     <div className="w-full">
       <h1 className="text-2xl font-bold">Kategori</h1>
       <div className="pt-10 w-full overflow-visible">
-        <div className="flex flex-row gap-6  overflow-x-scroll">
+        <div className="flex flex-row gap-6  overflow-x-scroll pb-4">
           <CategoryCard
             categoryIcon={<AirVentIcon size={100} strokeWidth={1} />}
-            categoryName="Air Conditioner"
+            categoryName="AC"
           />
           <CategoryCard
             categoryIcon={<WashingMachineIcon size={100} strokeWidth={1} />}
-            categoryName="Washing Machine"
+            categoryName="Mesin Cuci"
           />
           <CategoryCard
             categoryIcon={<SmartphoneIcon size={100} strokeWidth={1} />}
@@ -31,7 +31,7 @@ const Category = () => {
           />
           <CategoryCard
             categoryIcon={<RefrigeratorIcon size={100} strokeWidth={1} />}
-            categoryName="Refrigator"
+            categoryName="Kulkas"
           />
           <CategoryCard
             categoryIcon={<Laptop size={100} strokeWidth={1} />}
@@ -39,7 +39,7 @@ const Category = () => {
           />
           <CategoryCard
             categoryIcon={<Tv size={100} strokeWidth={1} />}
-            categoryName="Television"
+            categoryName="Televisi"
           />
           <CategoryCard
             categoryIcon={<MicrowaveIcon size={100} strokeWidth={1} />}

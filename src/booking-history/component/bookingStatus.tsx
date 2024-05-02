@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "../../ui/card";
+import { Card } from "../../core/components/ui/card";
 
 interface Props {
   status: "Awaiting" | "Denied" | "Accepted" | "In Progress" | "Completed";
