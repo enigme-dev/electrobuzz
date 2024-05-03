@@ -69,7 +69,7 @@ export default function Page() {
   }, [step]);
 
   return (
-    <div className="wrapper py-20 w-fit ">
+    <div className="wrapper px-10 py-20 w-fit ">
       <Card>
         {" "}
         <CardHeader>

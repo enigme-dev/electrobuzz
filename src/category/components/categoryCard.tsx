@@ -20,7 +20,7 @@ const CategoryCard = ({ categoryName, categoryIcon }: CategoryProps) => {
           </CardContent>
         </Card>
       </Link>
-      <p>{categoryName}</p>
+      <p className="text-xs sm:text-lg">{categoryName}</p>
     </div>
   );
 };

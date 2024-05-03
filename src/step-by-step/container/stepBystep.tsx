@@ -10,7 +10,7 @@ import {
 
 const StepByStep = () => {
   return (
-    <div>
+    <div className="hidden lg:block">
       <div className="z-0">
         <Separator />
       </div>

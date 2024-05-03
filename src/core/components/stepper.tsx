@@ -13,11 +13,14 @@ export default function Stepper(props: StepperProps) {
       <div className="flex gap-10 pt-2">
         {props.labels.map((label, i) =>
           i === props.activeStep ? (
-            <span className="text-sm" key={label}>
+            <span className="text-xs sm:text-sm text-center" key={label}>
               {label}
             </span>
           ) : (
-            <span key={label} className="text-sm text-gray-400">
+            <span
+              key={label}
+              className="text-xs sm:text-sm text-gray-400 text-center"
+            >
               {label}
             </span>
           )

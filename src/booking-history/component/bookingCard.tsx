@@ -2,9 +2,9 @@
 import React from "react";
 import { Card } from "../../core/components/ui/card";
 import Image from "next/image";
-import StatusMerchant from "../../merchant/statusMerchant";
 import { useRouter } from "next/navigation";
 import BookingStatus from "./bookingStatus";
+import { MapPin } from "lucide-react";
 
 interface BookingCardProps {
   imgSource: string;
@@ -32,12 +32,12 @@ const BookingCard = ({
         onClick={() => {
           router.push(`/bookings/${orderId}`);
         }}
-        className="p-6 w-full hover:shadow-lg cursor-pointer transition duration-500"
+        className="w-full hover:shadow-lg cursor-pointer transition duration-500"
       >
         <div className="flex justify-start items-center gap-10">
           <div>
             <Image
-              className=" aspect-square rounded-full flex justify-center items-center"
+              className="aspect-square p-3 rounded-full flex justify-center items-center"
               src={imgSource}
               alt={imgAlt}
               width={100}
@@ -45,9 +45,12 @@ const BookingCard = ({
             />
           </div>
           <div className="grid place-items-start gap-3">
-            <h1 className="text-xl font-semibold">{merchName}</h1>
-            <div className="flex gap-4">
-              <Card className="px-4 py-2 ">{location}</Card>
+            <h1 className="text-sm sm:text-md font-semibold">{merchName}</h1>
+            <div className="flex gap-4 items-center">
+              <div className="flex gap-2 items-center">
+                <MapPin className="w-4" />
+                <p className="text-xs sm:text-md  ">{location}</p>
+              </div>
               <BookingStatus status={status} />
             </div>
           </div>

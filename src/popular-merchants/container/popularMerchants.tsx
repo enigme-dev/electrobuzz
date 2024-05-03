@@ -1,19 +1,19 @@
 import React from "react";
-import TeknisiTerdekatCard from "../components/popularMerchantsCard";
-import { MapPinIcon } from "lucide-react";
-import MerchantCard from "../components/popularMerchantsCard";
 import Image from "next/image";
+import PopularMerchantsCard from "../components/popularMerchantsCard";
 
 const PopularMerchants = () => {
   return (
     <div className="w-full ">
       <div className="flex justify-between">
-        <h2 className="text-2xl font-bold pb-3">Teknisi Terpopuler</h2>
+        <h2 className="text-xl sm:text-2xl font-bold pb-10 pt-10">
+          Teknisi Terpopuler
+        </h2>
       </div>
       <div className="flex items-center justify-center">
-        <div className=" max-h-[50vh] w-[50%] overflow-auto p-10 rounded-lg border">
+        <div className=" grid gap-4 max-h-[70vh] w-full sm:w-[50%] overflow-auto sm:p-10 ">
           <div>
-            <MerchantCard
+            <PopularMerchantsCard
               imgSource={"/AdamSucipto.svg"}
               imgAlt={"AdamSucipto"}
               merchName={"Adam Sucipto"}
@@ -22,9 +22,9 @@ const PopularMerchants = () => {
               merchantId="asdasda-asfsa-fafs-safs"
             />
           </div>
-          <div className="pt-10">
+          <div>
             {" "}
-            <MerchantCard
+            <PopularMerchantsCard
               imgSource={"/AdamSucipto.svg"}
               imgAlt={"AdamSucipto"}
               merchName={"Adam Sucipto"}
@@ -33,9 +33,9 @@ const PopularMerchants = () => {
               merchantId="asdasda-asfsa-fafs"
             />
           </div>
-          <div className="pt-10">
+          <div>
             {" "}
-            <MerchantCard
+            <PopularMerchantsCard
               imgSource={"/AdamSucipto.svg"}
               imgAlt={"AdamSucipto"}
               merchName={"Adam Sucipto"}
@@ -44,9 +44,9 @@ const PopularMerchants = () => {
               merchantId="asdasda-fafs-safs"
             />
           </div>
-          <div className="pt-10">
+          <div>
             {" "}
-            <MerchantCard
+            <PopularMerchantsCard
               imgSource={"/AdamSucipto.svg"}
               imgAlt={"AdamSucipto"}
               merchName={"Adam Sucipto"}
@@ -55,9 +55,9 @@ const PopularMerchants = () => {
               merchantId="asfsa-fafs-safs"
             />
           </div>
-          <div className="pt-10">
+          <div>
             {" "}
-            <MerchantCard
+            <PopularMerchantsCard
               imgSource={"/AdamSucipto.svg"}
               imgAlt={"AdamSucipto"}
               merchName={"Adam Sucipto"}
@@ -66,9 +66,9 @@ const PopularMerchants = () => {
               merchantId="asfsa-fafs-safs"
             />
           </div>
-          <div className="pt-10">
+          <div>
             {" "}
-            <MerchantCard
+            <PopularMerchantsCard
               imgSource={"/AdamSucipto.svg"}
               imgAlt={"AdamSucipto"}
               merchName={"Adam Sucipto"}
@@ -78,12 +78,14 @@ const PopularMerchants = () => {
             />
           </div>
         </div>
-        <Image
-          src={"/Electrician-rafiki.svg"}
-          alt="Electrician-rafiki"
-          width={500}
-          height={500}
-        />
+        <div className="hidden sm:block">
+          <Image
+            src={"/Electrician-rafiki.svg"}
+            alt="Electrician-rafiki"
+            width={500}
+            height={500}
+          />
+        </div>
       </div>
     </div>
   );

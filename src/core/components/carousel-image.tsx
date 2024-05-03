@@ -42,7 +42,7 @@ export function CarouselImage({ carouselContent }: carouselProps) {
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
-        className="w-[40vw]"
+        className="w-full"
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.reset}
       >
@@ -50,13 +50,13 @@ export function CarouselImage({ carouselContent }: carouselProps) {
           {Array.from({ length: 5 }).map((_, index) => (
             <CarouselItem key={index}>
               <div className="p-1">
-                <Card>
-                  <CardContent className=" aspect-auto items-center justify-center p-6">
+                <div>
+                  <div className=" aspect-auto items-center justify-center ">
                     <span className="text-4xl font-semibold">
                       {carouselContent}
                     </span>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
             </CarouselItem>
           ))}

@@ -1,16 +1,18 @@
 "use client";
 
-import { AlertDialogComponent } from "@/core/components/alertDialog";
-import { DialogGeneral } from "@/core/components/generalDialog";
-import { RadioGroupForm } from "@/core/components/radioGroup";
+import { AlertDialogComponent } from "@/core/components/alert-dialog";
+import { DialogGeneral } from "@/core/components/general-dialog";
+import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const BookingDetail = () => {
-  const status = "Accepted";
+  const [status, setStatus] = useState(
+    "pending" || "cancelled" || "accepted" || "done"
+  );
   const pathname = usePathname();
   const radioOptionsForCancelReason = [
     { option: "Budjet tidak cukup" },
@@ -19,9 +21,13 @@ const BookingDetail = () => {
     { option: "Other" },
   ];
 
+  useEffect(() => {
+    setStatus("accepted");
+  }, [status]);
+
   return (
-    <main className="wrapper py-10">
-      {/* {status == "Awaiting" && (
+    <main className="sm:wrapper pb-20 px-4">
+      {status == "pending" && (
         <>
           <div className="flex items-center justify-center">
             <Image
@@ -41,7 +47,7 @@ const BookingDetail = () => {
           </div>
         </>
       )}
-      {status == "Denied" && (
+      {status == "cancelled" && (
         <>
           <div className="flex items-center justify-center">
             <Image
@@ -64,8 +70,8 @@ const BookingDetail = () => {
             </Link>
           </div>
         </>
-      )} */}
-      {status == "Accepted" && (
+      )}
+      {status == "accepted" && (
         <>
           <div className="flex items-center justify-center">
             <Image
@@ -87,14 +93,13 @@ const BookingDetail = () => {
             <p className="font-bold text-left">
               Perlu ganti kapasitor sekitar 700.000
             </p>
-            <div className="flex gap-10 justify-end items-center">
+            <div className="flex gap-10 justify-center items-center">
               <DialogGeneral
                 dialogTitle="Alasan Penolakan"
                 dialogDescription={
                   <RadioGroupForm options={radioOptionsForCancelReason} />
                 }
-                buttonTitle={"Tolak"}
-                buttonFooterTitle={"Submit"}
+                dialogTrigger={<Button variant={"destructive"}>Tolak</Button>}
               />
               <AlertDialogComponent
                 dialogTitle="Apakah kamu yakin?"

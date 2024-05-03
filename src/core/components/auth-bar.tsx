@@ -5,7 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HomeIcon, NotepadText, Settings } from "lucide-react";
+import {
+  HomeIcon,
+  NotepadText,
+  PersonStanding,
+  Settings,
+  User,
+  UserRound,
+} from "lucide-react";
 import { useState } from "react";
 
 export const navList = [
@@ -40,13 +47,16 @@ export default function AuthBar() {
         <div className="flex items-center">
           <Popover>
             <PopoverTrigger asChild>
-              <Avatar className="w-9 h-9">
-                <AvatarImage
-                  src={session?.user?.image ?? undefined}
-                  referrerPolicy="no-referrer"
-                />
-                <AvatarFallback>{session?.user?.name}</AvatarFallback>
-              </Avatar>
+              <div className="grid gap-1 items-center place-items-center">
+                <Avatar className="w-9 h-9 grid">
+                  <AvatarImage
+                    src={session?.user?.image ?? undefined}
+                    referrerPolicy="no-referrer"
+                    className="w-full"
+                  />
+                  <AvatarFallback>{session?.user?.name}</AvatarFallback>
+                </Avatar>
+              </div>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-fit">
               <ul>
@@ -118,7 +128,21 @@ export default function AuthBar() {
         </div>
       ) : (
         <AuthDialog>
-          <Button>Sign in</Button>
+          <div>
+            <Button
+              variant={"link"}
+              className="grid gap-1 items-center place-items-center p-0 hover:no-underline text-black sm:hidden"
+            >
+              <UserRound />
+              <p className="text-xs">Login</p>
+            </Button>
+            <Button
+              variant={"secondary"}
+              className="bg-yellow-400 hover:bg-yellow-300 hidden sm:block"
+            >
+              <p className="text-xs">Login</p>
+            </Button>
+          </div>
         </AuthDialog>
       )}
     </>

@@ -13,28 +13,27 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 interface DialogGeneralProps {
-  buttonTitle: string;
+  dialogTrigger: ReactNode;
   dialogTitle: string;
   dialogDescription: ReactNode;
-  buttonFooterTitle: String;
+  dialogFooterContent?: ReactNode;
 }
 
 export function DialogGeneral({
-  buttonTitle,
+  dialogTrigger,
   dialogTitle,
   dialogDescription,
-  buttonFooterTitle,
+  dialogFooterContent,
 }: DialogGeneralProps) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructive">{buttonTitle}</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
+        <DialogFooter>{dialogFooterContent}</DialogFooter>
       </DialogContent>
     </Dialog>
   );

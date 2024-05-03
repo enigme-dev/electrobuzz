@@ -35,7 +35,7 @@ const MerchantListCard: React.FC<Props> = ({
           <div className="flex gap-10 items-center">
             <div>
               <Image
-                className="p-3 rounded-full flex justify-center items-center"
+                className="aspect-square p-3 rounded-full flex justify-center items-center"
                 src={imgSource}
                 alt={imgAlt}
                 width={100}

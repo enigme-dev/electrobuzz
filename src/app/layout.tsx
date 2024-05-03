@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/core/components/theme-provider";
 import NextAuthProvider from "@/core/components/next-auth-provider";
 import Header from "@/core/components/header";
 import TanstackQueryProvider from "@/core/components/tanstack-query";
+import Footer from "@/core/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,10 +30,13 @@ export default function RootLayout({
         >
           <NextAuthProvider>
             <TanstackQueryProvider>
-              <header>
+              <header className="w-full">
                 <Header />
               </header>
               <main>{children}</main>
+              <footer className="fixed bottom-0 left-0 w-full z-50 sm:hidden">
+                <Footer />
+              </footer>
             </TanstackQueryProvider>
           </NextAuthProvider>
         </ThemeProvider>

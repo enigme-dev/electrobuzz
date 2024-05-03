@@ -18,25 +18,27 @@ export default function Header() {
 
   return (
     <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838]">
-      <div className="wrapper flex justify-between">
+      <div className="wrapper flex justify-center sm:justify-between">
         <div className="flex gap-6 items-center">
           <Link href="/" className="select-none">
             <h1 className="font-bold text-xl">electroBu⚡z</h1>
           </Link>
         </div>
-        <div className="flex gap-2">
-          <Link href="/merchant-list">
-            <Button
-              variant="link"
-              className="text-black hover:text-yellow-400 hover:no-underline dark:text-white dark:hover:text-yellow-400 "
-            >
-              Cari Teknisimu
+        <div className="hidden sm:block">
+          <div className="flex gap-2 ">
+            <Link href="/merchant-list">
+              <Button
+                variant="link"
+                className="text-black hover:text-yellow-400 hover:no-underline dark:text-white dark:hover:text-yellow-400 "
+              >
+                Cari Teknisimu
+              </Button>
+            </Link>
+            <AuthBar />
+            <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
+              <SunMoon className="mx-2 h-6 w-6" />
             </Button>
-          </Link>
-          <AuthBar />
-          <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
-            <SunMoon className="mx-2 h-6 w-6" />
-          </Button>
+          </div>
         </div>
       </div>
     </div>

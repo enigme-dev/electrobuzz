@@ -78,7 +78,7 @@ const BuatJanjiPage = () => {
   }
 
   return (
-    <div className="wrapper py-10">
+    <div className="sm:wrapper pb-20 pt-10 sm:py-10 px-4">
       <h1 className="font-bold text-xl pb-10">Form Buat Janji</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

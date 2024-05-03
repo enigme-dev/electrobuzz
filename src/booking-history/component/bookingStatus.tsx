@@ -9,24 +9,24 @@ const BookingStatus = ({ status }: Props) => {
   return (
     <div>
       {" "}
-      <Card className=" px-4 py-2 flex justify-center items-center gap-2">
+      <div className=" flex justify-center items-center gap-2">
         {status === "Awaiting" && (
-          <div className="h-2 w-2 rounded-full bg-gray-500"></div>
+          <div className="h-1 w-1 rounded-full bg-gray-500"></div>
         )}
         {status === "Denied" && (
-          <div className="h-2 w-2 rounded-full bg-red-500"></div>
+          <div className="h-1 w-1 rounded-full bg-red-500"></div>
         )}
         {status === "Accepted" && (
-          <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+          <div className="h-1 w-1 rounded-full bg-blue-500"></div>
         )}
         {status === "In Progress" && (
-          <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+          <div className="h-1 w-1 rounded-full bg-yellow-500"></div>
         )}
         {status === "Completed" && (
-          <div className="h-2 w-2 rounded-full bg-green-500"></div>
+          <div className="h-1 w-1 rounded-full bg-green-500"></div>
         )}
-        {status}
-      </Card>
+        <p className="text-xs sm:text-md">{status}</p>
+      </div>
     </div>
   );
 };
