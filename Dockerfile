@@ -14,8 +14,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN --mount=type=secret,id=PRISMA_FIELD_ENCRYPTION_KEY echo "NEXT_PUBLIC_ALGOLIA_APP_ID=$(cat /run/secrets/NEXT_PUBLIC_ALGOLIA_APP_ID)" >> .env.production
-RUN --mount=type=secret,id=PRISMA_FIELD_ENCRYPTION_KEY echo "NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY=$(cat /run/secrets/NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY)" >> .env.production
+RUN --mount=type=secret,id=NEXT_PUBLIC_ALGOLIA_APP_ID echo "NEXT_PUBLIC_ALGOLIA_APP_ID=$(cat /run/secrets/NEXT_PUBLIC_ALGOLIA_APP_ID)" >> .env.production
+RUN --mount=type=secret,id=NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY echo "NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY=$(cat /run/secrets/NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY)" >> .env.production
 RUN --mount=type=secret,id=PRISMA_FIELD_ENCRYPTION_KEY echo "PRISMA_FIELD_ENCRYPTION_KEY=$(cat /run/secrets/PRISMA_FIELD_ENCRYPTION_KEY)" >> .env.production
 RUN --mount=type=secret,id=ASSETS_URL echo "ASSETS_URL=$(cat /run/secrets/ASSETS_URL)" >> .env.production
 RUN --mount=type=secret,id=MINIO_ENDPOINT echo "MINIO_ENDPOINT=$(cat /run/secrets/MINIO_ENDPOINT)" >> .env.production
