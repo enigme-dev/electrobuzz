@@ -7,7 +7,7 @@ import getPrivateProfile from "@/users/queries/getPrivateProfile";
 import getPublicProfile from "@/users/queries/getPublicProfile";
 import { Prisma } from "@prisma/client";
 import { UpdateProfileSchema } from "@/users/types";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 
 interface IdParams {
@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
 
   if (userId.data !== params.id) {
     return buildErr(
-      "ErrUnauthorized",
+      "ErrForbidden",
       403,
       "not allowed to update other user's profile"
     );
@@ -81,25 +81,18 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
-  let imageUrl = input.data.image;
+  let imageUrl;
   try {
-    const user = await getPrivateProfile(userId.data);
-
-    if (!input.data.image.startsWith(process.env.ASSETS_URL as string)) {
+    if (input.data.image && input.data.image.startsWith("data:image")) {
+      const user = await getPrivateProfile(userId.data);
       if (user?.image?.startsWith(process.env.ASSETS_URL as string)) {
         await deleteImg(user?.image);
       }
 
-      imageUrl = await uploadImg(input.data.image);
-    }
-
-    input.data.phoneVerified = user?.phoneVerified;
-    if (input.data.phone !== user?.phone) {
-      input.data.phoneVerified = false;
+      const compressed = await compressImg(input.data.image);
+      imageUrl = await uploadImg(compressed);
     }
   } catch (e) {
-    deleteImg(removeImagePrefix(imageUrl));
-
     return buildErr("ErrUnknown", 500);
   }
 
@@ -108,7 +101,9 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   try {
     await updateProfile(input.data, params.id);
   } catch (e) {
-    deleteImg(removeImagePrefix(imageUrl));
+    if (imageUrl) {
+      deleteImg(removeImagePrefix(imageUrl));
+    }
 
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {

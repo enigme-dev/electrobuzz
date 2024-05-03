@@ -12,7 +12,6 @@ export default async function updateProfile(
     data: {
       name: data.name,
       phone: data.phone,
-      phoneVerified: data.phoneVerified,
       image: data.image,
     },
   });

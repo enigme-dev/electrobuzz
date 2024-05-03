@@ -8,8 +8,7 @@ export const UpdateProfileSchema = z.object({
   phone: z
     .string({ required_error: "phone cannot be empty" })
     .regex(/^\d{10,14}$/, "phone must consist of 10-14 digits number"),
-  phoneVerified: z.boolean().optional(),
-  image: z.string({ required_error: "image cannot be empty" }),
+  image: z.string({ required_error: "image cannot be empty" }).optional(),
 });
 
 export type UpdateProfileModel = z.infer<typeof UpdateProfileSchema>;

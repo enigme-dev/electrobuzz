@@ -1,7 +1,7 @@
 import { buildErr } from "@/core/lib/errors";
+import { deleteImg } from "@/core/lib/image";
 import deleteMerchantAlbum from "@/merchantAlbums/mutations/deleteMerchantAlbums";
-import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
+import getMerchantAlbum from "@/merchantAlbums/queries/getMerchantAlbum";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -12,12 +12,17 @@ interface IdParams {
 }
 
 export async function DELETE(req: NextRequest, { params }: IdParams) {
-  let merchant, merchantAlbum;
+  let merchantAlbum;
 
   const token = await getToken({ req });
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
     return buildErr("ErrUnauthorized", 401);
+  }
+
+  const merchantId = z.string().cuid().safeParse(token?.merchantId);
+  if (!merchantId.success) {
+    return buildErr("ErrForbidden", 403, "not registered as merchant");
   }
 
   const merchantAlbumId = z.string().cuid().safeParse(params.id);
@@ -26,18 +31,7 @@ export async function DELETE(req: NextRequest, { params }: IdParams) {
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr("ErrNotFound", 404, "merchant not found");
-      }
-    }
-    return buildErr("ErrUnknown", 500);
-  }
-
-  try {
-    merchantAlbum = await getMerchantAlbums(merchant.merchantId);
+    merchantAlbum = await getMerchantAlbum(merchantAlbumId.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -47,16 +41,15 @@ export async function DELETE(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnknown", 500);
   }
 
-  if (
-    merchantAlbum.filter((obj) => obj.merchantAlbumId === merchantAlbumId.data)
-      .length === 0
-  ) {
-    return buildErr("ErrForbidden", 403);
+  if (merchantAlbum.merchantId !== merchantId.data) {
+    return buildErr("ErrNotFound", 404, "merchant album not found");
   }
 
   try {
-    await deleteMerchantAlbum(merchant.merchantId);
+    await deleteMerchantAlbum(merchantAlbumId.data);
+    await deleteImg(merchantAlbumId.data);
   } catch (e) {
+    console.log(e);
     return buildErr("ErrUnknown", 500);
   }
 

@@ -1,5 +1,5 @@
 import { buildErr } from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 import { addMerchant } from "@/merchants/mutations/addMerchant";
 import { MerchantSchema } from "@/merchants/types";
@@ -8,6 +8,7 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
@@ -39,8 +40,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const imageUrl = await uploadImg(input.data.merchantPhotoUrl, 512);
+    const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
+    const imageUrl = await uploadImg(compressed);
     input.data.merchantPhotoUrl = imageUrl;
+    input.data.merchantAvailable = true;
 
     await addMerchant(userId.data, input.data);
   } catch (e) {
@@ -57,6 +60,12 @@ export async function POST(req: NextRequest) {
     }
     return buildErr("ErrUnknown", 500);
   }
+
+  const cookieName =
+    process.env.NODE_ENV === "production"
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
+  cookies().delete(cookieName);
 
   return Response.json({ status: "merchant registered successfully" });
 }

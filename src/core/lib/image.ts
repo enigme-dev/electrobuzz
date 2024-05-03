@@ -1,12 +1,14 @@
 import { createId } from "@paralleldrive/cuid2";
 import { MinioClient } from "../adapters/minio";
+import sharp from "sharp";
+import { Stream } from "stream";
 
-const sharp = require("sharp");
+interface UploadOptions {
+  filename?: string;
+  bucket?: string;
+}
 
-export async function compressImg(
-  image: string,
-  size: number
-): Promise<Buffer> {
+export async function compressImg(image: string, size = 320): Promise<Buffer> {
   const parts = image.split(";");
   const imageData = parts[1].split(",")[1];
 
@@ -14,14 +16,12 @@ export async function compressImg(
   try {
     const image = sharp(img);
     const result = await image
-      .metadata()
-      .then((metadata: any) => {
-        if (metadata.width <= size && metadata.height <= size) return image;
-        return image.resize({ width: size, fit: "cover" });
+      .resize(size, size, {
+        fit: "inside",
+        withoutEnlargement: true,
       })
-      .then((data: any) => {
-        return data.toFormat("webp").toBuffer();
-      });
+      .webp()
+      .toBuffer();
     return result;
   } catch (e) {
     console.error(e);
@@ -29,27 +29,50 @@ export async function compressImg(
   }
 }
 
-export async function uploadImg(image: string, size = 320): Promise<string> {
-  const filename = createId();
-  const img = await compressImg(image, size);
+export async function uploadImg(image: Buffer, options?: UploadOptions) {
+  const bucket = options?.bucket ?? "assets";
+  const filename = options?.filename ?? createId() + ".webp";
+
   try {
-    await MinioClient.putObject("assets", `${filename}.webp`, img);
-    return `${process.env.ASSETS_URL}/${filename}.webp`;
+    await MinioClient.putObject(bucket, filename, image);
+
+    if (bucket === "assets") {
+      return `${process.env.ASSETS_URL}/${filename}.webp`;
+    }
+
+    return filename;
   } catch (e) {
     console.error(e);
     throw new Error("Failed to upload image");
   }
 }
 
-export async function deleteImg(imageUrl: string) {
-  const filename = imageUrl.replace(
-    (process.env.ASSETS_URL as string) + "/",
-    ""
-  );
+export async function deleteImg(imageUrl: string, bucket = "assets") {
+  let filename;
+  if (bucket === "assets") {
+    filename = imageUrl.replace((process.env.ASSETS_URL as string) + "/", "");
+  }
+
   try {
-    await MinioClient.removeObject("assets", filename);
+    await MinioClient.removeObject(bucket, filename);
   } catch (e) {
     console.error(e);
     throw new Error("Failed to delete image");
   }
+}
+
+export async function getImg(
+  imageUrl: string,
+  bucket = "assets"
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+    MinioClient.getObject(bucket, imageUrl, (err: Error, stream: Stream) => {
+      if (err) {
+        reject(err);
+      }
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    });
+  });
 }

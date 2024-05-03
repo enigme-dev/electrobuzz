@@ -1,11 +1,9 @@
 import { buildErr } from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import addMerchantAlbums from "@/merchantAlbums/mutations/addMerchantAlbums";
 import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
 import { AlbumsSchema } from "@/merchantAlbums/types";
 import { removeImagePrefix } from "@/merchants/lib/utils";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
-import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -13,7 +11,6 @@ import { z } from "zod";
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
   let body,
-    merchant,
     photos: string[] = [];
 
   try {
@@ -27,24 +24,18 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnauthorized", 401);
   }
 
+  const merchantId = z.string().cuid().safeParse(token?.merchantId);
+  if (!merchantId.success) {
+    return buildErr("ErrForbidden", 403, "not registered as merchant");
+  }
+
   const data = AlbumsSchema.safeParse(body);
   if (!data.success) {
     return buildErr("ErrValidation", 400, data.error);
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr("ErrNotFound", 404, "merchant not found");
-      }
-    }
-    return buildErr("ErrUnknown", 500);
-  }
-
-  try {
-    const merchantAlbum = await getMerchantAlbums(merchant.merchantId);
+    const merchantAlbum = await getMerchantAlbums(merchantId.data);
     const albumQuota = 4 - merchantAlbum.length;
     if (albumQuota < data.data.albums.length) {
       return buildErr(
@@ -59,11 +50,12 @@ export async function POST(req: NextRequest) {
 
   try {
     for (const album of data.data.albums) {
-      const imageUrl = await uploadImg(album.albumPhotoUrl, 640);
+      const compressed = await compressImg(album.albumPhotoUrl, 640);
+      const imageUrl = await uploadImg(compressed);
       photos.push(imageUrl);
     }
 
-    await addMerchantAlbums(merchant.merchantId, photos);
+    await addMerchantAlbums(merchantId.data, photos);
   } catch (e) {
     photos.map((photo) => {
       deleteImg(removeImagePrefix(photo));

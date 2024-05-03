@@ -18,7 +18,7 @@ export default function AuthDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="px-4">
         <DialogHeader>
           <DialogTitle>Sign in</DialogTitle>
         </DialogHeader>
