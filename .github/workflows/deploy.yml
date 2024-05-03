@@ -26,6 +26,8 @@ jobs:
           push: true
           tags: alkuinvito/electrobuzz:latest
           secrets: |
+           "NEXT_PUBLIC_ALGOLIA_APP_ID=${{ secrets.NEXT_PUBLIC_ALGOLIA_APP_ID }}"
+           "NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY=${{ secrets.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY }}"
            "PRISMA_FIELD_ENCRYPTION_KEY=${{ secrets.PRISMA_FIELD_ENCRYPTION_KEY }}"
            "ASSETS_URL=${{ secrets.ASSETS_URL }}"
            "MINIO_ENDPOINT=${{ secrets.MINIO_ENDPOINT }}"
