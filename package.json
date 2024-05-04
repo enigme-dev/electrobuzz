@@ -30,6 +30,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.11",
     "embla-carousel-autoplay": "^8.0.0",
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.3",
@@ -50,7 +51,6 @@
     "sharp": "^0.33.3",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "twilio": "^5.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
