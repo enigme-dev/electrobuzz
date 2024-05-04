@@ -7,6 +7,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json* ./
 RUN npm ci
+RUN npm install --os=linux --libc=musl --cpu=x64 sharp
 
 
 FROM base AS builder

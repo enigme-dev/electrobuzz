@@ -149,3 +149,9 @@ model Review {
   apptId      String      @unique
   appointment Appointment @relation(fields: [apptId], references: [apptId])
 }
+
+model Verification {
+  verifId   String   @id
+  code      String
+  createdAt DateTime @default(now())
+}

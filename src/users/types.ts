@@ -13,7 +13,17 @@ export const UpdateProfileSchema = z.object({
 
 export type UpdateProfileModel = z.infer<typeof UpdateProfileSchema>;
 
+export const VerifyStatuses = z.enum([
+  "correct",
+  "incorrect",
+  "expired",
+  "error",
+]);
+
+export type VerifyStatuses = z.infer<typeof VerifyStatuses>;
+
 export const VerifyOTPSchema = z.object({
+  verifId: z.string({ required_error: "verifId cannot be empty" }),
   code: z
     .string({ required_error: "code cannot be empty" })
     .regex(/^\d{6}$/, "code must consist of 6-digits number"),
