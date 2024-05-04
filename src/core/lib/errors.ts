@@ -13,6 +13,7 @@ export enum ErrorCode {
   ErrValidation = "error in parsing input data",
   ErrForbidden = "request forbidden",
   ErrConflict = "request conflict",
+  ErrTooManyRequest = "too many request",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;
