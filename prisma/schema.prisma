@@ -82,6 +82,8 @@ model Merchant {
   merchantPhotoUrl  String
   merchantCity      String
   merchantProvince  String
+  merchantLat       Float
+  merchantLong      Float
   merchantCategory  String[]
   merchantRating    Float?
   merchantReviewCt  Int?
@@ -108,9 +110,9 @@ model MerchantAlbum {
 
 model MerchantIdentity {
   merchantIdentityId String   @id @default(cuid())
-  identityKtp        String?
-  identitySkck       String?
-  identityCert       String?
+  identityKTP        String?
+  identitySKCK       String?
+  identityDocs       String?
   identityStatus     String?
 
   merchantId         String   @unique

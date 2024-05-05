@@ -8,6 +8,8 @@ export const MerchantSchema = z.object({
   merchantPhotoUrl: z.string(),
   merchantCity: z.string(),
   merchantProvince: z.string(),
+  merchantLat: z.number(),
+  merchantLong: z.number(),
   merchantCategory: z.string().array(),
   merchantRating: z.number().nullable(),
   merchantReviewCt: z.number().int().nullable(),
@@ -21,3 +23,9 @@ export const MerchantSchema = z.object({
 });
 
 export type MerchantModel = z.infer<typeof MerchantSchema>;
+
+export const RegisterMerchantSchema = MerchantSchema.extend({
+  merchantIdentity: MerchantIdentitiesSchema,
+});
+
+export type RegisterMerchantSchema = z.infer<typeof RegisterMerchantSchema>;
