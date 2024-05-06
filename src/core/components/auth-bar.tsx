@@ -22,8 +22,8 @@ export const navList = [
     icon: <HomeIcon size="20" />,
   },
   {
-    label: "Bookings",
-    link: "/bookings",
+    label: "My Bookings",
+    link: "/my-bookings",
     icon: <NotepadText size="20" />,
   },
   {
@@ -131,14 +131,14 @@ export default function AuthBar() {
           <div>
             <Button
               variant={"link"}
-              className="grid gap-1 items-center place-items-center p-0 hover:no-underline text-black sm:hidden"
+              className="grid gap-1 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
             >
-              <UserRound />
-              <p className="text-xs">Login</p>
+              <UserRound strokeWidth={2} size={20} />
+              <p className="text-[0.6rem]">Login</p>
             </Button>
             <Button
               variant={"secondary"}
-              className="bg-yellow-400 hover:bg-yellow-300 hidden sm:block"
+              className="bg-yellow-400 hover:bg-yellow-300 hidden sm:block dark:text-black"
             >
               <p className="text-xs">Login</p>
             </Button>

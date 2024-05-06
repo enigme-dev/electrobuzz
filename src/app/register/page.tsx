@@ -1,34 +1,9 @@
 "use client";
 
-import { Button } from "@/core/components/ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Card, CardContent, CardHeader } from "@/core/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/core/components/ui/form";
-import { Input } from "@/core/components/ui/input";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/core/components/ui/input-otp";
-import {
-  UpdateProfileModel,
-  UpdateProfileSchema,
-  VerifyOTPModel,
-  VerifyOTPSchema,
-} from "@/users/types";
-import { AddressModel, AddressSchema } from "@/addresses/types";
+
 import Stepper from "@/core/components/stepper";
 import RegisterForm from "@/users/components/registerForm";
 import OTPVerification from "@/users/components/otpVerification";

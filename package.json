@@ -29,6 +29,7 @@
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
     "embla-carousel-autoplay": "^8.0.0",

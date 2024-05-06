@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const UpdateProfileSchema = z.object({
   name: z
-    .string({ required_error: "name cannot be empty" })
-    .min(3, "name must be between 3 and 128 characters")
-    .max(128, "name must be between 3 and 128 characters"),
+    .string({ required_error: "name tidak boleh kosong" })
+    .min(3, "nama harus diantara 3 dan 128 huruf")
+    .max(128, "nama harus diantara 3 dan 128 huruf"),
   phone: z
-    .string({ required_error: "phone cannot be empty" })
-    .regex(/^\d{10,14}$/, "phone must consist of 10-14 digits number"),
-  image: z.string({ required_error: "image cannot be empty" }).optional(),
+    .string({ required_error: "Nomor telpon tidak boleh kosong" })
+    .regex(/^\d{10,14}$/, "Nomor telpon harus 10-14 digit"),
+  image: z.string({ required_error: "foto tidak boleh kosong" }).optional(),
 });
 
 export type UpdateProfileModel = z.infer<typeof UpdateProfileSchema>;

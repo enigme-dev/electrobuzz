@@ -25,19 +25,19 @@ export default function Footer() {
               variant={"link"}
               className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
             >
-              <Home />
-              <p className="text-xs">Home</p>
+              <Home strokeWidth={2} size={20} />
+              <p className="text-[0.6rem]">Home</p>
             </Button>
           </Link>
         </div>
         <div>
-          <Link href="/bookings" className="select-none">
+          <Link href="/my-bookings" className="select-none">
             <Button
               variant={"link"}
               className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
             >
-              <NotepadText />
-              <p className="text-xs">Bookings</p>
+              <NotepadText strokeWidth={2} size={20} />
+              <p className="text-[0.6rem]">My Bookings</p>
             </Button>
           </Link>
         </div>
@@ -47,8 +47,8 @@ export default function Footer() {
               variant={"link"}
               className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
             >
-              <Search />
-              <p className="text-xs">Search</p>
+              <Search strokeWidth={2} size={20} />
+              <p className="text-[0.6rem]">Search</p>
             </Button>
           </Link>
         </div>

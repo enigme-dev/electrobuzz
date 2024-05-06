@@ -48,7 +48,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         token.isAdmin = profile?.isAdmin;
-
         try {
           const merchant = await getMerchantByUserId(user.id);
           if (merchant) {
@@ -64,6 +63,7 @@ export const authOptions: NextAuthOptions = {
         session.user.isNewUser = token.isNewUser;
         session.user.merchantId = token.merchantId;
         session.user.isAdmin = token.isAdmin;
+        session.user.id = token.sub || "";
       }
 
       return session;

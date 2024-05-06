@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "../../core/components/ui/card";
 
 interface Props {
-  status: "Awaiting" | "Denied" | "Accepted" | "In Progress" | "Completed";
+  status: "pending" | "cancelled" | "accepted" | "done";
 }
 
 const BookingStatus = ({ status }: Props) => {
@@ -10,22 +10,30 @@ const BookingStatus = ({ status }: Props) => {
     <div>
       {" "}
       <div className=" flex justify-center items-center gap-2">
-        {status === "Awaiting" && (
-          <div className="h-1 w-1 rounded-full bg-gray-500"></div>
+        {status === "pending" && (
+          <div className="px-2 py-1 sm:px-3 sm:py-2 rounded-full bg-gray-500">
+            {" "}
+            <p className="text-xs sm:text-md text-white">{status}</p>
+          </div>
         )}
-        {status === "Denied" && (
-          <div className="h-1 w-1 rounded-full bg-red-500"></div>
+        {status === "cancelled" && (
+          <div className=" rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-red-500">
+            {" "}
+            <p className="text-xs sm:text-md text-white">{status}</p>
+          </div>
         )}
-        {status === "Accepted" && (
-          <div className="h-1 w-1 rounded-full bg-blue-500"></div>
+        {status === "accepted" && (
+          <div className="  rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-blue-500">
+            {" "}
+            <p className="text-xs sm:text-md text-white">{status}</p>
+          </div>
         )}
-        {status === "In Progress" && (
-          <div className="h-1 w-1 rounded-full bg-yellow-500"></div>
+        {status === "done" && (
+          <div className="  rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-green-500">
+            {" "}
+            <p className="text-xs sm:text-md text-white">{status}</p>
+          </div>
         )}
-        {status === "Completed" && (
-          <div className="h-1 w-1 rounded-full bg-green-500"></div>
-        )}
-        <p className="text-xs sm:text-md">{status}</p>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { VerifyOTPModel, VerifyOTPSchema } from "../types";
 import {
   Form,
@@ -18,18 +18,32 @@ import {
 } from "@/core/components/ui/input-otp";
 import { Button } from "@/core/components/ui/button";
 import { useForm } from "react-hook-form";
+import { getData, postData } from "@/core/lib/service";
 interface OTPProps {
   onNext: Function;
   onPrevious: Function;
 }
 const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
-  function onSubmitOTP(OTPvalues: VerifyOTPModel) {
-    onNext();
-  }
-
   const OTPform = useForm<VerifyOTPModel>({
     resolver: zodResolver(VerifyOTPSchema),
+    defaultValues: {
+      verifId: "",
+    },
   });
+  async function getOTP() {
+    try {
+      const response = await getData(`/api/user/otp`);
+      OTPform.setValue("verifId", response.data.verifId);
+    } catch (error) {}
+  }
+  function onSubmitOTP(OTPvalues: VerifyOTPModel) {
+    try {
+      postData(`/api/user/otp`, OTPvalues);
+    } catch (error) {
+      console.error(error);
+    }
+    onNext();
+  }
 
   return (
     <div>
@@ -53,7 +67,11 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
-                <FormDescription>One-time password sent to</FormDescription>
+                <FormDescription>
+                  <Button variant="link" type="button" onClick={() => getOTP()}>
+                    Get Code
+                  </Button>
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
