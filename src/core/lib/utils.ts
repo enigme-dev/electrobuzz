@@ -29,7 +29,7 @@ export type ResponseSchema = z.infer<typeof ResponseSchema>;
 export function buildRes(response: ResponseSchema) {
   const length =
     response.data instanceof Array ? response.data.length : undefined;
-  const perpage = 10;
+  const perpage = length ? 10 : undefined;
 
   return Response.json({ ...response, length, perpage });
 }
