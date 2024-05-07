@@ -14,6 +14,12 @@ export enum ErrorCode {
   ErrForbidden = "request forbidden",
   ErrConflict = "request conflict",
   ErrTooManyRequest = "too many request",
+
+  // otp
+  ErrOTPIncorrect = "incorrect OTP code",
+  ErrOTPNotFound = "verifId does not exist",
+  ErrOTPUnknown = "unknown error occured",
+  ErrOTPExpired = "expired OTP code",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;

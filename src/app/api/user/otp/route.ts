@@ -80,13 +80,13 @@ export async function POST(req: NextRequest) {
     const response = await checkOTP(data.data.verifId, data.data.code);
     switch (response) {
       case VerifyStatuses.Enum.incorrect:
-        return buildErr("ErrValidation", 400, "incorrect OTP code");
+        return buildErr("ErrOTPIncorrect", 400, "incorrect OTP code");
       case VerifyStatuses.Enum.expired:
-        return buildErr("ErrValidation", 400, "expired OTP code");
+        return buildErr("ErrOTPExpired", 400, "expired OTP code");
       case VerifyStatuses.Enum.not_found:
-        return buildErr("ErrNotFound", 404, "verifId does not exist");
+        return buildErr("ErrOTPNotFound", 404, "verifId does not exist");
       case VerifyStatuses.Enum.error:
-        return buildErr("ErrUnknown", 500);
+        return buildErr("ErrOTPUnknown", 500);
     }
 
     await updatePhoneVerification(userId.data, true);
