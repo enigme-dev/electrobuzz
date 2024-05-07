@@ -47,7 +47,7 @@ export async function checkOTP(verifId: string, code: string) {
   }
 
   if (!verification) {
-    return VerifyStatuses.Enum.error;
+    return VerifyStatuses.Enum.not_found;
   }
 
   if (dayjs().diff(verification.createdAt, "minute") >= 5) {

@@ -17,6 +17,7 @@ export const VerifyStatuses = z.enum([
   "correct",
   "incorrect",
   "expired",
+  "not_found",
   "error",
 ]);
 

@@ -83,6 +83,8 @@ export async function POST(req: NextRequest) {
         return buildErr("ErrValidation", 400, "incorrect OTP code");
       case VerifyStatuses.Enum.expired:
         return buildErr("ErrValidation", 400, "expired OTP code");
+      case VerifyStatuses.Enum.not_found:
+        return buildErr("ErrNotFound", 404, "verifId does not exist");
       case VerifyStatuses.Enum.error:
         return buildErr("ErrUnknown", 500);
     }
