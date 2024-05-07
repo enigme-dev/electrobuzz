@@ -44,10 +44,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const merchantId = createId();
+    const id = createId();
     const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
-    const imageUrl = await uploadImg(compressed);
-    input.data.merchantPhotoUrl = imageUrl;
+    input.data.merchantPhotoUrl = await uploadImg(compressed);
     input.data.merchantAvailable = true;
     input.data.merchantIdentity.identityStatus = IdentityStatuses.Enum.pending;
 
@@ -55,7 +54,7 @@ export async function POST(req: NextRequest) {
     input.data.merchantIdentity.identityKTP = await uploadImg(
       Buffer.from(encryptedKtp),
       {
-        filename: `ktp-${merchantId}`,
+        filename: `ktp-${id}`,
         bucket: "vault",
       }
     );
@@ -67,7 +66,7 @@ export async function POST(req: NextRequest) {
     input.data.merchantIdentity.identitySKCK = await uploadImg(
       Buffer.from(encryptedSkck),
       {
-        filename: `skck-${merchantId}`,
+        filename: `skck-${id}`,
         bucket: "vault",
       }
     );
@@ -77,16 +76,16 @@ export async function POST(req: NextRequest) {
       input.data.merchantIdentity.identityDocs = await uploadImg(
         Buffer.from(input.data.merchantIdentity.identityDocs),
         {
-          filename: `sertifikat-${merchantId}`,
+          filename: `docs-${id}`,
           bucket: "vault",
         }
       );
       images.push(input.data.merchantIdentity.identityDocs);
     }
 
-    await addMerchant(merchantId, userId.data, input.data);
+    await addMerchant(userId.data, input.data);
   } catch (e) {
-    deleteImg(removeImagePrefix(input.data.merchantPhotoUrl));
+    await deleteImg(removeImagePrefix(input.data.merchantPhotoUrl));
 
     images.map(async (image) => {
       await deleteImg(image);

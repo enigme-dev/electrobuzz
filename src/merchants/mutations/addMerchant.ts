@@ -2,13 +2,11 @@ import { prisma } from "@/core/adapters/prisma";
 import { RegisterMerchantSchema } from "../types";
 
 export async function addMerchant(
-  merchantId: string,
   userId: string,
   data: RegisterMerchantSchema
 ) {
   return prisma.merchant.create({
     data: {
-      merchantId: merchantId,
       merchantName: data.merchantName,
       merchantDesc: data.merchantDesc,
       merchantCity: data.merchantCity,
