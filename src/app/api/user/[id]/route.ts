@@ -9,6 +9,7 @@ import { Prisma } from "@prisma/client";
 import { UpdateProfileSchema } from "@/users/types";
 import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
+import { buildRes } from "@/core/lib/utils";
 
 interface IdParams {
   params: { id: string };
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest, { params }: IdParams) {
     } catch (e) {
       return buildErr("ErrUnknown", 500);
     }
-    return Response.json({ data: response });
+    return buildRes({ data: response });
   }
 
   let result;
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ data: result });
+  return buildRes({ data: result });
 }
 
 export async function PATCH(req: NextRequest, { params }: IdParams) {
@@ -113,5 +114,5 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ status: "updated successfully" });
+  return buildRes({ status: "updated successfully" });
 }
