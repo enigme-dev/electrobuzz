@@ -19,11 +19,11 @@ export async function GET(req: NextRequest) {
   try {
     const user = await getPrivateProfile(userId.data);
     if (!user?.phone) {
-      return buildErr("ErrConflict", 409, "phone is not registered");
+      return buildErr("ErrOTPNotRegistered", 409, "phone is not registered");
     }
 
     if (user?.phoneVerified) {
-      return buildErr("ErrConflict", 409, "phone has been verified already");
+      return buildErr("ErrOTPVerified", 409, "phone has been verified already");
     }
 
     result = await sendOTP(user?.phone);
