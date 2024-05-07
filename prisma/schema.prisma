@@ -48,7 +48,7 @@ model User {
 
   addresses     Address[]
   merchant      Merchant?
-  appointments  Appointment[]
+  bookings      Booking[]
   reviews       Review[]
   accounts      Account[]
   sessions      Session[]
@@ -72,7 +72,7 @@ model Address {
   userId          String
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  appointments    Appointment[]
+  bookings        Booking[]
 }
 
 model Merchant {
@@ -96,7 +96,7 @@ model Merchant {
   
   merchantAlbums    MerchantAlbum[]
   merchantIdentity  MerchantIdentity?
-  appointments      Appointment[]
+  bookings          Booking[]
   reviews           Review[]
 }
 
@@ -119,15 +119,15 @@ model MerchantIdentity {
   merchant           Merchant @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
 }
 
-model Appointment {
-  apptId        String   @id @default(cuid())
-  apptPhotoUrl  String?
-  apptComplain  String
-  apptSchedule  DateTime
-  apptStatus    String
-  apptReason    String?
-  apptPrice     Int?
-  apptCreatedAt DateTime @default(now())
+model Booking {
+  bookingId        String   @id @default(cuid())
+  bookingPhotoUrl  String?
+  bookingComplain  String
+  bookingSchedule  DateTime
+  bookingStatus    String
+  bookingReason    String?
+  bookingPrice     Int?
+  bookingCreatedAt DateTime @default(now())
 
   userId        String
   user          User     @relation(fields: [userId], references: [id])
@@ -148,8 +148,8 @@ model Review {
   user        User        @relation(fields: [userId], references: [id])
   merchantId  String
   merchant    Merchant    @relation(fields: [merchantId], references: [merchantId])
-  apptId      String      @unique
-  appointment Appointment @relation(fields: [apptId], references: [apptId])
+  bookingId   String      @unique
+  booking     Booking     @relation(fields: [bookingId], references: [bookingId])
 }
 
 model Verification {
