@@ -83,7 +83,7 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
 
   let imageUrl;
   try {
-    if (input.data.image && input.data.image.startsWith("data:image")) {
+    if (input.data.image?.startsWith("data:image")) {
       const user = await getPrivateProfile(userId.data);
       if (user?.image?.startsWith(process.env.ASSETS_URL as string)) {
         await deleteImg(user?.image);
