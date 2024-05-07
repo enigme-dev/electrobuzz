@@ -8,7 +8,6 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { buildRes } from "@/core/lib/utils";
 import { IdentityStatuses } from "@/merchantIdentities/types";
 import { encrypt } from "@/core/lib/security";
@@ -104,12 +103,6 @@ export async function POST(req: NextRequest) {
     }
     return buildErr("ErrUnknown", 500);
   }
-
-  const cookieName =
-    process.env.NODE_ENV === "production"
-      ? "__Secure-next-auth.session-token"
-      : "next-auth.session-token";
-  cookies().delete(cookieName);
 
   return buildRes({ status: "merchant registered successfully" });
 }

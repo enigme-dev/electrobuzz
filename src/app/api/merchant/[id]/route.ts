@@ -1,4 +1,5 @@
 import { buildErr } from "@/core/lib/errors";
+import { buildRes } from "@/core/lib/utils";
 import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
@@ -16,9 +17,8 @@ export async function GET(req: NextRequest, { params }: IdParams) {
 
   try {
     const merchant = await getMerchant(merchantId.data);
-    return Response.json({ data: merchant });
+    return buildRes({ data: merchant });
   } catch (e) {
-    console.error(e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
         return buildErr("ErrNotFound", 404, "merchant not found");

@@ -1,21 +1,28 @@
 "use client";
 
 import FormLoader from "@/core/components/loader/formLoader";
+import { getData } from "@/core/lib/service";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function RegisterLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  const { data: session, status } = useSession();
-  const pathname = usePathname();
-
+}>) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
 
-  if (status === "loading" && pathname == "/register") {
+  const { data, isLoading } = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => getData(`/api/user/${userId}`),
+    enabled: !!userId,
+  });
+
+  if (isLoading || status === "loading") {
     return (
       <div className="wrapper pt-60">
         <FormLoader />
@@ -23,6 +30,6 @@ export default function RegisterLayout({
     );
   }
 
-  if (session?.user?.isNewUser) return <div>{children}</div>;
+  if (!data?.data?.phone && userId) return <div>{children}</div>;
   return router.push("/");
 }

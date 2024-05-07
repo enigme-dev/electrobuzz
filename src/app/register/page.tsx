@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/core/components/ui/card";
-import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 
 import Stepper from "@/core/components/stepper";
@@ -10,8 +9,6 @@ import OTPVerification from "@/users/components/otpVerification";
 import AddressForm from "@/users/components/addressForm";
 
 export default function Page() {
-  const { data: session } = useSession();
-
   const [step, setStep] = useState(0);
   const [view, setView] = useState(<></>);
   const labels = ["Data Diri", "Verifikasi Nomor Telepon", "Alamat"];
