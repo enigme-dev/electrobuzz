@@ -20,6 +20,8 @@ export enum ErrorCode {
   ErrOTPNotFound = "verifId does not exist",
   ErrOTPUnknown = "unknown error occured",
   ErrOTPExpired = "expired OTP code",
+  ErrOTPVerified = "phone has been verified already",
+  ErrOTPNotRegistered = "phone is not registered",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;
