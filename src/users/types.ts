@@ -26,7 +26,7 @@ export type VerifyStatuses = z.infer<typeof VerifyStatuses>;
 export const VerifyOTPSchema = z.object({
   verifId: z.string({ required_error: "verifId cannot be empty" }),
   code: z
-    .string({ required_error: "code cannot be empty" })
+    .string({ required_error: "Kode tidak boleh kosong" })
     .regex(/^\d{6}$/, "code must consist of 6-digits number"),
 });
 

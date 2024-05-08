@@ -1,7 +1,9 @@
 "use client";
 
 import FormLoader from "@/core/components/loader/formLoader";
+import { Toaster } from "@/core/components/ui/toaster";
 import { getData } from "@/core/lib/service";
+import { CountdownProvider } from "@/users/context/countdownContext";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -30,6 +32,15 @@ export default function RegisterLayout({
     );
   }
 
-  if (!data?.data?.phone && userId) return <div>{children}</div>;
+  if (!data?.data?.phoneVerified && userId)
+    return (
+      <div>
+        <CountdownProvider>
+          {" "}
+          {children}
+          <Toaster />
+        </CountdownProvider>
+      </div>
+    );
   return router.push("/");
 }

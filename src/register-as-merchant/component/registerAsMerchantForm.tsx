@@ -45,9 +45,14 @@ const FormSchema = z.object({
     required_error: "tolong deskripsikan keluhanmu",
   }),
   kategori: z.array(optionSchema).min(1),
+  noTelp: z
+    .string({ required_error: "Nomor telpon tidak boleh kosong" })
+    .regex(/^\d{8,14}$/, "Nomor telpon harus 8-14 digit"),
+
   Alamat: z.string({
     required_error: "tolong isi alamatmu",
   }),
+
   deskripsi: z.string({
     required_error: "tolong deskripsikan keluhanmu",
   }),
@@ -200,7 +205,7 @@ const RegisterAsMerchantForm = ({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="keluhan"
+            name="namaToko"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nama Toko</FormLabel>
@@ -240,7 +245,7 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="Alamat"
+            name="noTelp"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>No.Telp</FormLabel>
@@ -266,7 +271,7 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="keluhan"
+            name="deskripsi"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
@@ -279,12 +284,12 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="keluhan"
+            name="garansi"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Garansi</FormLabel>
                 <FormControl>
-                  <Input placeholder="Deskripsikan keahlianmu" {...field} />
+                  <Input placeholder="garansi" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

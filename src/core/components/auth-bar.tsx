@@ -28,7 +28,7 @@ export const navList = [
   },
   {
     label: "Edit Profile",
-    link: "/",
+    link: "/edit-profile",
     icon: <Settings size="20" />,
   },
 ];
@@ -36,7 +36,6 @@ export const navList = [
 export default function AuthBar() {
   const { data: session } = useSession();
   const [isVerified, setIsVerified] = useState(false);
-
   const handleSignOut = () => {
     signOut();
   };
@@ -71,25 +70,6 @@ export default function AuthBar() {
                       </h2>
                     </li>
                   </div>
-                  <div>
-                    {isVerified ? (
-                      <Button
-                        variant="outline"
-                        className="text-xs px-2 rounded-full text-white bg-green-500 hover:text-white hover:bg-green-500 cursor-default"
-                      >
-                        Verified
-                      </Button>
-                    ) : (
-                      <Link href="/register">
-                        <Button
-                          variant="outline"
-                          className="text-xs px-2 py-1 rounded-full text-gray-600 outline-none"
-                        >
-                          Verify now
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
                 </div>
                 {navList.map((value, index) => (
                   <div key={index} className="grid gap-2 text-start">
@@ -104,7 +84,7 @@ export default function AuthBar() {
                     </Link>
                   </div>
                 ))}
-                <ul className="flex justify-between">
+                <ul className="flex justify-between gap-5">
                   <li className="pt-5 text-center">
                     <Button variant="outline">
                       <Link href="/register-user-as-merchant">
@@ -131,7 +111,7 @@ export default function AuthBar() {
           <div>
             <Button
               variant={"link"}
-              className="grid gap-1 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
+              className="grid gap-2 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
             >
               <UserRound strokeWidth={2} size={20} />
               <p className="text-[0.6rem]">Login</p>

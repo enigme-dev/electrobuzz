@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VerifyOTPModel, VerifyOTPSchema } from "../types";
 import {
   Form,
@@ -19,30 +19,96 @@ import {
 import { Button } from "@/core/components/ui/button";
 import { useForm } from "react-hook-form";
 import { getData, postData } from "@/core/lib/service";
+import { useToast } from "@/core/components/ui/use-toast";
+import axios, { AxiosError } from "axios";
+import { useCountdown } from "../context/countdownContext";
+
 interface OTPProps {
   onNext: Function;
   onPrevious: Function;
 }
 const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
+  const { countdown, setIsCountdown, isCountdown, setCountdown } =
+    useCountdown();
+
+  const { toast } = useToast();
+
   const OTPform = useForm<VerifyOTPModel>({
     resolver: zodResolver(VerifyOTPSchema),
     defaultValues: {
       verifId: "",
     },
   });
+
   async function getOTP() {
     try {
+      setCountdown(300);
+      setIsCountdown(true);
       const response = await getData(`/api/user/otp`);
+      handleError(response);
       OTPform.setValue("verifId", response.data.verifId);
-    } catch (error) {}
-  }
-  function onSubmitOTP(OTPvalues: VerifyOTPModel) {
-    try {
-      postData(`/api/user/otp`, OTPvalues);
     } catch (error) {
       console.error(error);
     }
-    onNext();
+  }
+
+  async function checkOTPValid(values: VerifyOTPModel) {
+    const response = await postData("/api/user/otp", values);
+    handleError(response);
+    if (response.status === 200 || response.data.status === "ErrOTPVerified") {
+      onNext();
+    }
+  }
+
+  function handleError(response: any) {
+    switch (response.data.status) {
+      case "ErrOTPIncorrect":
+        toast({
+          title: "OTP yang anda masukan salah",
+          variant: "destructive",
+        });
+        break;
+      case "ErrOTPExpired":
+        toast({
+          title: "OTP anda telah expired",
+          variant: "destructive",
+        });
+        break;
+      case "ErrUnknown":
+        toast({
+          title: "Server unavailable",
+          variant: "destructive",
+        });
+        break;
+      case "ErrOTPVerified":
+        toast({
+          title: "Kamu sudah terverifikasi",
+          variant: "default",
+        });
+        break;
+      case "ErrOTPNotFound":
+        toast({
+          title:
+            "OTP Tidak ditemukan, Mohon klik 'Get Code' untuk mendapatkan kode ",
+          variant: "destructive",
+        });
+        break;
+      case "ErrOTPNotRegistered":
+        toast({
+          title: "Nomor HP belum terdaftar",
+          variant: "destructive",
+        });
+        break;
+      default:
+    }
+  }
+
+  function onSubmitOTP(OTPvalues: VerifyOTPModel) {
+    try {
+      checkOTPValid(OTPvalues);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -68,8 +134,28 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
                   </InputOTP>
                 </FormControl>
                 <FormDescription>
-                  <Button variant="link" type="button" onClick={() => getOTP()}>
+                  <Button
+                    variant="link"
+                    type="button"
+                    onClick={() => {
+                      getOTP();
+                    }}
+                    className="flex gap-5 active:no-underline hover:no-underline"
+                    disabled={isCountdown}
+                  >
                     Get Code
+                    <div className={countdown === 0 ? "hidden" : "block"}>
+                      {" "}
+                      {countdown > 0 ? (
+                        <p className="text-gray-400 text-xs">
+                          Time remaining: {Math.floor(countdown / 60)}:
+                          {countdown % 60 < 10 ? "0" : ""}
+                          {countdown % 60}
+                        </p>
+                      ) : (
+                        <p></p>
+                      )}
+                    </div>
                   </Button>
                 </FormDescription>
                 <FormMessage />

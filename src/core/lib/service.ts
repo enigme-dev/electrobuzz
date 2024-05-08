@@ -1,56 +1,41 @@
 import axios, { AxiosResponse } from "axios";
 
 interface ApiResponse {
-  success: boolean;
-  message: string;
-  data?: any;
+  status: string;
+  data: string[];
+  response?: any;
 }
 
-export const updateData = async (
-  url: string,
-  data: any
-): Promise<ApiResponse> => {
+export const updateData = async (url: string, data: any) => {
   try {
     const response: AxiosResponse<ApiResponse> = await axios.patch(url, data);
     console.log(response.data);
     return response.data;
   } catch (error: any) {
-    return {
-      success: false,
-      message: error.response
-        ? error.response.data.message
-        : "An error occurred",
-    };
+    if (error.response) {
+      return error.response;
+    }
   }
 };
 
-export const getData = async <T>(url: string): Promise<ApiResponse> => {
+export const getData = async <T>(url: string) => {
   try {
     const response: AxiosResponse<ApiResponse> = await axios.get(url);
     return response.data;
   } catch (error: any) {
-    return {
-      success: false,
-      message: error.response
-        ? error.response.data.message
-        : "An error occurred",
-    };
+    if (error.response) {
+      return error.response;
+    }
   }
 };
 
-export const postData = async <T>(
-  url: string,
-  data: T
-): Promise<ApiResponse> => {
+export const postData = async <T>(url: string, data: T) => {
   try {
     const response: AxiosResponse<ApiResponse> = await axios.post(url, data);
     return response.data;
   } catch (error: any) {
-    return {
-      success: false,
-      message: error.response
-        ? error.response.data.message
-        : "An error occurred",
-    };
+    if (error.response) {
+      return error.response;
+    }
   }
 };

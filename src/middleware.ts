@@ -3,7 +3,7 @@ import { buildErr } from "@/core/lib/errors";
 
 export default withAuth(function middleware(req) {
   const isAdmin = req.nextauth.token?.isAdmin;
-  if (!isAdmin) {
+  if (isAdmin) {
     if (req.nextUrl.pathname.startsWith("/admin")) {
       return Response.redirect(new URL("/", req.url));
     }

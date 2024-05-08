@@ -2,7 +2,7 @@
 const nextConfig = {
   output: "standalone",
   images: {
-    domains: ["assets.electrobuzz.id"],
+    domains: ["assets.electrobuzz.id", "lh3.googleusercontent.com"],
   },
 };
 

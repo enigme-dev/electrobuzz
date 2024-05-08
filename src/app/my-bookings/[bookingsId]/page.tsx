@@ -100,7 +100,7 @@ const BookingDetail = () => {
             <div className="flex gap-10 justify-center items-center">
               <DialogGeneral
                 dialogTitle="Alasan Penolakan"
-                dialogDescription={
+                dialogContent={
                   <RadioGroupForm options={radioOptionsForCancelReason} />
                 }
                 dialogTrigger={<Button variant={"destructive"}>Tolak</Button>}

@@ -14,9 +14,7 @@ import React, { useState } from "react";
 import { UpdateProfileModel, UpdateProfileSchema } from "../types";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { getData, updateData } from "@/core/lib/service";
-import { hostname } from "os";
+import { updateData } from "@/core/lib/service";
 
 interface RegisterProps {
   onNext: Function;
@@ -54,7 +52,7 @@ const RegisterForm = ({ onNext }: RegisterProps) => {
             <FormItem>
               <FormLabel>Nama</FormLabel>
               <FormControl>
-                <Input disabled {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

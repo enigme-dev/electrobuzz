@@ -9,20 +9,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 interface DialogGeneralProps {
-  dialogTrigger: ReactNode;
+  dialogTrigger?: ReactNode;
   dialogTitle: string;
-  dialogDescription: ReactNode;
+  dialogContent: ReactNode;
   dialogFooterContent?: ReactNode;
 }
 
 export function DialogGeneral({
   dialogTrigger,
   dialogTitle,
-  dialogDescription,
+  dialogContent,
   dialogFooterContent,
 }: DialogGeneralProps) {
   return (
@@ -31,8 +29,8 @@ export function DialogGeneral({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
+        <DialogDescription>{dialogContent}</DialogDescription>
         <DialogFooter>{dialogFooterContent}</DialogFooter>
       </DialogContent>
     </Dialog>
