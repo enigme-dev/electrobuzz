@@ -70,11 +70,7 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   }
 
   if (userId.data !== params.id) {
-    return buildErr(
-      "ErrForbidden",
-      403,
-      "not allowed to update other user's profile"
-    );
+    return buildErr("ErrConflict", 409, "user ids not matching");
   }
 
   const input = UpdateProfileSchema.safeParse(body);
@@ -84,8 +80,14 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
 
   let imageUrl;
   try {
+    const user = await getPrivateProfile(userId.data);
+
+    input.data.phoneVerified = user?.phoneVerified;
+    if (input.data.phone && input.data.phone != user?.phone) {
+      input.data.phoneVerified = false;
+    }
+
     if (input.data.image?.startsWith("data:image")) {
-      const user = await getPrivateProfile(userId.data);
       if (user?.image?.startsWith(process.env.ASSETS_URL as string)) {
         await deleteImg(user?.image);
       }
@@ -100,7 +102,7 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   input.data.image = imageUrl;
 
   try {
-    await updateProfile(input.data, params.id);
+    await updateProfile(params.id, input.data);
   } catch (e) {
     if (imageUrl) {
       deleteImg(removeImagePrefix(imageUrl));

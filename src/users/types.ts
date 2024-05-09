@@ -9,6 +9,7 @@ export const UpdateProfileSchema = z.object({
     .string({ required_error: "Nomor telpon tidak boleh kosong" })
     .regex(/^\d{10,14}$/, "Nomor telpon harus 10-14 digit"),
   image: z.string({ required_error: "foto tidak boleh kosong" }).optional(),
+  phoneVerified: z.boolean().optional(),
 });
 
 export type UpdateProfileModel = z.infer<typeof UpdateProfileSchema>;
