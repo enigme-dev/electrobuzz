@@ -7,12 +7,9 @@ import { AddressModel, AddressSchema } from "@/addresses/types";
 import editAddress from "@/addresses/mutations/editAddress";
 import deleteAddress from "@/addresses/mutations/deleteAddress";
 import { Prisma } from "@prisma/client";
+import {IdParam} from "@/core/lib/utils";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function GET(req: NextRequest, { params }: IdParams) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
@@ -51,7 +48,7 @@ export async function GET(req: NextRequest, { params }: IdParams) {
   return Response.json({ data: result });
 }
 
-export async function PATCH(req: NextRequest, { params }: IdParams) {
+export async function PATCH(req: NextRequest, { params }: IdParam) {
   let body;
 
   try {
@@ -101,7 +98,7 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   return Response.json({ status: "updated successfully" });
 }
 
-export async function DELETE(req: NextRequest, { params }: IdParams) {
+export async function DELETE(req: NextRequest, { params }: IdParam) {
   const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);

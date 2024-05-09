@@ -37,7 +37,7 @@ export function Banner() {
               >
                 <span className="flex gap-2 items-center">
                   {" "}
-                  <Search /> Cari Teknisi Favoritmu
+                  <Search strokeWidth={2} /> <p>Cari Teknisi Favoritmu</p>
                 </span>
               </Button>
             </Link>

@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/core/components/ui/card";
-import { MapPinIcon, PinIcon, Star } from "lucide-react";
+import { Lightbulb, MapPinIcon, PinIcon, Star } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode } from "react";
@@ -14,7 +14,7 @@ interface Props {
   merchantId: string;
 }
 
-const PopularMerchantsCard: React.FC<Props> = ({
+const MerchantsCard: React.FC<Props> = ({
   imgSource,
   imgAlt,
   merchName,
@@ -44,10 +44,11 @@ const PopularMerchantsCard: React.FC<Props> = ({
           <div className="grid place-items-start gap-1">
             <h1 className="text-sm sm:text-md font-semibold ">{merchName}</h1>
             <div className="flex gap-4 items-center">
-              <h2 className="rounded-lg text-xs sm:text-sm">
+              <h2 className="rounded-lg text-gray-400 text-[0.6rem] sm:text-sm flex items-center gap-2">
+                <Lightbulb className="w-4" />
                 {serviceCategory}
               </h2>
-              <h2 className="text-xs sm:text-sm  flex items-center gap-2">
+              <h2 className="text-gray-400 text-[0.6rem] sm:text-sm  flex items-center gap-2 ">
                 <MapPinIcon className="w-4 " />
                 {location}
               </h2>
@@ -63,4 +64,4 @@ const PopularMerchantsCard: React.FC<Props> = ({
   );
 };
 
-export default PopularMerchantsCard;
+export default MerchantsCard;

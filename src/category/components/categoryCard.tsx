@@ -14,7 +14,7 @@ const CategoryCard = ({ categoryName, categoryIcon }: CategoryProps) => {
       <Link
         href={`/merchant-list?merchants%5BrefinementList%5D%5B_tags%5D%5B0%5D=${categoryName}`}
       >
-        <Card className="hover:shadow-lg hover:shadow-yellow-200 cursor-pointer transition duration-500">
+        <Card className="hover:shadow-lg hover:shadow-yellow-200 dark:shadow-sm dark:shadow-yellow-200 cursor-pointer transition duration-500">
           <CardContent className="flex items-center justify-center p-6">
             {categoryIcon}
           </CardContent>

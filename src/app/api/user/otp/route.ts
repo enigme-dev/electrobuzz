@@ -19,11 +19,11 @@ export async function GET(req: NextRequest) {
   try {
     const user = await getPrivateProfile(userId.data);
     if (!user?.phone) {
-      return buildErr("ErrConflict", 409, "phone is not registered");
+      return buildErr("ErrOTPNotRegistered", 409, "phone is not registered");
     }
 
     if (user?.phoneVerified) {
-      return buildErr("ErrConflict", 409, "phone has been verified already");
+      return buildErr("ErrOTPVerified", 409, "phone has been verified already");
     }
 
     result = await sendOTP(user?.phone);
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       return buildErr(
         "ErrTooManyRequest",
         429,
-        "OTP can be sent again after 5 minutes"
+        result.expiredDate?.toISOString()
       );
     } else if (result.error === "ErrUnknown") {
       return buildErr("ErrUnknown", 500);
@@ -70,21 +70,23 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getPrivateProfile(userId.data);
     if (!user?.phone) {
-      return buildErr("ErrConflict", 409, "phone is not registered");
+      return buildErr("ErrOTPNotRegistered", 409, "phone is not registered");
     }
 
     if (user?.phoneVerified) {
-      return buildErr("ErrConflict", 409, "phone has been verified already");
+      return buildErr("ErrOTPVerified", 409, "phone has been verified already");
     }
 
     const response = await checkOTP(data.data.verifId, data.data.code);
     switch (response) {
       case VerifyStatuses.Enum.incorrect:
-        return buildErr("ErrValidation", 400, "incorrect OTP code");
+        return buildErr("ErrOTPIncorrect", 400, "incorrect OTP code");
       case VerifyStatuses.Enum.expired:
-        return buildErr("ErrValidation", 400, "expired OTP code");
+        return buildErr("ErrOTPExpired", 400, "expired OTP code");
+      case VerifyStatuses.Enum.not_found:
+        return buildErr("ErrOTPNotFound", 404, "verifId does not exist");
       case VerifyStatuses.Enum.error:
-        return buildErr("ErrUnknown", 500);
+        return buildErr("ErrOTPUnknown", 500);
     }
 
     await updatePhoneVerification(userId.data, true);

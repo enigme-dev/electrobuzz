@@ -1,18 +1,16 @@
 import { buildErr } from "@/core/lib/errors";
 import { deleteImg } from "@/core/lib/image";
+import { buildRes, IdParam } from "@/core/lib/utils";
 import deleteMerchantAlbum from "@/merchantAlbums/mutations/deleteMerchantAlbums";
 import getMerchantAlbum from "@/merchantAlbums/queries/getMerchantAlbum";
+import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function DELETE(req: NextRequest, { params }: IdParams) {
-  let merchantAlbum;
+export async function DELETE(req: NextRequest, { params }: IdParam) {
+  let merchantAlbum, merchant;
 
   const token = await getToken({ req });
   const userId = z.string().cuid().safeParse(token?.sub);
@@ -20,14 +18,24 @@ export async function DELETE(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnauthorized", 401);
   }
 
-  const merchantId = z.string().cuid().safeParse(token?.merchantId);
-  if (!merchantId.success) {
-    return buildErr("ErrForbidden", 403, "not registered as merchant");
-  }
-
   const merchantAlbumId = z.string().cuid().safeParse(params.id);
   if (!merchantAlbumId.success) {
     return buildErr("ErrValidation", 404, "invalid merchant album id");
+  }
+
+  try {
+    merchant = await getMerchant(userId.data);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildErr(
+          "ErrForbidden",
+          403,
+          "user is not registered as merchant"
+        );
+      }
+    }
+    return buildErr("ErrUnknown", 500);
   }
 
   try {
@@ -41,7 +49,7 @@ export async function DELETE(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnknown", 500);
   }
 
-  if (merchantAlbum.merchantId !== merchantId.data) {
+  if (merchantAlbum.merchantId !== merchant.merchantId) {
     return buildErr("ErrNotFound", 404, "merchant album not found");
   }
 
@@ -49,9 +57,8 @@ export async function DELETE(req: NextRequest, { params }: IdParams) {
     await deleteMerchantAlbum(merchantAlbumId.data);
     await deleteImg(merchantAlbumId.data);
   } catch (e) {
-    console.log(e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ status: "deleted successfully" });
+  return buildRes({ status: "deleted successfully" });
 }

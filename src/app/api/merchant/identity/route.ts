@@ -1,12 +1,15 @@
-import { buildErr } from "@/core/lib/errors";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { encrypt } from "@/core/lib/security";
+import { buildRes } from "@/core/lib/utils";
 import addMerchantIdentities from "@/merchantIdentities/mutations/addMerchantIdentities";
 import getIdentitiesByMerchantId from "@/merchantIdentities/queries/getIdentitiesByMerchantId";
 import {
   IdentityStatuses,
   MerchantIdentitiesSchema,
 } from "@/merchantIdentities/types";
+import getMerchant from "@/merchants/queries/getMerchant";
+import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -14,7 +17,8 @@ import { z } from "zod";
 export async function POST(req: NextRequest) {
   const token = await getToken({ req });
   let body,
-    images = [];
+    images = [],
+    merchant;
 
   try {
     body = await req.json();
@@ -27,18 +31,30 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnauthorized", 401);
   }
 
-  const merchantId = z.string().cuid().safeParse(token?.merchantId);
-  if (!merchantId.success) {
-    return buildErr("ErrForbidden", 403, "not registered as merchant");
-  }
-
   const input = MerchantIdentitiesSchema.safeParse(body);
   if (!input.success) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
   try {
-    const merchantIdentities = await getIdentitiesByMerchantId(merchantId.data);
+    merchant = await getMerchant(userId.data);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildErr(
+          "ErrForbidden",
+          403,
+          "user is not registered as merchant"
+        );
+      }
+    }
+    return buildErr("ErrUnknown", 500);
+  }
+
+  try {
+    const merchantIdentities = await getIdentitiesByMerchantId(
+      merchant.merchantId
+    );
     if (merchantIdentities) {
       return buildErr(
         "ErrConflict",
@@ -51,37 +67,44 @@ export async function POST(req: NextRequest) {
   }
 
   input.data.identityStatus = IdentityStatuses.Enum.pending;
-  input.data.merchantId = merchantId.data;
+  input.data.merchantId = merchant.merchantId;
 
   try {
-    const encryptedKtp = await encrypt(input.data.identityKtp);
-    input.data.identityKtp = await uploadImg(Buffer.from(encryptedKtp), {
-      filename: `ktp-${merchantId.data}`,
+    const encryptedKtp = await encrypt(input.data.identityKTP);
+    input.data.identityKTP = await uploadImg(encryptedKtp, {
+      filename: `ktp-${merchant.merchantId}`,
       bucket: "vault",
     });
-    images.push(input.data.identityKtp);
-    input.data.identitySkck = await uploadImg(
-      Buffer.from(input.data.identitySkck),
-      {
-        filename: `skck-${merchantId.data}`,
+    images.push(input.data.identityKTP);
+    input.data.identitySKCK = await uploadImg(input.data.identitySKCK, {
+        filename: `skck-${merchant.merchantId}`,
         bucket: "vault",
       }
     );
-    images.push(input.data.identitySkck);
-    if (input.data.identityCert) {
-      input.data.identityCert = await uploadImg(
-        Buffer.from(input.data.identityCert),
-        {
-          filename: `sertifikat-${merchantId.data}`,
+    images.push(input.data.identitySKCK);
+    if (input.data.identityDocs) {
+      input.data.identityDocs = await uploadImg(input.data.identityDocs, {
+          filename: `docs-${merchant.merchantId}`,
           bucket: "vault",
         }
       );
-      images.push(input.data.identityCert);
+      images.push(input.data.identityDocs);
     }
   } catch (e) {
     images.map(async (image) => {
       await deleteImg(image);
     });
+
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
+
     return buildErr("ErrUnknown", 500);
   }
 
@@ -91,5 +114,5 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ status: "identities submitted successfully" });
+  return buildRes({ status: "identities submitted successfully" });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import MerchantCard from "@/popular-merchants/components/popularMerchantsCard";
+import MerchantCard from "@/core/components/merchantsCard";
 import { Hit } from "@/merchant-list/component/hit";
 import { MenuSelect } from "@/merchant-list/component/menuSelect";
 import algoliasearch from "algoliasearch/lite";
@@ -48,17 +48,18 @@ export default function Page() {
                 classNames={{
                   root: "rounded-lg w-full h-fit ",
                   form: "flex ",
-                  input: "grow py-3 outline-none text-md dark:bg-[#020817]",
+                  input:
+                    "grow py-3 outline-none text-md dark:bg-[#020817] w-full",
                   submitIcon: "hidden",
                   resetIcon: "hidden",
                   loadingIcon: "hidden",
                 }}
               />
-              <Search />
+              <Search className="w-10" />
             </div>
           </div>
           <div className="flex flex-col md:flex-row h-full">
-            <div className="py-6 w-full sm:w-[40%]">
+            <div className="py-6 w-full md:w-[40%]">
               <div className="flex gap-2 items-center w-full  justify-end">
                 <MapPin />
                 <MenuSelect attribute="merchantCity" />
@@ -83,7 +84,7 @@ export default function Page() {
               </GeneralAccordion>
             </div>
 
-            <div className="flex flex-col gap-6 w-full  max-h-full overflow-auto rounded-lg sm:p-10">
+            <div className="flex flex-col gap-6 w-full  max-h-full overflow-auto rounded-lg sm:p-10 no-scrollbar">
               <NoResultsBoundary fallback={<NoResults />}>
                 <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
               </NoResultsBoundary>

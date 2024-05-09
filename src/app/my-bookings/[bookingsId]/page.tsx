@@ -83,20 +83,24 @@ const BookingDetail = () => {
             />
           </div>
           <div className="grid place-content-center text-center gap-5">
-            <h1 className="pt-10 text-2xl font-bold">Selamat...</h1>
-            <p className="text-md text-left">
+            <h1 className="sm:pt-10 text-lg sm:text-2xl font-bold">
+              Selamat...
+            </h1>
+            <p className="text-sm sm:text-lg text-left">
               Sepertinya Mitra telah menerima permintaanmu, berikut merupakan
               estimasi harga servismu:
             </p>
-            <p className="font-bold">Rp.700.000 - Rp.1000.000</p>
-            <h1 className="pt-2 text-left text-md">Alasan:</h1>
-            <p className="font-bold text-left">
+            <p className="font-bold text-sm sm:text-xl ">
+              Rp.700.000 - Rp.1000.000
+            </p>
+            <h1 className="pt-2 text-left text-sm sm:text-lg">Alasan:</h1>
+            <p className="font-bold text-left text-sm sm:text-xl">
               Perlu ganti kapasitor sekitar 700.000
             </p>
             <div className="flex gap-10 justify-center items-center">
               <DialogGeneral
                 dialogTitle="Alasan Penolakan"
-                dialogDescription={
+                dialogContent={
                   <RadioGroupForm options={radioOptionsForCancelReason} />
                 }
                 dialogTrigger={<Button variant={"destructive"}>Tolak</Button>}

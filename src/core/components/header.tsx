@@ -24,21 +24,21 @@ export default function Header() {
             <h1 className="font-bold text-xl">electroBu⚡z</h1>
           </Link>
         </div>
-        <div className="hidden sm:block">
-          <div className="flex gap-2 ">
-            <Link href="/merchant-list">
-              <Button
-                variant="link"
-                className="text-black hover:text-yellow-400 hover:no-underline dark:text-white dark:hover:text-yellow-400 "
-              >
-                Cari Teknisimu
-              </Button>
-            </Link>
-            <AuthBar />
-            <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
-              <SunMoon className="mx-2 h-6 w-6" />
+        <div className="flex gap-2 ">
+          <Link href="/merchant-list">
+            <Button
+              variant="link"
+              className="text-black hover:text-yellow-400 hover:no-underline dark:text-white dark:hover:text-yellow-400 hidden sm:block"
+            >
+              Cari Teknisimu
             </Button>
+          </Link>
+          <div className="hidden sm:block">
+            <AuthBar />
           </div>
+          <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
+            <SunMoon className="mx-2 h-6 w-6" />
+          </Button>
         </div>
       </div>
     </div>

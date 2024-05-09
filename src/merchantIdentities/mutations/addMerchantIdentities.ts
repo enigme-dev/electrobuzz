@@ -6,9 +6,9 @@ export default async function addMerchantIdentities(
 ) {
   return prisma.merchantIdentity.create({
     data: {
-      identityKtp: data.identityKtp,
-      identitySkck: data.identitySkck,
-      identityCert: data.identityCert,
+      identityKTP: data.identityKTP,
+      identitySKCK: data.identitySKCK,
+      identityDocs: data.identityDocs,
       identityStatus: data.identityStatus,
       merchant: {
         connect: {

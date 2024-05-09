@@ -8,12 +8,14 @@ export const MerchantSchema = z.object({
   merchantPhotoUrl: z.string(),
   merchantCity: z.string(),
   merchantProvince: z.string(),
+  merchantLat: z.number(),
+  merchantLong: z.number(),
   merchantCategory: z.string().array(),
-  merchantRating: z.number().nullable(),
-  merchantReviewCt: z.number().int().nullable(),
-  merchantVerified: z.boolean().nullable(),
-  merchantAvailable: z.boolean().nullable(),
-  merchantCreatedAt: z.date().nullable(),
+  merchantRating: z.number().optional(),
+  merchantReviewCt: z.number().int().optional(),
+  merchantVerified: z.boolean().optional(),
+  merchantAvailable: z.boolean().optional(),
+  merchantCreatedAt: z.date().optional(),
   merchantIdentity: MerchantIdentitiesSchema.pick({
     identityStatus: true,
   }).optional(),
@@ -21,3 +23,9 @@ export const MerchantSchema = z.object({
 });
 
 export type MerchantModel = z.infer<typeof MerchantSchema>;
+
+export const RegisterMerchantSchema = MerchantSchema.extend({
+  merchantIdentity: MerchantIdentitiesSchema,
+});
+
+export type RegisterMerchantSchema = z.infer<typeof RegisterMerchantSchema>;

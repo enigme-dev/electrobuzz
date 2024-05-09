@@ -9,43 +9,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useParams, usePathname, useRouter } from "next/navigation";
 
 interface SelectProps {
-  selectLabel: string;
-  defaultSelectValue: string;
-  categoryList: { item: string; value: string }[];
+  selectLabel?: string;
+  selectList: { item: string; value: string; id?: string }[];
+  defaultValue: string | undefined;
+  onValueChange: (value: { item: string; value: string }) => void;
+  placeholder: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
 }
 
 export function SelectOption({
   selectLabel,
-  defaultSelectValue,
-  categoryList,
+  selectList,
+  defaultValue,
+  onValueChange,
+  placeholder,
+  onClick,
 }: SelectProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useParams();
-
-  const onSelect = (categoryValue: any) => {
-    if (params.categoryValue) {
-      router.push(pathname.replace(pathname, categoryValue));
-    } else {
-      router.push(`/merchant-list/${categoryValue}`);
-    }
-  };
-
   return (
-    <Select
-      defaultValue={defaultSelectValue}
-      onValueChange={(e) => onSelect(e)}
-    >
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select category" />
+    <Select defaultValue={defaultValue} onValueChange={onValueChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>{selectLabel}</SelectLabel>
-          {categoryList.map((value, index) => (
+          {selectList?.map((value, index) => (
             <SelectItem key={index} value={value.value}>
               {value.item}
             </SelectItem>

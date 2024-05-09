@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { buildErr } from "@/core/lib/errors";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 import updateProfile from "@/users/mutations/updateProfile";
@@ -7,14 +7,11 @@ import getPrivateProfile from "@/users/queries/getPrivateProfile";
 import getPublicProfile from "@/users/queries/getPublicProfile";
 import { Prisma } from "@prisma/client";
 import { UpdateProfileSchema } from "@/users/types";
-import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
+import { deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
+import {buildRes, IdParam} from "@/core/lib/utils";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function GET(req: NextRequest, { params }: IdParams) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
@@ -34,7 +31,7 @@ export async function GET(req: NextRequest, { params }: IdParams) {
     } catch (e) {
       return buildErr("ErrUnknown", 500);
     }
-    return Response.json({ data: response });
+    return buildRes({ data: response });
   }
 
   let result;
@@ -49,10 +46,10 @@ export async function GET(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ data: result });
+  return buildRes({ data: result });
 }
 
-export async function PATCH(req: NextRequest, { params }: IdParams) {
+export async function PATCH(req: NextRequest, { params }: IdParam) {
   let body;
 
   try {
@@ -69,11 +66,7 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   }
 
   if (userId.data !== params.id) {
-    return buildErr(
-      "ErrForbidden",
-      403,
-      "not allowed to update other user's profile"
-    );
+    return buildErr("ErrConflict", 409, "user ids not matching");
   }
 
   const input = UpdateProfileSchema.safeParse(body);
@@ -83,23 +76,36 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
 
   let imageUrl;
   try {
-    if (input.data.image && input.data.image.startsWith("data:image")) {
-      const user = await getPrivateProfile(userId.data);
+    const user = await getPrivateProfile(userId.data);
+
+    input.data.phoneVerified =
+      input.data.phone === user?.phone ? user?.phoneVerified : false;
+
+    if (input.data.image?.startsWith("data:image")) {
       if (user?.image?.startsWith(process.env.ASSETS_URL as string)) {
         await deleteImg(user?.image);
       }
 
-      const compressed = await compressImg(input.data.image);
-      imageUrl = await uploadImg(compressed);
+      imageUrl = await uploadImg(input.data.image);
     }
   } catch (e) {
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
+
     return buildErr("ErrUnknown", 500);
   }
 
   input.data.image = imageUrl;
 
   try {
-    await updateProfile(input.data, params.id);
+    await updateProfile(params.id, input.data);
   } catch (e) {
     if (imageUrl) {
       deleteImg(removeImagePrefix(imageUrl));
@@ -113,5 +119,5 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ status: "updated successfully" });
+  return buildRes({ status: "updated successfully" });
 }

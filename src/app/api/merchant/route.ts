@@ -1,19 +1,22 @@
-import { buildErr } from "@/core/lib/errors";
-import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
+import { deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 import { addMerchant } from "@/merchants/mutations/addMerchant";
-import { MerchantSchema } from "@/merchants/types";
+import { RegisterMerchantSchema } from "@/merchants/types";
 import getPrivateProfile from "@/users/queries/getPrivateProfile";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { cookies } from "next/headers";
+import { buildRes } from "@/core/lib/utils";
+import { IdentityStatuses } from "@/merchantIdentities/types";
+import { encrypt } from "@/core/lib/security";
 
 export async function POST(req: NextRequest) {
+  let body,
+    images = [];
   const token = await getToken({ req });
 
-  let body;
   try {
     body = await req.json();
   } catch (e) {
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnauthorized", 401);
   }
 
-  const input = MerchantSchema.safeParse(body);
+  const input = RegisterMerchantSchema.safeParse(body);
   if (!input.success) {
     return buildErr("ErrValidation", 400, input.error);
   }
@@ -40,14 +43,50 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
-    const imageUrl = await uploadImg(compressed);
-    input.data.merchantPhotoUrl = imageUrl;
+    input.data.merchantPhotoUrl = await uploadImg(input.data.merchantPhotoUrl);
     input.data.merchantAvailable = true;
+    input.data.merchantIdentity.identityStatus = IdentityStatuses.Enum.pending;
+
+    const encryptedKtp = await encrypt(input.data.merchantIdentity.identityKTP);
+    input.data.merchantIdentity.identityKTP = await uploadImg(
+      encryptedKtp,
+      {
+        filename: `ktp-${userId.data}`,
+        bucket: "vault",
+      }
+    );
+    images.push(input.data.merchantIdentity.identityKTP);
+
+    const encryptedSkck = await encrypt(
+      input.data.merchantIdentity.identitySKCK
+    );
+    input.data.merchantIdentity.identitySKCK = await uploadImg(
+      encryptedSkck,
+      {
+        filename: `skck-${userId.data}`,
+        bucket: "vault",
+      }
+    );
+    images.push(input.data.merchantIdentity.identitySKCK);
+
+    if (input.data.merchantIdentity.identityDocs) {
+      input.data.merchantIdentity.identityDocs = await uploadImg(
+        input.data.merchantIdentity.identityDocs,
+        {
+          filename: `docs-${userId.data}`,
+          bucket: "vault",
+        }
+      );
+      images.push(input.data.merchantIdentity.identityDocs);
+    }
 
     await addMerchant(userId.data, input.data);
   } catch (e) {
-    deleteImg(removeImagePrefix(input.data.merchantPhotoUrl));
+    await deleteImg(removeImagePrefix(input.data.merchantPhotoUrl));
+
+    images.map(async (image) => {
+      await deleteImg(image);
+    });
 
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2014") {
@@ -58,14 +97,18 @@ export async function POST(req: NextRequest) {
         );
       }
     }
+
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
     return buildErr("ErrUnknown", 500);
   }
 
-  const cookieName =
-    process.env.NODE_ENV === "production"
-      ? "__Secure-next-auth.session-token"
-      : "next-auth.session-token";
-  cookies().delete(cookieName);
-
-  return Response.json({ status: "merchant registered successfully" });
+  return buildRes({ status: "merchant registered successfully" });
 }

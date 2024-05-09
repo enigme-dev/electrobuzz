@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { UpdateProfileModel, UpdateProfileSchema } from "../types";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import PageLoader from "@/core/components/loader/pageLoader";
+import { updateData } from "@/core/lib/service";
 
 interface RegisterProps {
   onNext: Function;
@@ -32,7 +32,13 @@ const RegisterForm = ({ onNext }: RegisterProps) => {
 
   function onSubmit(values: UpdateProfileModel) {
     try {
-    } catch (error) {}
+      updateData(
+        `${process.env.NEXT_PUBLIC_APP_HOST}/api/user/${session?.user?.id}`,
+        values
+      );
+    } catch (error) {
+      console.error(error);
+    }
     onNext();
   }
 
@@ -46,7 +52,7 @@ const RegisterForm = ({ onNext }: RegisterProps) => {
             <FormItem>
               <FormLabel>Nama</FormLabel>
               <FormControl>
-                <Input disabled {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

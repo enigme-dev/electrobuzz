@@ -16,7 +16,12 @@ export function GeneralAccordion({
   children,
 }: AccordionProps) {
   return (
-    <Accordion type="single" collapsible className="w-full">
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue="item-1"
+      className="w-full"
+    >
       <AccordionItem value="item-1" className="p-0 border-b-0">
         <AccordionTrigger>{accordionTrigger}</AccordionTrigger>
         <AccordionContent>{children}</AccordionContent>
