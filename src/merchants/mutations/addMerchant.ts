@@ -7,6 +7,7 @@ export async function addMerchant(
 ) {
   return prisma.merchant.create({
     data: {
+      merchantId: userId,
       merchantName: data.merchantName,
       merchantDesc: data.merchantDesc,
       merchantCity: data.merchantCity,

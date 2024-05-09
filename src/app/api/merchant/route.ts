@@ -11,7 +11,6 @@ import { z } from "zod";
 import { buildRes } from "@/core/lib/utils";
 import { IdentityStatuses } from "@/merchantIdentities/types";
 import { encrypt } from "@/core/lib/security";
-import { createId } from "@paralleldrive/cuid2";
 
 export async function POST(req: NextRequest) {
   let body,
@@ -44,7 +43,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const id = createId();
     const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
     input.data.merchantPhotoUrl = await uploadImg(compressed);
     input.data.merchantAvailable = true;
@@ -54,7 +52,7 @@ export async function POST(req: NextRequest) {
     input.data.merchantIdentity.identityKTP = await uploadImg(
       Buffer.from(encryptedKtp),
       {
-        filename: `ktp-${id}`,
+        filename: `ktp-${userId.data}`,
         bucket: "vault",
       }
     );
@@ -66,7 +64,7 @@ export async function POST(req: NextRequest) {
     input.data.merchantIdentity.identitySKCK = await uploadImg(
       Buffer.from(encryptedSkck),
       {
-        filename: `skck-${id}`,
+        filename: `skck-${userId.data}`,
         bucket: "vault",
       }
     );
@@ -76,7 +74,7 @@ export async function POST(req: NextRequest) {
       input.data.merchantIdentity.identityDocs = await uploadImg(
         Buffer.from(input.data.merchantIdentity.identityDocs),
         {
-          filename: `docs-${id}`,
+          filename: `docs-${userId.data}`,
           bucket: "vault",
         }
       );

@@ -2,7 +2,7 @@ import { buildErr } from "@/core/lib/errors";
 import { buildRes, parseParams } from "@/core/lib/utils";
 import countBookings from "@/merchants/queries/countBookings";
 import getBookings from "@/merchants/queries/getBookings";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
+import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
+    merchant = await getMerchant(userId.data);
     bookings = await getBookings(merchant.merchantId, {
       page: skip,
       startDate,

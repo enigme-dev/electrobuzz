@@ -1,13 +1,13 @@
-import {NextRequest} from "next/server";
-import {buildRes, IdParam} from "@/core/lib/utils";
-import {z} from "zod";
-import {buildErr} from "@/core/lib/errors";
-import {getToken} from "next-auth/jwt";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
-import {Prisma} from "@prisma/client";
+import { NextRequest } from "next/server";
+import { buildRes, IdParam } from "@/core/lib/utils";
+import { z } from "zod";
+import { buildErr } from "@/core/lib/errors";
+import { getToken } from "next-auth/jwt";
+import getMerchant from "@/merchants/queries/getMerchant";
+import { Prisma } from "@prisma/client";
 import getBooking from "@/merchants/queries/getBooking";
 
-export async function GET(req: NextRequest, {params}: IdParam) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   let merchant, booking;
   const token = await getToken({ req });
 
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, {params}: IdParam) {
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
+    merchant = await getMerchant(userId.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -37,10 +37,10 @@ export async function GET(req: NextRequest, {params}: IdParam) {
   }
 
   try {
-    booking = await getBooking(merchant.merchantId, bookingId.data)
+    booking = await getBooking(merchant.merchantId, bookingId.data);
   } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({data: booking})
+  return buildRes({ data: booking });
 }

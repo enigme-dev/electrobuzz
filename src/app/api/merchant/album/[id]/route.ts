@@ -1,9 +1,9 @@
 import { buildErr } from "@/core/lib/errors";
 import { deleteImg } from "@/core/lib/image";
-import {buildRes, IdParam} from "@/core/lib/utils";
+import { buildRes, IdParam } from "@/core/lib/utils";
 import deleteMerchantAlbum from "@/merchantAlbums/mutations/deleteMerchantAlbums";
 import getMerchantAlbum from "@/merchantAlbums/queries/getMerchantAlbum";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
+import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -24,7 +24,7 @@ export async function DELETE(req: NextRequest, { params }: IdParam) {
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
+    merchant = await getMerchant(userId.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {

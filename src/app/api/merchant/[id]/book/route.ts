@@ -3,8 +3,7 @@ import addBooking from "@/bookings/mutations/addBooking";
 import { BookingModel, BookStatusEnum } from "@/bookings/types";
 import { buildErr } from "@/core/lib/errors";
 import { deleteImg, uploadImg } from "@/core/lib/image";
-import {buildRes, IdParam} from "@/core/lib/utils";
-import getMerchant from "@/merchants/queries/getMerchant";
+import { buildRes, IdParam } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -35,22 +34,8 @@ export async function POST(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
-  try {
-    const merchant = await getMerchant(merchantId.data);
-    if (merchant.userId === userId.data) {
-      return buildErr(
-        "ErrConflict",
-        409,
-        "user can not book their own merchant"
-      );
-    }
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr("ErrNotFound", 404, "merchant does not exist");
-      }
-    }
-    return buildErr("ErrUnknown", 500);
+  if (merchantId.data === userId.data) {
+    return buildErr("ErrConflict", 409, "user can not book their own merchant");
   }
 
   try {

@@ -5,7 +5,7 @@ import addMerchantAlbums from "@/merchantAlbums/mutations/addMerchantAlbums";
 import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
 import { AlbumsSchema } from "@/merchantAlbums/types";
 import { removeImagePrefix } from "@/merchants/lib/utils";
-import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
+import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    merchant = await getMerchantByUserId(userId.data);
+    merchant = await getMerchant(userId.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
