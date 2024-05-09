@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { buildErr } from "@/core/lib/errors";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 import updateProfile from "@/users/mutations/updateProfile";
@@ -7,7 +7,7 @@ import getPrivateProfile from "@/users/queries/getPrivateProfile";
 import getPublicProfile from "@/users/queries/getPublicProfile";
 import { Prisma } from "@prisma/client";
 import { UpdateProfileSchema } from "@/users/types";
-import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
+import { deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 import {buildRes, IdParam} from "@/core/lib/utils";
 
@@ -86,10 +86,19 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
         await deleteImg(user?.image);
       }
 
-      const compressed = await compressImg(input.data.image);
-      imageUrl = await uploadImg(compressed);
+      imageUrl = await uploadImg(input.data.image);
     }
   } catch (e) {
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
+
     return buildErr("ErrUnknown", 500);
   }
 

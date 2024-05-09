@@ -18,10 +18,15 @@ export enum ErrorCode {
   // otp
   ErrOTPIncorrect = "incorrect OTP code",
   ErrOTPNotFound = "verifId does not exist",
-  ErrOTPUnknown = "unknown error occured",
+  ErrOTPUnknown = "unknown error occurred",
   ErrOTPExpired = "expired OTP code",
   ErrOTPVerified = "phone has been verified already",
   ErrOTPNotRegistered = "phone is not registered",
+
+  // image
+  ErrImgInvalidImageType = "invalid image type",
+  ErrImgInvalidDataURL = "invalid data URL format",
+  ErrImgFailedUpload = "failed to upload image",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;

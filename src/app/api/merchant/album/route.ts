@@ -1,5 +1,5 @@
-import { buildErr } from "@/core/lib/errors";
-import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
+import { deleteImg, uploadImg } from "@/core/lib/image";
 import { buildRes } from "@/core/lib/utils";
 import addMerchantAlbums from "@/merchantAlbums/mutations/addMerchantAlbums";
 import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
@@ -64,8 +64,7 @@ export async function POST(req: NextRequest) {
 
   try {
     for (const album of data.data.albums) {
-      const compressed = await compressImg(album.albumPhotoUrl, 640);
-      const imageUrl = await uploadImg(compressed);
+      const imageUrl = await uploadImg(album.albumPhotoUrl);
       photos.push(imageUrl);
     }
 
@@ -74,6 +73,16 @@ export async function POST(req: NextRequest) {
     photos.map((photo) => {
       deleteImg(removeImagePrefix(photo));
     });
+
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
 
     return buildErr("ErrUnknown", 500);
   }

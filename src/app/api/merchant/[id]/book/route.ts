@@ -1,7 +1,7 @@
 import getAddress from "@/addresses/queries/getAddress";
 import addBooking from "@/bookings/mutations/addBooking";
 import { BookingModel, BookStatusEnum } from "@/bookings/types";
-import { buildErr } from "@/core/lib/errors";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { buildRes, IdParam } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
@@ -52,14 +52,22 @@ export async function POST(req: NextRequest, { params }: IdParam) {
   try {
     input.data.userId = userId.data;
     input.data.merchantId = merchantId.data;
-    input.data.bookingPhotoUrl = await uploadImg(
-      Buffer.from(input.data.bookingPhotoUrl)
-    );
+    input.data.bookingPhotoUrl = await uploadImg(input.data.bookingPhotoUrl);
     input.data.bookingStatus = BookStatusEnum.Enum.pending;
 
     await addBooking(input.data);
   } catch (e) {
     await deleteImg(input.data.bookingPhotoUrl);
+
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
 
     return buildErr("ErrUnknown", 500);
   }

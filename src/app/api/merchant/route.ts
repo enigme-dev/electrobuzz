@@ -1,5 +1,5 @@
-import { buildErr } from "@/core/lib/errors";
-import { compressImg, deleteImg, uploadImg } from "@/core/lib/image";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
+import { deleteImg, uploadImg } from "@/core/lib/image";
 import { removeImagePrefix } from "@/merchants/lib/utils";
 import { addMerchant } from "@/merchants/mutations/addMerchant";
 import { RegisterMerchantSchema } from "@/merchants/types";
@@ -43,14 +43,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const compressed = await compressImg(input.data.merchantPhotoUrl, 512);
-    input.data.merchantPhotoUrl = await uploadImg(compressed);
+    input.data.merchantPhotoUrl = await uploadImg(input.data.merchantPhotoUrl);
     input.data.merchantAvailable = true;
     input.data.merchantIdentity.identityStatus = IdentityStatuses.Enum.pending;
 
     const encryptedKtp = await encrypt(input.data.merchantIdentity.identityKTP);
     input.data.merchantIdentity.identityKTP = await uploadImg(
-      Buffer.from(encryptedKtp),
+      encryptedKtp,
       {
         filename: `ktp-${userId.data}`,
         bucket: "vault",
@@ -62,7 +61,7 @@ export async function POST(req: NextRequest) {
       input.data.merchantIdentity.identitySKCK
     );
     input.data.merchantIdentity.identitySKCK = await uploadImg(
-      Buffer.from(encryptedSkck),
+      encryptedSkck,
       {
         filename: `skck-${userId.data}`,
         bucket: "vault",
@@ -72,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     if (input.data.merchantIdentity.identityDocs) {
       input.data.merchantIdentity.identityDocs = await uploadImg(
-        Buffer.from(input.data.merchantIdentity.identityDocs),
+        input.data.merchantIdentity.identityDocs,
         {
           filename: `docs-${userId.data}`,
           bucket: "vault",
@@ -96,6 +95,16 @@ export async function POST(req: NextRequest) {
           409,
           "user already registered as a merchant"
         );
+      }
+    }
+
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
       }
     }
     return buildErr("ErrUnknown", 500);

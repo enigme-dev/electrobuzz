@@ -1,4 +1,4 @@
-import { buildErr } from "@/core/lib/errors";
+import {buildErr, ErrorCode} from "@/core/lib/errors";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { encrypt } from "@/core/lib/security";
 import { buildRes } from "@/core/lib/utils";
@@ -71,23 +71,19 @@ export async function POST(req: NextRequest) {
 
   try {
     const encryptedKtp = await encrypt(input.data.identityKTP);
-    input.data.identityKTP = await uploadImg(Buffer.from(encryptedKtp), {
+    input.data.identityKTP = await uploadImg(encryptedKtp, {
       filename: `ktp-${merchant.merchantId}`,
       bucket: "vault",
     });
     images.push(input.data.identityKTP);
-    input.data.identitySKCK = await uploadImg(
-      Buffer.from(input.data.identitySKCK),
-      {
+    input.data.identitySKCK = await uploadImg(input.data.identitySKCK, {
         filename: `skck-${merchant.merchantId}`,
         bucket: "vault",
       }
     );
     images.push(input.data.identitySKCK);
     if (input.data.identityDocs) {
-      input.data.identityDocs = await uploadImg(
-        Buffer.from(input.data.identityDocs),
-        {
+      input.data.identityDocs = await uploadImg(input.data.identityDocs, {
           filename: `docs-${merchant.merchantId}`,
           bucket: "vault",
         }
@@ -98,6 +94,17 @@ export async function POST(req: NextRequest) {
     images.map(async (image) => {
       await deleteImg(image);
     });
+
+    if (e instanceof Error) {
+      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
+        return buildErr("ErrImgInvalidDataURL", 400);
+      }
+
+      if (e.message === ErrorCode.ErrImgInvalidImageType) {
+        return buildErr("ErrImgInvalidImageType", 400);
+      }
+    }
+
     return buildErr("ErrUnknown", 500);
   }
 
