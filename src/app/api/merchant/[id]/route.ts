@@ -1,15 +1,11 @@
 import { buildErr } from "@/core/lib/errors";
-import { buildRes } from "@/core/lib/utils";
+import {buildRes, IdParam} from "@/core/lib/utils";
 import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function GET(req: NextRequest, { params }: IdParams) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");

@@ -1,6 +1,6 @@
 import { buildErr } from "@/core/lib/errors";
 import { deleteImg } from "@/core/lib/image";
-import { buildRes } from "@/core/lib/utils";
+import {buildRes, IdParam} from "@/core/lib/utils";
 import deleteMerchantAlbum from "@/merchantAlbums/mutations/deleteMerchantAlbums";
 import getMerchantAlbum from "@/merchantAlbums/queries/getMerchantAlbum";
 import getMerchantByUserId from "@/merchants/queries/getMerchantByUserId";
@@ -9,11 +9,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function DELETE(req: NextRequest, { params }: IdParams) {
+export async function DELETE(req: NextRequest, { params }: IdParam) {
   let merchantAlbum, merchant;
 
   const token = await getToken({ req });

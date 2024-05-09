@@ -11,12 +11,9 @@ import addMerchantIndex from "@/merchants/mutations/addMerchantIndex";
 import getMerchant from "@/merchants/queries/getMerchant";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import {IdParam} from "@/core/lib/utils";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function GET(req: NextRequest, { params }: IdParams) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
@@ -35,16 +32,16 @@ export async function GET(req: NextRequest, { params }: IdParams) {
   }
 
   try {
-    ktp = await getImg(result.identityKtp as string, "vault");
-    skck = await getImg(result.identitySkck as string, "vault");
-    if (result?.identityCert) {
-      cert = await getImg(result.identityCert, "vault");
+    ktp = await getImg(result.identityKTP as string, "vault");
+    skck = await getImg(result.identitySKCK as string, "vault");
+    if (result?.identityDocs) {
+      cert = await getImg(result.identityDocs, "vault");
     }
 
-    result.identityKtp = await decrypt(ktp);
-    result.identitySkck = await decrypt(skck);
+    result.identityKTP = await decrypt(ktp);
+    result.identitySKCK = await decrypt(skck);
     if (cert) {
-      result.identityCert = await decrypt(cert);
+      result.identityDocs = await decrypt(cert);
     }
   } catch (e) {
     console.error(e);
@@ -54,7 +51,7 @@ export async function GET(req: NextRequest, { params }: IdParams) {
   return Response.json({ data: result });
 }
 
-export async function PATCH(req: NextRequest, { params }: IdParams) {
+export async function PATCH(req: NextRequest, { params }: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
@@ -76,10 +73,10 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
     await editMerchantIdentity(merchantId.data, input.data.identityStatus);
     if (input.data.identityStatus === IdentityStatuses.Enum.rejected) {
       const identity = await getIdentitiesByMerchantId(merchantId.data);
-      await deleteImg(identity?.identityKtp as string, "vault");
-      await deleteImg(identity?.identitySkck as string, "vault");
-      if (identity?.identityCert) {
-        await deleteImg(identity.identityCert, "vault");
+      await deleteImg(identity?.identityKTP as string, "vault");
+      await deleteImg(identity?.identitySKCK as string, "vault");
+      if (identity?.identityDocs) {
+        await deleteImg(identity.identityDocs, "vault");
       }
     }
 

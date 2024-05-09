@@ -1,7 +1,7 @@
 import { AlgoliaClient } from "@/core/adapters/algolia";
 import { MerchantModel } from "../types";
 
-export default async function addMerchantIndex(data: MerchantModel) {
+export default async function addMerchantIndex(data: any) {
   const index = AlgoliaClient.initIndex("merchants");
 
   index.saveObject({

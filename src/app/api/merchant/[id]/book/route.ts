@@ -3,18 +3,14 @@ import addBooking from "@/bookings/mutations/addBooking";
 import { BookingModel, BookStatusEnum } from "@/bookings/types";
 import { buildErr } from "@/core/lib/errors";
 import { deleteImg, uploadImg } from "@/core/lib/image";
-import { buildRes } from "@/core/lib/utils";
+import {buildRes, IdParam} from "@/core/lib/utils";
 import getMerchant from "@/merchants/queries/getMerchant";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface IdParams {
-  params: { id: string };
-}
-
-export async function POST(req: NextRequest, { params }: IdParams) {
+export async function POST(req: NextRequest, { params }: IdParam) {
   let body;
   const token = await getToken({ req });
 

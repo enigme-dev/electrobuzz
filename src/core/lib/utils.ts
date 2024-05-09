@@ -39,6 +39,14 @@ export const ResponseSchema = z.object({
   page: z.number().optional(),
 });
 
+export const IdParam = z.object({
+  params: z.object({
+    id: z.string().cuid(),
+  })
+})
+
+export type IdParam = z.infer<typeof IdParam>;
+
 export type ResponseSchema = z.infer<typeof ResponseSchema>;
 
 export function buildRes(response: ResponseSchema) {
