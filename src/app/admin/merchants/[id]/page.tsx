@@ -67,10 +67,10 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
         </div>
       </div>
       <div className="grid grid-cols-2 justify-items-center">
-        <img src={merchant[0]?.data?.data.identityKtp} alt="ktp" />
-        <img src={merchant[0]?.data?.data.identitySkck} alt="skck" />
-        {merchant[0]?.data?.data.identityCert && (
-          <img src={merchant[0]?.data.data.identityCert} alt="cert" />
+        <img src={merchant[0]?.data?.data.identityKTP} alt="ktp" />
+        <img src={merchant[0]?.data?.data.identitySKCK} alt="skck" />
+        {merchant[0]?.data?.data.identityDocs && (
+          <img src={merchant[0]?.data.data.identityDocs} alt="docs" />
         )}
       </div>
     </div>
