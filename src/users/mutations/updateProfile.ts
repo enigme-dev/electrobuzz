@@ -13,6 +13,7 @@ export default async function updateProfile(
       name: data.name,
       phone: data.phone,
       image: data.image,
+      phoneVerified: data.phoneVerified,
     },
   });
 }

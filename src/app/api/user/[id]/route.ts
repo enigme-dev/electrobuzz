@@ -82,10 +82,8 @@ export async function PATCH(req: NextRequest, { params }: IdParams) {
   try {
     const user = await getPrivateProfile(userId.data);
 
-    input.data.phoneVerified = user?.phoneVerified;
-    if (input.data.phone && input.data.phone != user?.phone) {
-      input.data.phoneVerified = false;
-    }
+    input.data.phoneVerified =
+      input.data.phone === user?.phone ? user?.phoneVerified : false;
 
     if (input.data.image?.startsWith("data:image")) {
       if (user?.image?.startsWith(process.env.ASSETS_URL as string)) {
