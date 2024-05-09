@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       return buildErr(
         "ErrTooManyRequest",
         429,
-        "OTP can be sent again after 5 minutes"
+        result.expiredDate?.toISOString()
       );
     } else if (result.error === "ErrUnknown") {
       return buildErr("ErrUnknown", 500);

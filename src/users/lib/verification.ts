@@ -22,7 +22,10 @@ export async function sendOTP(phoneNumber: string) {
   try {
     const verification = await getVerification(hashed);
     if (verification && dayjs().diff(verification.createdAt, "minute") < 5) {
-      return { error: "ErrTooManyRequest" };
+      return {
+        error: "ErrTooManyRequest",
+        expiredDate: dayjs(verification.createdAt).add(5, "minute"),
+      };
     }
 
     await addVerification(hashed, code);
