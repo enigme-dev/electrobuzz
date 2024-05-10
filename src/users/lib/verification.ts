@@ -1,9 +1,9 @@
-import { SendMessage } from "@/core/adapters/watzap";
+import {SendMessage} from "@/core/adapters/watzap";
 import addVerification from "../mutations/addVerification";
 import getVerification from "../queries/checkVerification";
 import dayjs from "dayjs";
-import { VerifyStatuses } from "../types";
-import { createHash } from "crypto";
+import {VerifyStatuses} from "../types";
+import {createHash} from "crypto";
 
 export function generateOTP(length = 6) {
   let digits = "0123456789";
@@ -16,15 +16,17 @@ export function generateOTP(length = 6) {
 }
 
 export async function sendOTP(phoneNumber: string) {
+  let expiredAt;
   const hashed = createHash("sha1").update(phoneNumber).digest("hex");
   const code = generateOTP();
 
   try {
     const verification = await getVerification(hashed);
+    expiredAt = dayjs(verification?.createdAt).add(2, "minute")
     if (verification && dayjs().diff(verification.createdAt, "minute") < 2) {
       return {
         error: "ErrTooManyRequest",
-        expiredDate: dayjs(verification.createdAt).add(2, "minute"),
+        expiredAt,
       };
     }
 
@@ -34,10 +36,10 @@ export async function sendOTP(phoneNumber: string) {
       `Kode verifikasi akun Electrobuzz anda adalah ${code}`
     );
   } catch (e) {
-    return { error: "ErrUnknown" };
+    return {error: "ErrUnknown"};
   }
 
-  return { data: hashed };
+  return {data: hashed, expiredAt};
 }
 
 export async function checkOTP(verifId: string, code: string) {

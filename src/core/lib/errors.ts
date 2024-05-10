@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 interface ErrorResponse {
   status: ErrorCodeStrings;
@@ -34,16 +34,16 @@ export type ErrorCodeStrings = keyof typeof ErrorCode;
 export function buildErr(
   code: ErrorCodeStrings,
   status: number,
-  message?: string | z.ZodError
+  message?: any
 ) {
-  const err: ErrorResponse = { status: code, data: ErrorCode[code] };
+  const err: ErrorResponse = {status: code, data: ErrorCode[code]};
   if (message) {
-    if (typeof message === "string") {
-      err.data = message;
-    } else {
+    if (message instanceof z.ZodError) {
       err.data = message.flatten().fieldErrors;
+    } else {
+      err.data = message;
     }
   }
 
-  return Response.json(err, { status: status });
+  return Response.json(err, {status: status});
 }
