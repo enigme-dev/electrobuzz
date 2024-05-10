@@ -1,33 +1,32 @@
-import addAddress from "@/addresses/mutations/addAddress";
-import getAddresses from "@/addresses/queries/getAddresses";
-import { AddressSchema } from "@/addresses/types";
-import { buildErr } from "@/core/lib/errors";
-import getAddressCount from "@/users/queries/getAddressCount";
-import { Prisma } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {buildErr} from "@/core/lib/errors";
+import {Prisma} from "@prisma/client";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
+import {addAddress, getAddresses} from "@/users/services/AddressService";
+import {buildRes} from "@/core/lib/utils";
+import {AddressSchema} from "@/users/types";
 
 export async function GET(req: NextRequest) {
-  const token = await getToken({ req });
+  let addresses;
+  const token = await getToken({req});
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
     return buildErr("ErrUnauthorized", 401);
   }
 
-  let result;
   try {
-    result = await getAddresses(userId.data);
+    addresses = await getAddresses(userId.data);
   } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ data: result });
+  return buildRes({data: addresses});
 }
 
 export async function POST(req: NextRequest) {
-  let body;
+  let body, added;
 
   try {
     body = await req.json();
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({ req });
+  const token = await getToken({req});
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -48,32 +47,25 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const counter = await getAddressCount(userId.data);
-    if (counter._count.addresses === 3) {
-      return buildErr(
-        "ErrConflict",
-        409,
-        "maximum number of addresses has reached"
-      );
-    }
+    added = await addAddress(userId.data, data.data)
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2001") {
         return buildErr("ErrNotFound", 404, "invalid user id");
       }
     }
+
+    if (e instanceof Error) {
+      if (e.message === "maximum number of addresses has reached") {
+        return buildErr("ErrValidation", 400, e.message);
+      }
+    }
+
     return buildErr("ErrUnknown", 500);
   }
 
-  let added;
-  try {
-    added = await addAddress(userId.data, data.data);
-  } catch (e) {
-    return buildErr("ErrUnknown", 500);
-  }
-
-  return Response.json({
-    status: "added successfully",
-    data: { id: added.addressId },
+  return buildRes({
+    status: "address added successfully",
+    data: {id: added.addressId},
   });
 }

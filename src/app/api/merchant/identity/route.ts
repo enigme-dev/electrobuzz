@@ -1,21 +1,18 @@
 import {buildErr, ErrorCode} from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
-import { encrypt } from "@/core/lib/security";
-import { buildRes } from "@/core/lib/utils";
+import {deleteImg, uploadImg} from "@/core/lib/image";
+import {encrypt} from "@/core/lib/security";
+import {buildRes} from "@/core/lib/utils";
 import addMerchantIdentities from "@/merchantIdentities/mutations/addMerchantIdentities";
 import getIdentitiesByMerchantId from "@/merchantIdentities/queries/getIdentitiesByMerchantId";
-import {
-  IdentityStatuses,
-  MerchantIdentitiesSchema,
-} from "@/merchantIdentities/types";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {getMerchant} from "@/merchants/services/MerchantService";
+import {Prisma} from "@prisma/client";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
+import {IdentityStatuses, MerchantIdentitiesSchema} from "@/merchants/types";
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req });
+  const token = await getToken({req});
   let body,
     images = [],
     merchant;
@@ -114,5 +111,5 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ status: "identities submitted successfully" });
+  return buildRes({status: "identities submitted successfully"});
 }

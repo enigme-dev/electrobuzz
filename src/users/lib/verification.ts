@@ -1,6 +1,5 @@
 import {SendMessage} from "@/core/adapters/watzap";
-import addVerification from "../mutations/addVerification";
-import getVerification from "../queries/checkVerification";
+import {addVerification, getVerification} from "@/users/services/VerificationService";
 import dayjs from "dayjs";
 import {VerifyStatuses} from "../types";
 import {createHash} from "crypto";
@@ -16,12 +15,12 @@ export function generateOTP(length = 6) {
 }
 
 export async function sendOTP(phoneNumber: string) {
-  let expiredAt;
+  let verification, expiredAt;
   const hashed = createHash("sha1").update(phoneNumber).digest("hex");
   const code = generateOTP();
 
   try {
-    const verification = await getVerification(hashed);
+    verification = await getVerification(hashed);
     expiredAt = dayjs(verification?.createdAt).add(2, "minute")
     if (verification && dayjs().diff(verification.createdAt, "minute") < 2) {
       return {
@@ -30,7 +29,8 @@ export async function sendOTP(phoneNumber: string) {
       };
     }
 
-    await addVerification(hashed, code);
+    verification = await addVerification(hashed, code);
+    expiredAt = dayjs(verification?.createdAt).add(2, "minute")
     await SendMessage(
       phoneNumber,
       `Kode verifikasi akun Electrobuzz anda adalah ${code}`

@@ -1,5 +1,6 @@
-import { prisma } from "@/core/adapters/prisma";
-import { MerchantIdentitiesModel } from "../types";
+import {prisma} from "@/core/adapters/prisma";
+
+import {MerchantIdentitiesModel} from "@/merchants/types";
 
 export default async function addMerchantIdentities(
   data: MerchantIdentitiesModel

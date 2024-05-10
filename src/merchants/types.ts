@@ -1,5 +1,33 @@
-import { MerchantIdentitiesSchema } from "@/merchantIdentities/types";
-import { z } from "zod";
+import {z} from "zod";
+
+export const IdentityStatuses = z.enum(["pending", "verified", "rejected"]);
+
+export type IdentityStatuses = z.infer<typeof IdentityStatuses>;
+
+export const MerchantIdentitiesSchema = z.object({
+  identityKTP: z.string(),
+  identitySKCK: z.string(),
+  identityDocs: z.string().optional(),
+  identityStatus: IdentityStatuses.optional(),
+  merchantId: z.string().optional(),
+});
+
+export type MerchantIdentitiesModel = z.infer<typeof MerchantIdentitiesSchema>;
+
+export const EditMerchantIdentitySchema = z.object({
+  identityStatus: IdentityStatuses,
+});
+
+export type EditMerchantIdentityModel = z.infer<
+  typeof EditMerchantIdentitySchema
+>;
+
+export const IdentitiesParam = z.object({
+  name: z.string().optional(),
+  id: z.string().optional(),
+});
+
+export type IdentitiesParam = z.infer<typeof IdentitiesParam>;
 
 export const MerchantSchema = z.object({
   merchantId: z.string().cuid().optional(),
@@ -29,3 +57,17 @@ export const RegisterMerchantSchema = MerchantSchema.extend({
 });
 
 export type RegisterMerchantSchema = z.infer<typeof RegisterMerchantSchema>;
+
+export const MerchantAlbumSchema = z.object({
+  merchantAlbumId: z.string().cuid().optional(),
+  albumPhotoUrl: z.string(),
+  merchantId: z.string().cuid().optional(),
+});
+
+export type MerchantAlbumModel = z.infer<typeof MerchantAlbumSchema>;
+
+export const AlbumsSchema = z.object({
+  albums: MerchantAlbumSchema.array()
+    .min(1, "album must between 1 to 4 photos")
+    .max(4, "album must between 1 to 4 photos"),
+});

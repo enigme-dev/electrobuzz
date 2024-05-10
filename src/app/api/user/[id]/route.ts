@@ -1,42 +1,29 @@
-import { NextRequest } from "next/server";
+import {NextRequest} from "next/server";
 import {buildErr, ErrorCode} from "@/core/lib/errors";
-import { getToken } from "next-auth/jwt";
-import { z } from "zod";
-import updateProfile from "@/users/mutations/updateProfile";
-import getPrivateProfile from "@/users/queries/getPrivateProfile";
-import getPublicProfile from "@/users/queries/getPublicProfile";
-import { Prisma } from "@prisma/client";
-import { UpdateProfileSchema } from "@/users/types";
-import { deleteImg, uploadImg } from "@/core/lib/image";
-import { removeImagePrefix } from "@/merchants/lib/utils";
+import {getToken} from "next-auth/jwt";
+import {z} from "zod";
+import {updateProfile} from "@/users/services/UserService";
+import {getPrivateProfile, getPublicProfile} from "@/users/services/UserService";
+import {Prisma} from "@prisma/client";
+import {UpdateProfileSchema} from "@/users/types";
 import {buildRes, IdParam} from "@/core/lib/utils";
 
-export async function GET(req: NextRequest, { params }: IdParam) {
-  const token = await getToken({ req });
+export async function GET(req: NextRequest, {params}: IdParam) {
+  let profile;
+  const token = await getToken({req});
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (userId.success && userId.data === params.id) {
-    let response;
     try {
-      const find = await getPrivateProfile(userId.data);
-
-      response = {
-        id: find?.id,
-        name: find?.name,
-        email: find?.email,
-        phone: find?.phone,
-        phoneVerified: find?.phoneVerified,
-        image: find?.image,
-      };
+      profile = await getPrivateProfile(userId.data);
     } catch (e) {
       return buildErr("ErrUnknown", 500);
     }
-    return buildRes({ data: response });
+    return buildRes({data: profile});
   }
 
-  let result;
   try {
-    result = await getPublicProfile(params.id);
+    profile = await getPublicProfile(params.id);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -46,10 +33,10 @@ export async function GET(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ data: result });
+  return buildRes({data: profile});
 }
 
-export async function PATCH(req: NextRequest, { params }: IdParam) {
+export async function PATCH(req: NextRequest, {params}: IdParam) {
   let body;
 
   try {
@@ -58,7 +45,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({ req });
+  const token = await getToken({req});
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -74,21 +61,15 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
-  let imageUrl;
   try {
-    const user = await getPrivateProfile(userId.data);
-
-    input.data.phoneVerified =
-      input.data.phone === user?.phone ? user?.phoneVerified : false;
-
-    if (input.data.image?.startsWith("data:image")) {
-      if (user?.image?.startsWith(process.env.ASSETS_URL as string)) {
-        await deleteImg(user?.image);
-      }
-
-      imageUrl = await uploadImg(input.data.image);
-    }
+    await updateProfile(params.id, input.data);
   } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        return buildErr("ErrConflict", 409, "phone number already registered");
+      }
+    }
+
     if (e instanceof Error) {
       if (e.message === ErrorCode.ErrImgInvalidDataURL) {
         return buildErr("ErrImgInvalidDataURL", 400);
@@ -102,22 +83,5 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrUnknown", 500);
   }
 
-  input.data.image = imageUrl;
-
-  try {
-    await updateProfile(params.id, input.data);
-  } catch (e) {
-    if (imageUrl) {
-      deleteImg(removeImagePrefix(imageUrl));
-    }
-
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
-        return buildErr("ErrConflict", 409, "phone number already registered");
-      }
-    }
-    return buildErr("ErrUnknown", 500);
-  }
-
-  return buildRes({ status: "updated successfully" });
+  return buildRes({status: "updated successfully"});
 }

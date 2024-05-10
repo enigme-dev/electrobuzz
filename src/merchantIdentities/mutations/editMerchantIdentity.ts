@@ -1,5 +1,6 @@
-import { prisma } from "@/core/adapters/prisma";
-import { IdentityStatuses } from "../types";
+import {prisma} from "@/core/adapters/prisma";
+
+import {IdentityStatuses} from "@/merchants/types";
 
 export default async function editMerchantIdentity(
   merchantId: string,

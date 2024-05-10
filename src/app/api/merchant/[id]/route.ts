@@ -1,11 +1,11 @@
-import { buildErr } from "@/core/lib/errors";
+import {buildErr} from "@/core/lib/errors";
 import {buildRes, IdParam} from "@/core/lib/utils";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {getMerchant} from "@/merchants/services/MerchantService";
+import {Prisma} from "@prisma/client";
+import {NextRequest} from "next/server";
+import {z} from "zod";
 
-export async function GET(req: NextRequest, { params }: IdParam) {
+export async function GET(req: NextRequest, {params}: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
 
   try {
     const merchant = await getMerchant(merchantId.data);
-    return buildRes({ data: merchant });
+    return buildRes({data: merchant});
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {

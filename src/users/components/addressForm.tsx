@@ -1,8 +1,7 @@
 "use client";
 
-import { AddressModel, AddressSchema } from "@/addresses/types";
-import { SelectOption } from "@/core/components/select-option";
-import { Button } from "@/core/components/ui/button";
+import {SelectOption} from "@/core/components/select-option";
+import {Button} from "@/core/components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,20 +9,25 @@ import {
   FormItem,
   FormMessage,
 } from "@/core/components/ui/form";
-import { Input } from "@/core/components/ui/input";
-import { toast } from "@/core/components/ui/use-toast";
-import { getData, postData } from "@/core/lib/service";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import {Input} from "@/core/components/ui/input";
+import {toast} from "@/core/components/ui/use-toast";
+import {getData, postData} from "@/core/lib/service";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useRouter} from "next/navigation";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {AddressModel, AddressSchema} from "@/users/types";
 
 interface AddressProps {
   onPrevious: Function;
   isEditAddress?: boolean;
 }
 
+<<<<<<< Updated upstream
 const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
+=======
+const AddressForm = ({onPrevious}: AddressProps) => {
+>>>>>>> Stashed changes
   const router = useRouter();
 
   const [provinceOptions, setProvinceOptions] = useState([]);
@@ -126,7 +130,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressDetail"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -134,7 +138,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </div>
                   </div>
                 </FormItem>
@@ -143,7 +147,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressProvince"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -160,7 +164,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
                           }}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </div>
                   </div>
                 </FormItem>
@@ -169,7 +173,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressCity"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -184,7 +188,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </div>
                   </div>
                 </FormItem>
@@ -194,7 +198,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressZipCode"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -202,7 +206,7 @@ const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage/>
                     </div>
                   </div>
                 </FormItem>

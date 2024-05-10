@@ -1,15 +1,15 @@
-import { NextRequest } from "next/server";
-import { buildRes, IdParam } from "@/core/lib/utils";
-import { z } from "zod";
-import { buildErr } from "@/core/lib/errors";
-import { getToken } from "next-auth/jwt";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
+import {NextRequest} from "next/server";
+import {buildRes, IdParam} from "@/core/lib/utils";
+import {z} from "zod";
+import {buildErr} from "@/core/lib/errors";
+import {getToken} from "next-auth/jwt";
+import {getMerchant} from "@/merchants/services/MerchantService";
+import {Prisma} from "@prisma/client";
 import getBooking from "@/merchants/queries/getBooking";
 
-export async function GET(req: NextRequest, { params }: IdParam) {
+export async function GET(req: NextRequest, {params}: IdParam) {
   let merchant, booking;
-  const token = await getToken({ req });
+  const token = await getToken({req});
 
   const bookingId = z.string().cuid().safeParse(params.id);
   if (!bookingId.success) {
@@ -42,5 +42,5 @@ export async function GET(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ data: booking });
+  return buildRes({data: booking});
 }

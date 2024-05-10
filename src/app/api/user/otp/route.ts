@@ -1,7 +1,6 @@
 import {buildErr} from "@/core/lib/errors";
 import {checkOTP, sendOTP} from "@/users/lib/verification";
-import updatePhoneVerification from "@/users/mutations/updatePhoneVerification";
-import getPrivateProfile from "@/users/queries/getPrivateProfile";
+import {getPrivateProfile, updatePhoneVerification} from "@/users/services/UserService";
 import {VerifyOTPSchema, VerifyStatuses} from "@/users/types";
 import {getToken} from "next-auth/jwt";
 import {NextRequest} from "next/server";

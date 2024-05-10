@@ -1,26 +1,30 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type GetServerSidePropsContext } from "next";
+import {PrismaAdapter} from "@auth/prisma-adapter";
+import {type GetServerSidePropsContext} from "next";
 import {
   getServerSession,
   type NextAuthOptions,
   type DefaultUser,
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { prisma } from "@/core/adapters/prisma";
-import { PrismaClient } from "@prisma/client";
-import getPrivateProfile from "@/users/queries/getPrivateProfile";
+import {prisma} from "@/core/adapters/prisma";
+import {PrismaClient} from "@prisma/client";
+import {getPrivateProfile} from "@/users/services/UserService";
 
 interface IUser extends DefaultUser {
   isAdmin?: boolean;
 }
+
 declare module "next-auth" {
-  interface User extends IUser {}
+  interface User extends IUser {
+  }
+
   interface Session {
     user?: User;
   }
 }
 declare module "next-auth/jwt" {
-  interface JWT extends IUser {}
+  interface JWT extends IUser {
+  }
 }
 
 export const authOptions: NextAuthOptions = {
@@ -32,7 +36,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({token, user}) {
       if (user) {
         const profile = await getPrivateProfile(user.id);
         token.isAdmin = profile?.isAdmin;
@@ -40,7 +44,7 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({session, token}) {
       if (session.user && token) {
         session.user.isAdmin = token.isAdmin;
         session.user.id = token.sub ?? "";
@@ -48,7 +52,7 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    async redirect({ baseUrl }) {
+    async redirect({baseUrl}) {
       return baseUrl + "/register";
     },
   },

@@ -1,19 +1,19 @@
-import { buildErr } from "@/core/lib/errors";
-import { buildRes, parseParams } from "@/core/lib/utils";
+import {buildErr} from "@/core/lib/errors";
+import {buildRes, parseParams} from "@/core/lib/utils";
 import countBookings from "@/merchants/queries/countBookings";
 import getBookings from "@/merchants/queries/getBookings";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {getMerchant} from "@/merchants/services/MerchantService";
+import {Prisma} from "@prisma/client";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
 
 export async function GET(req: NextRequest) {
   let merchant, bookings, bookingsCt;
-  const token = await getToken({ req });
+  const token = await getToken({req});
 
   const searchParams = req.nextUrl.searchParams;
-  const { page, skip, startDate, endDate } = parseParams(searchParams);
+  const {page, skip, startDate, endDate} = parseParams(searchParams);
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -44,5 +44,5 @@ export async function GET(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ data: bookings, page, total: bookingsCt });
+  return buildRes({data: bookings, page, total: bookingsCt});
 }

@@ -1,18 +1,18 @@
 import {buildErr, ErrorCode} from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
-import { buildRes } from "@/core/lib/utils";
+import {deleteImg, uploadImg} from "@/core/lib/image";
+import {buildRes} from "@/core/lib/utils";
 import addMerchantAlbums from "@/merchantAlbums/mutations/addMerchantAlbums";
 import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
-import { AlbumsSchema } from "@/merchantAlbums/types";
-import { removeImagePrefix } from "@/merchants/lib/utils";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {removeImagePrefix} from "@/merchants/lib/utils";
+import {getMerchant} from "@/merchants/services/MerchantService";
+import {Prisma} from "@prisma/client";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
+import {AlbumsSchema} from "@/merchants/types";
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req });
+  const token = await getToken({req});
   let body,
     photos: string[] = [],
     merchant;
@@ -87,5 +87,5 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ status: "uploaded successfully", data: photos });
+  return buildRes({status: "uploaded successfully", data: photos});
 }

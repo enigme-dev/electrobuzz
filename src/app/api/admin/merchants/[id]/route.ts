@@ -1,19 +1,16 @@
-import { buildErr } from "@/core/lib/errors";
-import { deleteImg, getImg } from "@/core/lib/image";
-import { decrypt } from "@/core/lib/security";
+import {buildErr} from "@/core/lib/errors";
+import {deleteImg, getImg} from "@/core/lib/image";
+import {decrypt} from "@/core/lib/security";
 import editMerchantIdentity from "@/merchantIdentities/mutations/editMerchantIdentity";
 import getIdentitiesByMerchantId from "@/merchantIdentities/queries/getIdentitiesByMerchantId";
-import {
-  EditMerchantIdentitySchema,
-  IdentityStatuses,
-} from "@/merchantIdentities/types";
 import addMerchantIndex from "@/merchants/mutations/addMerchantIndex";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {getMerchant} from "@/merchants/services/MerchantService";
+import {NextRequest} from "next/server";
+import {z} from "zod";
 import {IdParam} from "@/core/lib/utils";
+import {EditMerchantIdentitySchema, IdentityStatuses} from "@/merchants/types";
 
-export async function GET(req: NextRequest, { params }: IdParam) {
+export async function GET(req: NextRequest, {params}: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
@@ -48,10 +45,10 @@ export async function GET(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ data: result });
+  return Response.json({data: result});
 }
 
-export async function PATCH(req: NextRequest, { params }: IdParam) {
+export async function PATCH(req: NextRequest, {params}: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
@@ -88,5 +85,5 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ status: "merchant updated successfully" });
+  return Response.json({status: "merchant updated successfully"});
 }
