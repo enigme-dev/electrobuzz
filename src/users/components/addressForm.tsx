@@ -20,9 +20,10 @@ import { useForm } from "react-hook-form";
 
 interface AddressProps {
   onPrevious: Function;
+  isEditAddress?: boolean;
 }
 
-const AddressForm = ({ onPrevious }: AddressProps) => {
+const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
   const router = useRouter();
 
   const [provinceOptions, setProvinceOptions] = useState([]);
@@ -69,7 +70,6 @@ const AddressForm = ({ onPrevious }: AddressProps) => {
       const id = selectedValue[0].id;
       getCityLocation(id);
     } else {
-      console.log("Province not found");
       return undefined;
     }
   }
@@ -77,7 +77,7 @@ const AddressForm = ({ onPrevious }: AddressProps) => {
   useEffect(() => {
     getProvince();
     getCityLocation();
-  }, []);
+  }, [isEditAddress]);
 
   async function handleSubmit(AddressForm: AddressModel) {
     const response = await postData(`/api/user/address/`, AddressForm);
@@ -104,6 +104,8 @@ const AddressForm = ({ onPrevious }: AddressProps) => {
       default:
     }
   }
+
+  console.log(isEditAddress);
 
   function onSubmitAddressForm(Addressform: AddressModel) {
     try {
@@ -208,7 +210,9 @@ const AddressForm = ({ onPrevious }: AddressProps) => {
             />
           </>
           <div className="flex justify-between pt-5">
-            <Button onClick={() => onPrevious()}>Back</Button>
+            {!isEditAddress && (
+              <Button onClick={() => onPrevious()}>Back</Button>
+            )}
             <Button
               type="submit"
               variant="secondary"

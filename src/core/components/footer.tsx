@@ -16,42 +16,40 @@ export default function Footer() {
     setTheme(selectedTheme);
   };
 
+  const footerNavLink = [
+    {
+      icon: <Home strokeWidth={2} size={20} />,
+      link: "/",
+      title: "Home",
+    },
+    {
+      icon: <NotepadText strokeWidth={2} size={20} />,
+      link: "/user/my-bookings",
+      title: "MyBookings",
+    },
+    {
+      icon: <Search strokeWidth={2} size={20} />,
+      link: "/merchant/search",
+      title: "Search",
+    },
+  ];
+
   return (
     <div className="w-full p-3 border-t border-solid border-t-[#cecece] dark:border-t-[#383838] bg-white dark:bg-[#020817] z-50">
       <div className="wrapper flex justify-around items-center ">
-        <div>
-          <Link href="/" className="select-none">
-            <Button
-              variant={"link"}
-              className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
-            >
-              <Home strokeWidth={2} size={20} />
-              <p className="text-[0.6rem]">Home</p>
-            </Button>
-          </Link>
-        </div>
-        <div>
-          <Link href="/my-bookings" className="select-none">
-            <Button
-              variant={"link"}
-              className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
-            >
-              <NotepadText strokeWidth={2} size={20} />
-              <p className="text-[0.6rem]">My Bookings</p>
-            </Button>
-          </Link>
-        </div>
-        <div>
-          <Link href="/merchant-list" className="select-none">
-            <Button
-              variant={"link"}
-              className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
-            >
-              <Search strokeWidth={2} size={20} />
-              <p className="text-[0.6rem]">Search</p>
-            </Button>
-          </Link>
-        </div>
+        {footerNavLink.map((value, index) => (
+          <div key={index}>
+            <Link href={value.link} className="select-none">
+              <Button
+                variant={"link"}
+                className="grid items-center place-items-center gap-1 p-0 hover:no-underline text-black dark:text-white"
+              >
+                {value.icon}
+                <p className="text-[0.6rem]">{value.title}</p>
+              </Button>
+            </Link>
+          </div>
+        ))}
         <div className="flex">
           <AuthBar />
         </div>

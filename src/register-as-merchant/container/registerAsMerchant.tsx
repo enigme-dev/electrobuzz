@@ -10,14 +10,13 @@ export default function Page() {
 
   const [step, setStep] = useState(0);
   const [view, setView] = useState(<></>);
-  const labels = ["Data Diri", "Verifikasi Nomor Telepon", "Alamat"];
 
   const handlePrev = () => {
     if (step > 0) setStep((prev) => prev - 1);
   };
 
   const handleNext = () => {
-    if (step < labels.length - 1) setStep((prev) => prev + 1);
+    if (step < 2) setStep((prev) => prev + 1);
   };
 
   useEffect(() => {

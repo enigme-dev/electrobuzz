@@ -4,16 +4,7 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  HomeIcon,
-  NotepadText,
-  PersonStanding,
-  Settings,
-  User,
-  UserRound,
-} from "lucide-react";
-import { useState } from "react";
+import { HomeIcon, NotepadText, Settings, UserRound } from "lucide-react";
 
 export const navList = [
   {
@@ -23,19 +14,18 @@ export const navList = [
   },
   {
     label: "My Bookings",
-    link: "/my-bookings",
+    link: "/user/my-bookings",
     icon: <NotepadText size="20" />,
   },
   {
     label: "Edit Profile",
-    link: "/edit-profile",
+    link: "/user/profile",
     icon: <Settings size="20" />,
   },
 ];
 
 export default function AuthBar() {
   const { data: session } = useSession();
-  const [isVerified, setIsVerified] = useState(false);
   const handleSignOut = () => {
     signOut();
   };
@@ -87,7 +77,7 @@ export default function AuthBar() {
                 <ul className="flex justify-between gap-5">
                   <li className="pt-5 text-center">
                     <Button variant="outline">
-                      <Link href="/register-user-as-merchant">
+                      <Link href="/merchant/register">
                         Register as merchant
                       </Link>
                     </Button>

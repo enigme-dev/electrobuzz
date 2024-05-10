@@ -30,7 +30,7 @@ const BookingCard = ({
       {" "}
       <Card
         onClick={() => {
-          router.push(`/my-bookings/${orderId}`);
+          router.push(`/user/my-bookings/${orderId}`);
         }}
         className="w-full hover:shadow-lg cursor-pointer transition duration-500"
       >

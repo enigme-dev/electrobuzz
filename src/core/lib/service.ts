@@ -9,7 +9,6 @@ interface ApiResponse {
 export const updateData = async (url: string, data: any) => {
   try {
     const response: AxiosResponse<ApiResponse> = await axios.patch(url, data);
-    console.log(response.data);
     return response.data;
   } catch (error: any) {
     if (error.response) {

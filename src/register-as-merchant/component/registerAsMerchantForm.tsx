@@ -27,13 +27,6 @@ import { cn } from "@/core/lib/shadcn";
 import { format } from "date-fns";
 import MultipleSelector, { Option } from "@/core/components/multi-select";
 
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
 const optionSchema = z.object({
   label: z.string(),
   value: z.string(),
@@ -41,23 +34,27 @@ const optionSchema = z.object({
 });
 
 const FormSchema = z.object({
-  namaToko: z.string({
+  merchantName: z.string({
     required_error: "tolong deskripsikan keluhanmu",
   }),
-  kategori: z.array(optionSchema).min(1),
-  noTelp: z
-    .string({ required_error: "Nomor telpon tidak boleh kosong" })
-    .regex(/^\d{8,14}$/, "Nomor telpon harus 8-14 digit"),
-
-  Alamat: z.string({
+  merchantCategory: z.array(optionSchema).min(1),
+  merchantProvince: z.string({
+    required_error: "tolong isi provinsimu",
+  }),
+  merchantCity: z.string({
+    required_error: "tolong isi kotamu",
+  }),
+  merchantLat: z.string({
+    required_error: "tolong isi alamatmu",
+  }),
+  merchantLong: z.string({
     required_error: "tolong isi alamatmu",
   }),
 
-  deskripsi: z.string({
-    required_error: "tolong deskripsikan keluhanmu",
+  merchantDesc: z.string({
+    required_error: "tolong deskripsikan tentang tokomu",
   }),
-  garansi: z.boolean(),
-  fotoBanner: z.string().refine(
+  merchantPhotoUrl: z.string().refine(
     (value) => {
       const allowedExtensions = /\.(jpg|jpeg|png)$/i;
       return allowedExtensions.test(value);
@@ -67,100 +64,40 @@ const FormSchema = z.object({
       path: ["foto"],
     }
   ),
-  fotoAlbum1: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto album harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  fotoAlbum2: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto album harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  fotoAlbum3: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto album harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  fotoAlbum4: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto album harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  fotoAlbum5: z
-    .string()
-    .optional()
-    .refine(
+  merchantIdentity: z.object({
+    identityKTP: z.string().refine(
       (value) => {
         const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-        return allowedExtensions.test(value as string);
+        return allowedExtensions.test(value);
       },
       {
-        message: "Foto album harus berupa file JPG atau PNG",
+        message: "Foto bannermu harus berupa file JPG atau PNG",
         path: ["foto"],
       }
     ),
-  fotoKTP: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto bannermu harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  fotoSKCK: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto bannermu harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  dokumenSertifikasi1: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto bannermu harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  dokumenSertifikasi2: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto bannermu harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
+    identitySKCK: z.string().refine(
+      (value) => {
+        const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+        return allowedExtensions.test(value);
+      },
+      {
+        message: "Foto bannermu harus berupa file JPG atau PNG",
+        path: ["foto"],
+      }
+    ),
+    identityDocs: z.string().refine(
+      (value) => {
+        const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+        return allowedExtensions.test(value);
+      },
+      {
+        message: "Foto bannermu harus berupa file JPG atau PNG",
+        path: ["foto"],
+      }
+    ),
+  }),
 });
+
 interface RegisterAsMerchantFormProps {
   onPrevious: Function;
   onNext: Function;
@@ -205,7 +142,7 @@ const RegisterAsMerchantForm = ({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="namaToko"
+            name="merchantName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nama Toko</FormLabel>
@@ -218,7 +155,7 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="kategori"
+            name="merchantCategory"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kategori</FormLabel>
@@ -245,20 +182,7 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="noTelp"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>No.Telp</FormLabel>
-                <FormControl>
-                  <Input placeholder="Contoh: 081274217283" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="Alamat"
+            name="merchantProvince"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Alamat Rumah atau Toko</FormLabel>
@@ -271,12 +195,25 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="deskripsi"
+            name="merchantCity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Alamat Rumah atau Toko</FormLabel>
+                <FormControl>
+                  <Input placeholder="Alamat lengkap" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="merchantDesc"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
                 <FormControl>
-                  <Input placeholder="Deskripsikan keahlianmu" {...field} />
+                  <Input placeholder="Deskripsikan tokomu" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -284,20 +221,7 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="garansi"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Garansi</FormLabel>
-                <FormControl>
-                  <Input placeholder="garansi" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
+            name="merchantPhotoUrl"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto Banner</FormLabel>
@@ -309,73 +233,10 @@ const RegisterAsMerchantForm = ({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="foto"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Foto Album</FormLabel>
-                <FormControl>
-                  <Input id="picture" type="file" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input id="picture" type="file" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input id="picture" type="file" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input id="picture" type="file" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input id="picture" type="file" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Tunjukan fotomu sebagai teknisi disini
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
+            name="merchantIdentity.identityKTP"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto KTP</FormLabel>
@@ -389,7 +250,7 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="foto"
+            name="merchantIdentity.identitySKCK"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
@@ -405,26 +266,13 @@ const RegisterAsMerchantForm = ({
           />
           <FormField
             control={form.control}
-            name="foto"
+            name="merchantIdentity.identityDocs"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Dokumen Sertifikasi</FormLabel>
                 <FormControl>
                   <Input id="picture" type="file" {...field} />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="foto"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input id="picture" type="file" {...field} />
-                </FormControl>
-                <FormDescription>Dokumen Sertifikasi Asli</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

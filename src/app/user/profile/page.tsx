@@ -4,7 +4,7 @@ import React from "react";
 
 const EditProfilePage = () => {
   return (
-    <div className="wrapper px-10 py-5 sm:py-20 w-screen">
+    <div className="wrapper px-10 pt-5 pb-20 sm:py-20 w-screen">
       <EditProfileForm />
     </div>
   );

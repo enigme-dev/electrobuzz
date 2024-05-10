@@ -30,7 +30,7 @@ export function Banner() {
             hanya di <br /> <span className="text-">Electrobuzz</span>
           </h1>
           <div className="text-center pt-5">
-            <Link href="/merchant-list">
+            <Link href="/merchant/search">
               <Button
                 variant="default"
                 className="bg-yellow-400 hover:bg-yellow-300 text-md text-black sm:text-lg"

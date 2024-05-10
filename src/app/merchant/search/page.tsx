@@ -29,7 +29,7 @@ export default function Page() {
       <div className="rounded-lg px-10 h-[100vh]">
         <div className="flex items-center justify-center md:pt-10">
           <Image
-            src="House searching-cuate.svg"
+            src="/House searching-cuate.svg"
             alt="searchingCuate"
             width={200}
             height={200}

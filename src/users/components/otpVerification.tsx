@@ -21,13 +21,22 @@ import { useForm } from "react-hook-form";
 import { getData, postData } from "@/core/lib/service";
 import { useToast } from "@/core/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
-import { useCountdown } from "../context/countdownContext";
+import { useCountdown } from "@/core/hooks/useCountdown";
+import { error, time } from "console";
+import { useSession } from "next-auth/react";
 
 interface OTPProps {
   onNext: Function;
   onPrevious: Function;
+  isEditing?: boolean;
+  isEditPhone?: boolean;
+  initialOTPFormValue: { verifId: string; code: string };
 }
-const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
+const OTPVerification = ({
+  onNext,
+  onPrevious,
+  initialOTPFormValue,
+}: OTPProps) => {
   const { countdown, setIsCountdown, isCountdown, setCountdown } =
     useCountdown();
 
@@ -36,32 +45,41 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
   const OTPform = useForm<VerifyOTPModel>({
     resolver: zodResolver(VerifyOTPSchema),
     defaultValues: {
+      code: "",
       verifId: "",
     },
   });
+  const [verifId, setVerifId] = useState("");
+  async function handleCountdown(response: any) {
+    console.log(response);
+    const givenTime = new Date(response.data.data);
+    if (response.status === 429) {
+      const currentTime = new Date();
+      console.log({ givenTime: givenTime, currentTime: currentTime });
+      const timeDifference = givenTime.getTime() - currentTime.getTime();
+      const minutesDifference = Math.floor(timeDifference / 1000);
+      console.log(minutesDifference);
+      setCountdown(minutesDifference);
+      setIsCountdown(true);
+    }
+  }
 
   async function getOTP() {
     try {
-      setCountdown(300);
-      setIsCountdown(true);
       const response = await getData(`/api/user/otp`);
+      setVerifId(response.data.verifId);
+      console.log(response);
+      handleCountdown(response);
       handleError(response);
-      OTPform.setValue("verifId", response.data.verifId);
     } catch (error) {
       console.error(error);
     }
   }
 
-  async function checkOTPValid(values: VerifyOTPModel) {
-    const response = await postData("/api/user/otp", values);
-    handleError(response);
-    if (response.status === 200 || response.data.status === "ErrOTPVerified") {
-      onNext();
-    }
-  }
+  console.log(verifId);
 
-  function handleError(response: any) {
-    switch (response.data.status) {
+  function handleError(error: any) {
+    switch (error.response.data.status) {
       case "ErrOTPIncorrect":
         toast({
           title: "OTP yang anda masukan salah",
@@ -105,10 +123,29 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
 
   function onSubmitOTP(OTPvalues: VerifyOTPModel) {
     try {
+      console.log("test");
       checkOTPValid(OTPvalues);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async function checkOTPValid(values: VerifyOTPModel) {
+    await axios
+      .post("/api/user/otp", values)
+      .then((response) => {
+        console.log(response);
+        if (response.data.status === "phone verified successfully") {
+          onNext();
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.status);
+        console.log(error.response.data.data);
+        console.log(error.response.data.status);
+
+        if (error.response.status > 200) handleError(error);
+      });
   }
 
   return (
@@ -163,7 +200,9 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
             )}
           />
           <div className="flex justify-between pt-5">
-            <Button onClick={() => onPrevious()}>Back</Button>
+            <Button onClick={() => onPrevious()} type="button">
+              Back
+            </Button>
             <Button
               type="submit"
               variant="secondary"
