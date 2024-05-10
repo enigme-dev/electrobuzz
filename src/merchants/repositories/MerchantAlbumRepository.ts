@@ -6,6 +6,10 @@ export type MerchantAlbum = {
 }
 
 export class MerchantAlbumRepository extends BaseRepository {
+  static count(merchantId: string) {
+    return this.db.merchant.count({where: {merchantId: merchantId}});
+  }
+
   static createMany(data: MerchantAlbum[]) {
     return this.db.merchantAlbum.createMany({data});
   }
@@ -14,6 +18,15 @@ export class MerchantAlbumRepository extends BaseRepository {
     return this.db.merchantAlbum.delete({where: {merchantAlbumId: id}});
   }
 
-  static findAllByMerchantId(merchantId: string) {
+  static findAll(merchantId: string) {
+    return this.db.merchantAlbum.findMany({
+      where: {
+        merchantId: merchantId,
+      },
+    });
+  }
+
+  static findOne(id: string) {
+    return this.db.merchantAlbum.findUniqueOrThrow({where: {merchantAlbumId: id}});
   }
 }

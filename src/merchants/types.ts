@@ -71,3 +71,5 @@ export const AlbumsSchema = z.object({
     .min(1, "album must between 1 to 4 photos")
     .max(4, "album must between 1 to 4 photos"),
 });
+
+export type AlbumsSchema = z.infer<typeof AlbumsSchema>;

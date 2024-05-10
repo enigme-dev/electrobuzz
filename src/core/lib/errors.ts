@@ -27,6 +27,9 @@ export enum ErrorCode {
   ErrImgInvalidImageType = "invalid image type",
   ErrImgInvalidDataURL = "invalid data URL format",
   ErrImgFailedUpload = "failed to upload image",
+
+  // album
+  ErrAlbumQuotaExceeded = "album cannot contain more than 4 photos"
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;
