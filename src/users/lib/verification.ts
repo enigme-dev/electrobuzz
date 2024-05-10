@@ -21,10 +21,10 @@ export async function sendOTP(phoneNumber: string) {
 
   try {
     const verification = await getVerification(hashed);
-    if (verification && dayjs().diff(verification.createdAt, "minute") < 5) {
+    if (verification && dayjs().diff(verification.createdAt, "minute") < 2) {
       return {
         error: "ErrTooManyRequest",
-        expiredDate: dayjs(verification.createdAt).add(5, "minute"),
+        expiredDate: dayjs(verification.createdAt).add(2, "minute"),
       };
     }
 
@@ -53,7 +53,7 @@ export async function checkOTP(verifId: string, code: string) {
     return VerifyStatuses.Enum.not_found;
   }
 
-  if (dayjs().diff(verification.createdAt, "minute") >= 5) {
+  if (dayjs().diff(verification.createdAt, "minute") >= 2) {
     return VerifyStatuses.Enum.expired;
   }
 
