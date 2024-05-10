@@ -1,7 +1,7 @@
 "use client";
 
-import {SelectOption} from "@/core/components/select-option";
-import {Button} from "@/core/components/ui/button";
+import { SelectOption } from "@/core/components/select-option";
+import { Button } from "@/core/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,25 +9,21 @@ import {
   FormItem,
   FormMessage,
 } from "@/core/components/ui/form";
-import {Input} from "@/core/components/ui/input";
-import {toast} from "@/core/components/ui/use-toast";
-import {getData, postData} from "@/core/lib/service";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useRouter} from "next/navigation";
-import React, {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {AddressModel, AddressSchema} from "@/users/types";
+import { Input } from "@/core/components/ui/input";
+import { toast } from "@/core/components/ui/use-toast";
+import { getData, postData } from "@/core/lib/service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { AddressModel, AddressSchema } from "@/users/types";
 
 interface AddressProps {
   onPrevious: Function;
-  isEditAddress?: boolean;
+  isEditing?: boolean;
 }
 
-<<<<<<< Updated upstream
-const AddressForm = ({ onPrevious, isEditAddress }: AddressProps) => {
-=======
-const AddressForm = ({onPrevious}: AddressProps) => {
->>>>>>> Stashed changes
+const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
   const router = useRouter();
 
   const [provinceOptions, setProvinceOptions] = useState([]);
@@ -81,7 +77,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
   useEffect(() => {
     getProvince();
     getCityLocation();
-  }, [isEditAddress]);
+  }, [isEditing]);
 
   async function handleSubmit(AddressForm: AddressModel) {
     const response = await postData(`/api/user/address/`, AddressForm);
@@ -109,8 +105,6 @@ const AddressForm = ({onPrevious}: AddressProps) => {
     }
   }
 
-  console.log(isEditAddress);
-
   function onSubmitAddressForm(Addressform: AddressModel) {
     try {
       handleSubmit(Addressform);
@@ -118,6 +112,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
       console.error(error);
     }
   }
+  console.log(isEditing);
 
   return (
     <div>
@@ -130,7 +125,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressDetail"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -138,7 +133,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormMessage/>
+                      <FormMessage />
                     </div>
                   </div>
                 </FormItem>
@@ -147,7 +142,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressProvince"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -164,7 +159,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
                           }}
                         />
                       </FormControl>
-                      <FormMessage/>
+                      <FormMessage />
                     </div>
                   </div>
                 </FormItem>
@@ -173,7 +168,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressCity"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -188,7 +183,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage/>
+                      <FormMessage />
                     </div>
                   </div>
                 </FormItem>
@@ -198,7 +193,7 @@ const AddressForm = ({onPrevious}: AddressProps) => {
             <FormField
               control={Addressform.control}
               name="addressZipCode"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="pt-5 flex-col justify-between md:flex ">
                     <div>
@@ -206,21 +201,26 @@ const AddressForm = ({onPrevious}: AddressProps) => {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormMessage/>
+                      <FormMessage />
                     </div>
                   </div>
                 </FormItem>
               )}
             />
           </>
-          <div className="flex justify-between pt-5">
-            {!isEditAddress && (
-              <Button onClick={() => onPrevious()}>Back</Button>
-            )}
+          <div
+            className={
+              isEditing ? "flex justify-end pt-5" : "lex justify-between pt-5"
+            }
+          >
+            {!isEditing && <Button onClick={() => onPrevious()}>Back</Button>}
+
             <Button
               type="submit"
               variant="secondary"
-              className="hover:shadow-md hover:shadow-yellow-200 transition duration-500 "
+              className={
+                "hover:shadow-md hover:shadow-yellow-200 transition duration-500 "
+              }
             >
               Submit
             </Button>

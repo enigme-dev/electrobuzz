@@ -19,7 +19,6 @@ import { useToast } from "@/core/components/ui/use-toast";
 
 const EditProfileForm = () => {
   const { data: session } = useSession();
-  const { toast } = useToast();
   const {
     startEditing,
     startEditName,
@@ -30,7 +29,6 @@ const EditProfileForm = () => {
     isEditing,
     onOpenDialog,
     setOnOpenDialog,
-    setIsEditAddress,
   } = useEditProfile();
 
   const {
@@ -93,6 +91,7 @@ const EditProfileForm = () => {
               onNext={() => handleNext()}
               isEditing={isEditing}
               isEditPhone={isEditPhone}
+              handleCloseDialog={() => setOnOpenDialog(false)}
             />
           );
           break;
@@ -203,12 +202,16 @@ const EditProfileForm = () => {
         </div>
         <div>
           <DialogGeneral
-            dialogTitle="Edit Profile"
-            dialogContent={<>{view}</>}
+            dialogTitle={isEditing ? "Edit Address" : "Add Address"}
+            dialogContent={
+              <>
+                <AddressForm isEditing={isEditing} onPrevious={() => {}} />
+              </>
+            }
             dialogTrigger={
               <Card
                 className="rounded-full w-fit"
-                onClick={() => setIsEditAddress(true)}
+                onClick={() => startEditing()}
               >
                 <PlusIcon
                   className="p-3 hover:bg-gray-100 rounded-full hover:cursor-pointer"
