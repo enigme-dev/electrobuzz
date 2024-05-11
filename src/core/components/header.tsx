@@ -25,7 +25,7 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-2 ">
-          <Link href="/merchant-list">
+          <Link href="/merchant/search">
             <Button
               variant="link"
               className="text-black hover:text-yellow-400 hover:no-underline dark:text-white dark:hover:text-yellow-400 hidden sm:block"

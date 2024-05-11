@@ -24,13 +24,20 @@ export default function Page() {
   useEffect(() => {
     switch (step) {
       case 0:
-        setView(<RegisterForm onNext={() => handleNext()} />);
+        setView(
+          <RegisterForm
+            onNext={() => handleNext()}
+            handleCloseDialog={() => {}}
+          />
+        );
         break;
       case 1:
         setView(
           <OTPVerification
             onPrevious={() => handlePrev()}
             onNext={() => handleNext()}
+            isEditPhone={false}
+            isEditing={false}
           />
         );
         break;

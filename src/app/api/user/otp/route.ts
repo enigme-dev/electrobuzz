@@ -1,15 +1,15 @@
-import { buildErr } from "@/core/lib/errors";
-import { checkOTP, sendOTP } from "@/users/lib/verification";
-import updatePhoneVerification from "@/users/mutations/updatePhoneVerification";
-import getPrivateProfile from "@/users/queries/getPrivateProfile";
-import { VerifyOTPSchema, VerifyStatuses } from "@/users/types";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {buildErr} from "@/core/lib/errors";
+import {checkOTP, sendOTP} from "@/users/lib/verification";
+import {getPrivateProfile, updatePhoneVerification} from "@/users/services/UserService";
+import {VerifyOTPSchema, VerifyStatuses} from "@/users/types";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
+import {buildRes} from "@/core/lib/utils";
 
 export async function GET(req: NextRequest) {
   let result;
-  const token = await getToken({ req });
+  const token = await getToken({req});
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       return buildErr(
         "ErrTooManyRequest",
         429,
-        result.expiredDate?.toISOString()
+        {message: "OTP can be requested every 2 minutes", expiredAt: result.expiredAt?.toISOString()}
       );
     } else if (result.error === "ErrUnknown") {
       return buildErr("ErrUnknown", 500);
@@ -40,9 +40,9 @@ export async function GET(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({
+  return buildRes({
     status: "OTP sent successfully",
-    data: { verifId: result.data },
+    data: {verifId: result.data, expiredAt: result.expiredAt},
   });
 }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({ req });
+  const token = await getToken({req});
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -94,5 +94,5 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return Response.json({ status: "phone verified successfully" });
+  return buildRes({status: "phone verified successfully"});
 }

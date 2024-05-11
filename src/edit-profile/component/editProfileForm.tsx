@@ -1,140 +1,244 @@
 "use client";
 import { Button } from "@/core/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/core/components/ui/form";
-import { Input } from "@/core/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
-import axios from "axios";
 import { getData, updateData } from "@/core/lib/service";
-import { hostname } from "os";
-import { UpdateProfileModel, UpdateProfileSchema } from "@/users/types";
 import Image from "next/image";
 import { Card, CardContent } from "@/core/components/ui/card";
-import { MapPinIcon, PencilIcon } from "lucide-react";
+import { MapPinIcon, PencilIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import RegisterForm from "@/users/components/registerForm";
 import OTPVerification from "@/users/components/otpVerification";
+import useEditProfile from "../hooks/useEditProfiles";
+import AddressForm from "@/users/components/addressForm";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import Loader from "@/core/components/loader";
+import { useToast } from "@/core/components/ui/use-toast";
+import AddressCard from "./addressCard";
+
+interface AddressData {
+  addressId: string | undefined;
+  addressDetail: string | undefined;
+  addressCity: string | undefined;
+  addressProvince: string | undefined;
+  addressZipCode: string | undefined;
+}
 
 const EditProfileForm = () => {
   const { data: session } = useSession();
+  const {
+    startEditing,
+    startEditName,
+    startEditPhone,
+    cancelEditing,
+    isEditName,
+    isEditPhone,
+    isEditing,
+    onOpenDialog,
+    setOnOpenDialog,
+  } = useEditProfile();
 
-  const [userData, setUserData] = useState({
-    data: {
-      image: "",
-      name: "",
-      email: "",
-      phone: "",
-      phoneVerified: "",
-    },
+  const { isLoading: isLoading, data } = useQuery({
+    queryKey: ["user", session?.user?.id],
+    queryFn: () => axios.get(`/api/user/${session?.user?.id}`),
+    enabled: !!session?.user?.id,
+  });
+
+  const {
+    isLoading: addressLoading,
+    error: fetchAddressError,
+    data: userAddressData,
+  } = useQuery({
+    queryKey: ["userAddressData", session?.user?.id],
+    queryFn: () =>
+      axios.get(`/api/user/address`).then((response) => {
+        return response.data.data as AddressData;
+      }),
+    enabled: !!session?.user?.id,
   });
 
   const [step, setStep] = useState(0);
-  const [view, setView] = useState(<></>);
-  const labels = ["Data Diri", "Verifikasi Nomor Telepon", "Alamat"];
+  const [view, setView] = useState<React.ReactNode | null>(null);
 
   const handlePrev = () => {
     if (step > 0) setStep((prev) => prev - 1);
   };
 
   const handleNext = () => {
-    if (step < labels.length - 1) setStep((prev) => prev + 1);
+    if (step < 1) setStep((prev) => prev + 1);
   };
-  useEffect(() => {
-    async function getUserData() {
-      const response = await getData(`/api/user/${session?.user?.id}`);
-      setUserData(response);
+
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      setStep(0);
+      setOnOpenDialog(false);
     }
-    if (session?.user) {
-      getUserData();
-    }
-  }, [session]);
+  }
+
+  const initialFormValues = {
+    name: data?.data.data.name,
+    image: data?.data.data.image,
+    phone: data?.data.data.phone,
+  };
 
   useEffect(() => {
-    switch (step) {
-      case 0:
-        setView(<RegisterForm onNext={() => handleNext()} />);
-        break;
-      case 1:
-        setView(
-          <OTPVerification
-            onPrevious={() => handlePrev()}
-            onNext={() => handleNext()}
-          />
-        );
-        break;
+    let newView: React.SetStateAction<React.ReactNode> = null;
+    if (session) {
+      switch (step) {
+        case 0:
+          newView = (
+            <RegisterForm
+              onNext={() => handleNext()}
+              isEditing={isEditing}
+              isEditName={isEditName}
+              isEditPhone={isEditPhone}
+              initialFormValues={initialFormValues}
+              handleCloseDialog={() => setOnOpenDialog(false)}
+            />
+          );
+          break;
+        case 1:
+          newView = (
+            <OTPVerification
+              onPrevious={() => handlePrev()}
+              onNext={() => handleNext()}
+              isEditing={isEditing}
+              isEditPhone={isEditPhone}
+              handleCloseDialog={() => setOnOpenDialog(false)}
+            />
+          );
+          break;
+        default:
+          newView = null;
+      }
     }
-  }, [step]);
+    setView(newView);
+  }, [step, isEditing, isEditPhone, isEditName, onOpenDialog]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="grid place-items-center place-content-center gap-1">
         <div>
           <Image
-            src={userData.data.image}
+            src={data?.data.data.image}
             className="aspect-square rounded-full"
             alt="userImage"
             width={100}
             height={100}
           />
         </div>
-        <div className="flex gap-2 items-center pl-5">
+
+        <div className="flex gap-2 items-center pl-12">
           <h1 className="font-bold text-md sm:text-2xl flex gap-1 items-center">
-            {userData.data.name}
+            {data?.data.data.name}
           </h1>
           <DialogGeneral
             dialogTitle="Edit Profile"
+            onOpen={onOpenDialog}
+            onOpenChange={handleOpenChange}
             dialogContent={<>{view}</>}
-            dialogTrigger={<PencilIcon size={15} className="w-2 sm:w-4" />}
+            dialogTrigger={
+              <Button
+                variant={"ghost"}
+                onClick={() => {
+                  startEditing();
+                  startEditName();
+                  setOnOpenDialog(true);
+                }}
+              >
+                <PencilIcon className="hover:shadow-lg" size={15} />
+              </Button>
+            }
           />
         </div>
 
-        <p className="text-gray-400 text-xs">{userData.data.email}</p>
-        <div className="flex items-center justify-center gap-4">
-          <p className="text-sm sm:text-md">{userData.data.phone}</p>
-
-          {userData.data.phoneVerified ? (
+        <p className="text-gray-400 text-xs">{data?.data.data.email}</p>
+        <div className="flex items-center justify-center gap-4 pl-14">
+          <p className="text-sm sm:text-md">{data?.data.data.phone}</p>
+          <DialogGeneral
+            dialogTitle="Edit Profile"
+            onOpen={onOpenDialog}
+            onOpenChange={handleOpenChange}
+            dialogContent={<>{view}</>}
+            dialogTrigger={
+              <Button
+                variant={"ghost"}
+                onClick={() => {
+                  startEditing();
+                  startEditPhone();
+                  setOnOpenDialog(true);
+                }}
+              >
+                <PencilIcon className="hover:shadow-lg" size={15} />
+              </Button>
+            }
+          />
+        </div>
+        {data?.data.data.phoneVerified ? (
+          <div className="text-xs px-2 py-1 rounded-md text-white bg-green-500 hover:text-white hover:bg-green-500 cursor-default">
+            Verified
+          </div>
+        ) : (
+          <Link href="/register">
             <Button
               variant="outline"
-              className="text-xs px-2 rounded-full text-white bg-green-500 hover:text-white hover:bg-green-500 cursor-default"
+              className="text-xs px-2 py-1 rounded-full text-gray-600 outline-none"
+              onClick={() => cancelEditing()}
             >
-              Verified
+              Verify now
             </Button>
-          ) : (
-            <Link href="/register">
-              <Button
-                variant="outline"
-                className="text-xs px-2 py-1 rounded-full text-gray-600 outline-none"
-              >
-                Verify now
-              </Button>
-            </Link>
-          )}
-        </div>
+          </Link>
+        )}
       </div>
       <div>
-        <div className="grid gap-4 pt-5">
+        <div className="flex items-center gap-4 pt-5">
           <h2 className="text-md sm:text-xl font-bold">Alamat</h2>
-          <div className="flex gap-2 w-full items-center">
-            <p className="font-bold text-xl">1.</p>
-            <Card className="p-5 w-full flex items-center gap-4 sm:gap-10">
-              <MapPinIcon />
-              <CardContent className="p-0 text-sm">
-                <p>Villa Pasimas Blok A no.23</p>
-                <p>Bogor Jawa Barat</p>
-                <p>16119</p>
-              </CardContent>
-            </Card>
+          <div>
+            <DialogGeneral
+              dialogTitle={"Add Address"}
+              dialogContent={
+                <>
+                  <AddressForm />
+                </>
+              }
+              dialogTrigger={
+                <Card
+                  className="rounded-full w-fit block"
+                  onClick={() => cancelEditing()}
+                >
+                  <PlusIcon
+                    className="p-1 hover:bg-gray-100 rounded-full hover:cursor-pointer"
+                    size={30}
+                  />
+                </Card>
+              }
+            />
           </div>
+        </div>
+        <div className="flex gap-4 pt-5 flex-col lg:flex-row items-center w-full justify-evenly">
+          {userAddressData &&
+            Object.entries(userAddressData).map(([key, value], index) => {
+              return (
+                <AddressCard
+                  key={key}
+                  addressCity={value.addressCity}
+                  addressDetail={value.addressDetail}
+                  addressProvince={value.addressProvince}
+                  addressZipCode={value.addressZipCode}
+                  addressId={value.addressId}
+                />
+              );
+            })}
         </div>
       </div>
     </div>

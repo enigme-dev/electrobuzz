@@ -1,9 +1,8 @@
-import { SendMessage } from "@/core/adapters/watzap";
-import addVerification from "../mutations/addVerification";
-import getVerification from "../queries/checkVerification";
+import {SendMessage} from "@/core/adapters/watzap";
+import {addVerification, getVerification} from "@/users/services/VerificationService";
 import dayjs from "dayjs";
-import { VerifyStatuses } from "../types";
-import { createHash } from "crypto";
+import {VerifyStatuses} from "../types";
+import {createHash} from "crypto";
 
 export function generateOTP(length = 6) {
   let digits = "0123456789";
@@ -16,28 +15,31 @@ export function generateOTP(length = 6) {
 }
 
 export async function sendOTP(phoneNumber: string) {
+  let verification, expiredAt;
   const hashed = createHash("sha1").update(phoneNumber).digest("hex");
   const code = generateOTP();
 
   try {
-    const verification = await getVerification(hashed);
-    if (verification && dayjs().diff(verification.createdAt, "minute") < 5) {
+    verification = await getVerification(hashed);
+    expiredAt = dayjs(verification?.createdAt).add(2, "minute")
+    if (verification && dayjs().diff(verification.createdAt, "minute") < 2) {
       return {
         error: "ErrTooManyRequest",
-        expiredDate: dayjs(verification.createdAt).add(5, "minute"),
+        expiredAt,
       };
     }
 
-    await addVerification(hashed, code);
+    verification = await addVerification(hashed, code);
+    expiredAt = dayjs(verification?.createdAt).add(2, "minute")
     await SendMessage(
       phoneNumber,
       `Kode verifikasi akun Electrobuzz anda adalah ${code}`
     );
   } catch (e) {
-    return { error: "ErrUnknown" };
+    return {error: "ErrUnknown"};
   }
 
-  return { data: hashed };
+  return {data: hashed, expiredAt};
 }
 
 export async function checkOTP(verifId: string, code: string) {
@@ -53,7 +55,7 @@ export async function checkOTP(verifId: string, code: string) {
     return VerifyStatuses.Enum.not_found;
   }
 
-  if (dayjs().diff(verification.createdAt, "minute") >= 5) {
+  if (dayjs().diff(verification.createdAt, "minute") >= 2) {
     return VerifyStatuses.Enum.expired;
   }
 

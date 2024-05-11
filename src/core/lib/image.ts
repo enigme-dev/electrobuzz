@@ -1,7 +1,7 @@
-import { createId } from "@paralleldrive/cuid2";
-import { MinioClient } from "../adapters/minio";
-import { Stream } from "stream";
-import { ErrorCode } from "@/core/lib/errors";
+import {createId} from "@paralleldrive/cuid2";
+import {MinioClient} from "../adapters/minio";
+import {Stream} from "stream";
+import {ErrorCode} from "@/core/lib/errors";
 
 interface UploadOptions {
   filename?: string;
@@ -16,19 +16,26 @@ export const AllowedDataType = [
 ];
 
 export async function uploadImg(image: string, options?: UploadOptions) {
-  const parts = image.split(";");
-  const dataType = parts[0].split(":")[1].replace("image/", "");
-  const imageData = parts[1].split(",")[1];
-  const imageBuff = Buffer.from(imageData, "base64")
+  let dataType, imageData, filename, imageBuff = Buffer.from(image);
 
-  if (parts.length !== 2) throw new Error(ErrorCode.ErrImgInvalidDataURL);
+  if (options?.bucket != "vault") {
+    try {
+      dataType = image.substring("data:image/".length, image.indexOf(";base64"))
+      imageData = image.replace(/^data:image\/\w+;base64,/, "")
+    } catch (e) {
+      throw new Error(ErrorCode.ErrImgInvalidDataURL);
+    }
 
-  if (!AllowedDataType.includes(dataType)) {
-    throw new Error(ErrorCode.ErrImgInvalidImageType);
+    imageBuff = Buffer.from(imageData, "base64")
+
+    if (!AllowedDataType.includes(dataType)) {
+      throw new Error(ErrorCode.ErrImgInvalidImageType);
+    }
   }
 
   const bucket = options?.bucket ?? "assets";
-  const filename = (options?.filename ?? createId()) + `.${dataType}`;
+  filename = (options?.filename ?? createId());
+  if (dataType) filename += "." + dataType;
 
   try {
     await MinioClient.putObject(bucket, filename, imageBuff);

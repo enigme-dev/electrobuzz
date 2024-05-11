@@ -8,13 +8,15 @@ import {
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/core/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
-import getPrivateProfile from "@/users/queries/getPrivateProfile";
+import { getPrivateProfile } from "@/users/services/UserService";
 
 interface IUser extends DefaultUser {
   isAdmin?: boolean;
 }
+
 declare module "next-auth" {
   interface User extends IUser {}
+
   interface Session {
     user?: User;
   }
@@ -32,10 +34,15 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         const profile = await getPrivateProfile(user.id);
         token.isAdmin = profile?.isAdmin;
+      }
+
+      if (trigger === "update") {
+        if (session?.name) token.name = session.name;
+        if (session?.image) token.image = session.image;
       }
 
       return token;

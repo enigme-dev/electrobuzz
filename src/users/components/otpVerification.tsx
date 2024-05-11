@@ -18,50 +18,102 @@ import {
 } from "@/core/components/ui/input-otp";
 import { Button } from "@/core/components/ui/button";
 import { useForm } from "react-hook-form";
-import { getData, postData } from "@/core/lib/service";
 import { useToast } from "@/core/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
-import { useCountdown } from "../context/countdownContext";
+import axios from "axios";
+import { useCountdown } from "@/core/hooks/useCountdown";
+
+import { useLocalStorage } from "@/core/hooks/useLocalStorage";
+import { useSession } from "next-auth/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface OTPProps {
   onNext: Function;
   onPrevious: Function;
+  isEditing?: boolean;
+  isEditPhone?: boolean;
+  handleCloseDialog?: Function;
 }
-const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
+const OTPVerification = ({
+  onNext,
+  onPrevious,
+  handleCloseDialog,
+  isEditing,
+}: OTPProps) => {
   const { countdown, setIsCountdown, isCountdown, setCountdown } =
     useCountdown();
+  const { data: session } = useSession();
+  const [verifId, setVerifId] = useLocalStorage("verifId", "");
+  const queryClient = useQueryClient();
 
   const { toast } = useToast();
 
   const OTPform = useForm<VerifyOTPModel>({
     resolver: zodResolver(VerifyOTPSchema),
     defaultValues: {
+      code: "",
       verifId: "",
     },
   });
 
+  const { mutate: updateNumberStatus, isPending: updateLoading } = useMutation({
+    mutationFn: () => axios.get(`/api//user/${session?.user?.id}`),
+    onSuccess: () => {
+      toast({ title: "Verifikasi Berhasil!" });
+      queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
+    },
+  });
+
+  async function handleCountdown(response: any) {
+    setIsCountdown(true);
+
+    let expiredTime;
+
+    if (
+      response &&
+      response.data &&
+      response.data.data &&
+      response.data.data.expiredAt
+    ) {
+      expiredTime = new Date(response.data.data.expiredAt);
+    } else if (
+      response &&
+      response.response &&
+      response.response.data &&
+      response.response.data.data &&
+      response.response.data.data.expiredAt
+    ) {
+      expiredTime = new Date(response.response.data.data.expiredAt);
+    } else {
+      console.error("Invalid response format");
+      return;
+    }
+
+    const currentTime = new Date();
+
+    const timeDifference = expiredTime.getTime() - currentTime.getTime();
+    const minutesDifference = Math.floor(timeDifference / 1000);
+    setCountdown(minutesDifference);
+  }
+
   async function getOTP() {
-    try {
-      setCountdown(300);
-      setIsCountdown(true);
-      const response = await getData(`/api/user/otp`);
-      handleError(response);
-      OTPform.setValue("verifId", response.data.verifId);
-    } catch (error) {
-      console.error(error);
-    }
+    await axios
+      .get(`/api/user/otp`)
+      .then((response) => {
+        handleCountdown(response);
+        setVerifId(response.data.data.verifId);
+      })
+      .catch((error) => {
+        handleCountdown(error);
+        handleError(error);
+      });
   }
 
-  async function checkOTPValid(values: VerifyOTPModel) {
-    const response = await postData("/api/user/otp", values);
-    handleError(response);
-    if (response.status === 200 || response.data.status === "ErrOTPVerified") {
-      onNext();
-    }
-  }
+  useEffect(() => {
+    OTPform.setValue("verifId", verifId);
+  }, [verifId, OTPform]);
 
-  function handleError(response: any) {
-    switch (response.data.status) {
+  function handleError(error: any) {
+    switch (error.response.data.status) {
       case "ErrOTPIncorrect":
         toast({
           title: "OTP yang anda masukan salah",
@@ -77,6 +129,12 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
       case "ErrUnknown":
         toast({
           title: "Server unavailable",
+          variant: "destructive",
+        });
+        break;
+      case "ErrOTPUnknown":
+        toast({
+          title: "OTP Tidak dikenal",
           variant: "destructive",
         });
         break;
@@ -99,6 +157,12 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
           variant: "destructive",
         });
         break;
+      case "ErrTooManyRequest":
+        toast({
+          title: "Mohon menunggu selama 2 menit",
+          variant: "destructive",
+        });
+        break;
       default:
     }
   }
@@ -109,6 +173,25 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async function checkOTPValid(values: VerifyOTPModel) {
+    await axios
+      .post("/api/user/otp", values)
+      .then((response) => {
+        if (response.data.status === "phone verified successfully") {
+          onNext();
+          if (isEditing) {
+            if (handleCloseDialog) {
+              handleCloseDialog();
+            }
+            updateNumberStatus();
+          }
+        }
+      })
+      .catch((error) => {
+        handleError(error);
+      });
   }
 
   return (
@@ -137,9 +220,7 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
                   <Button
                     variant="link"
                     type="button"
-                    onClick={() => {
-                      getOTP();
-                    }}
+                    onClick={() => getOTP()}
                     className="flex gap-5 active:no-underline hover:no-underline"
                     disabled={isCountdown}
                   >
@@ -163,7 +244,9 @@ const OTPVerification = ({ onNext, onPrevious }: OTPProps) => {
             )}
           />
           <div className="flex justify-between pt-5">
-            <Button onClick={() => onPrevious()}>Back</Button>
+            <Button onClick={() => onPrevious()} type="button">
+              Back
+            </Button>
             <Button
               type="submit"
               variant="secondary"

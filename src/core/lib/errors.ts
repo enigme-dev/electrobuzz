@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 interface ErrorResponse {
   status: ErrorCodeStrings;
@@ -27,6 +27,9 @@ export enum ErrorCode {
   ErrImgInvalidImageType = "invalid image type",
   ErrImgInvalidDataURL = "invalid data URL format",
   ErrImgFailedUpload = "failed to upload image",
+
+  // album
+  ErrAlbumQuotaExceeded = "album cannot contain more than 4 photos"
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;
@@ -34,16 +37,16 @@ export type ErrorCodeStrings = keyof typeof ErrorCode;
 export function buildErr(
   code: ErrorCodeStrings,
   status: number,
-  message?: string | z.ZodError
+  message?: any
 ) {
-  const err: ErrorResponse = { status: code, data: ErrorCode[code] };
+  const err: ErrorResponse = {status: code, data: ErrorCode[code]};
   if (message) {
-    if (typeof message === "string") {
-      err.data = message;
-    } else {
+    if (message instanceof z.ZodError) {
       err.data = message.flatten().fieldErrors;
+    } else {
+      err.data = message;
     }
   }
 
-  return Response.json(err, { status: status });
+  return Response.json(err, {status: status});
 }

@@ -1,21 +1,15 @@
 import {buildErr, ErrorCode} from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
-import { buildRes } from "@/core/lib/utils";
-import addMerchantAlbums from "@/merchantAlbums/mutations/addMerchantAlbums";
-import getMerchantAlbums from "@/merchantAlbums/queries/getMerchantAlbums";
-import { AlbumsSchema } from "@/merchantAlbums/types";
-import { removeImagePrefix } from "@/merchants/lib/utils";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {buildRes} from "@/core/lib/utils";
+import {addMerchantAlbums} from "@/merchants/services/MerchantAlbumService";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
+import {AlbumsSchema} from "@/merchants/types";
+import {Prisma} from "@prisma/client";
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req });
-  let body,
-    photos: string[] = [],
-    merchant;
+  let body;
+  const token = await getToken({req});
 
   try {
     body = await req.json();
@@ -34,45 +28,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    merchant = await getMerchant(userId.data);
+    await addMerchantAlbums(userId.data, data.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr(
-          "ErrForbidden",
-          403,
-          "user is not registered as merchant"
-        );
+      if (e.code === "P2003") {
+        return buildErr("ErrForbidden", 403, "user is not registered as merchant")
       }
     }
-    return buildErr("ErrUnknown", 500);
-  }
-
-  try {
-    const merchantAlbum = await getMerchantAlbums(merchant.merchantId);
-    const albumQuota = 4 - merchantAlbum.length;
-    if (albumQuota < data.data.albums.length) {
-      return buildErr(
-        "ErrConflict",
-        409,
-        "album cannot contain more than 4 photos"
-      );
-    }
-  } catch (e) {
-    return buildErr("ErrUnknown", 500);
-  }
-
-  try {
-    for (const album of data.data.albums) {
-      const imageUrl = await uploadImg(album.albumPhotoUrl);
-      photos.push(imageUrl);
-    }
-
-    await addMerchantAlbums(merchant.merchantId, photos);
-  } catch (e) {
-    photos.map((photo) => {
-      deleteImg(removeImagePrefix(photo));
-    });
 
     if (e instanceof Error) {
       if (e.message === ErrorCode.ErrImgInvalidDataURL) {
@@ -82,10 +44,14 @@ export async function POST(req: NextRequest) {
       if (e.message === ErrorCode.ErrImgInvalidImageType) {
         return buildErr("ErrImgInvalidImageType", 400);
       }
+
+      if (e.message === ErrorCode.ErrAlbumQuotaExceeded) {
+        return buildErr("ErrAlbumQuotaExceeded", 409, e.message);
+      }
     }
 
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ status: "uploaded successfully", data: photos });
+  return buildRes({status: "albums uploaded successfully"});
 }

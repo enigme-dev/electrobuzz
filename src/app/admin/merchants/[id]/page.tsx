@@ -1,21 +1,21 @@
 "use client";
 
 import Loader from "@/core/components/loader";
-import { MerchantIdentitiesSchema } from "@/merchantIdentities/types";
-import { useQueries } from "@tanstack/react-query";
+import {useQueries} from "@tanstack/react-query";
 import axios from "axios";
-import { ChangeEvent } from "react";
-import { z } from "zod";
+import {ChangeEvent} from "react";
+import {z} from "zod";
+import {MerchantIdentitiesSchema} from "@/merchants/types";
 
-const MerchantIdentityResponse = z.object({ data: MerchantIdentitiesSchema });
+const MerchantIdentityResponse = z.object({data: MerchantIdentitiesSchema});
 type MerchantIdentityResponse = z.infer<typeof MerchantIdentityResponse>;
 
-export default function Page({ params }: Readonly<{ params: { id: string } }>) {
+export default function Page({params}: Readonly<{ params: { id: string } }>) {
   const handleSelect = (option: ChangeEvent<HTMLSelectElement>) => {
     axios.patch(
       `/api/admin/merchants/${params.id}`,
-      { identityStatus: option.target.value },
-      { withCredentials: true }
+      {identityStatus: option.target.value},
+      {withCredentials: true}
     );
   };
 
@@ -24,9 +24,9 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
       {
         queryKey: ["merchantIdentity", params.id],
         queryFn: async () => {
-          const { data } = await axios.get<MerchantIdentityResponse>(
+          const {data} = await axios.get<MerchantIdentityResponse>(
             `/api/admin/merchants/${params.id}`,
-            { withCredentials: true }
+            {withCredentials: true}
           );
           return data;
         },
@@ -34,7 +34,7 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
       {
         queryKey: ["merchant", params.id],
         queryFn: async () => {
-          const { data } = await axios.get(`/api/merchant/${params.id}`, {
+          const {data} = await axios.get(`/api/merchant/${params.id}`, {
             withCredentials: true,
           });
           return data;
@@ -45,7 +45,7 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
 
   const isLoading = merchant.some((query) => query.isLoading);
   if (isLoading) {
-    return <Loader />;
+    return <Loader/>;
   }
 
   return (
@@ -67,10 +67,10 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
         </div>
       </div>
       <div className="grid grid-cols-2 justify-items-center">
-        <img src={merchant[0]?.data?.data.identityKtp} alt="ktp" />
-        <img src={merchant[0]?.data?.data.identitySkck} alt="skck" />
-        {merchant[0]?.data?.data.identityCert && (
-          <img src={merchant[0]?.data.data.identityCert} alt="cert" />
+        <img src={merchant[0]?.data?.data.identityKTP} alt="ktp"/>
+        <img src={merchant[0]?.data?.data.identitySKCK} alt="skck"/>
+        {merchant[0]?.data?.data.identityDocs && (
+          <img src={merchant[0]?.data.data.identityDocs} alt="docs"/>
         )}
       </div>
     </div>

@@ -7,7 +7,7 @@ import PopularMerchants from "@/popular-merchants/container/popularMerchants";
 
 export default function Home() {
   return (
-    <main className="px-4 pb-20 sm:py-16 ">
+    <main className="px-4 pb-20 sm:py-16">
       <section className="wrapper flex justify-center">
         <Banner />
       </section>

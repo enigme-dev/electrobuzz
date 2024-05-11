@@ -3,7 +3,6 @@
 import FormLoader from "@/core/components/loader/formLoader";
 import { Toaster } from "@/core/components/ui/toaster";
 import { getData } from "@/core/lib/service";
-import { CountdownProvider } from "@/users/context/countdownContext";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -35,11 +34,9 @@ export default function RegisterLayout({
   if (!data?.data?.phoneVerified && userId)
     return (
       <div>
-        <CountdownProvider>
-          {" "}
-          {children}
-          <Toaster />
-        </CountdownProvider>
+        {" "}
+        {children}
+        <Toaster />
       </div>
     );
   return router.push("/");

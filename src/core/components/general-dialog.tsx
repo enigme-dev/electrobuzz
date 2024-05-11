@@ -15,6 +15,8 @@ interface DialogGeneralProps {
   dialogTitle: string;
   dialogContent: ReactNode;
   dialogFooterContent?: ReactNode;
+  onOpenChange?: (open: boolean) => void;
+  onOpen?: boolean;
 }
 
 export function DialogGeneral({
@@ -22,11 +24,14 @@ export function DialogGeneral({
   dialogTitle,
   dialogContent,
   dialogFooterContent,
+  onOpenChange,
+  onOpen,
 }: DialogGeneralProps) {
   return (
-    <Dialog>
+    <Dialog open={onOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+
+      <DialogContent className="sm:max-w-[425px] max-w-[325px] rounded-lg">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>

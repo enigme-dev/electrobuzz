@@ -1,24 +1,15 @@
 import {buildErr, ErrorCode} from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
-import { encrypt } from "@/core/lib/security";
-import { buildRes } from "@/core/lib/utils";
-import addMerchantIdentities from "@/merchantIdentities/mutations/addMerchantIdentities";
-import getIdentitiesByMerchantId from "@/merchantIdentities/queries/getIdentitiesByMerchantId";
-import {
-  IdentityStatuses,
-  MerchantIdentitiesSchema,
-} from "@/merchantIdentities/types";
-import getMerchant from "@/merchants/queries/getMerchant";
-import { Prisma } from "@prisma/client";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
-import { z } from "zod";
+import {buildRes} from "@/core/lib/utils";
+import {Prisma} from "@prisma/client";
+import {getToken} from "next-auth/jwt";
+import {NextRequest} from "next/server";
+import {z} from "zod";
+import {MerchantIdentitiesSchema} from "@/merchants/types";
+import {addMerchantIdentity} from "@/merchants/services/MerchantIdentityService";
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req });
-  let body,
-    images = [],
-    merchant;
+  const token = await getToken({req});
+  let body, merchant;
 
   try {
     body = await req.json();
@@ -37,8 +28,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    merchant = await getMerchant(userId.data);
+    await addMerchantIdentity(userId.data, input.data);
   } catch (e) {
+    console.error(e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
         return buildErr(
@@ -48,52 +40,6 @@ export async function POST(req: NextRequest) {
         );
       }
     }
-    return buildErr("ErrUnknown", 500);
-  }
-
-  try {
-    const merchantIdentities = await getIdentitiesByMerchantId(
-      merchant.merchantId
-    );
-    if (merchantIdentities) {
-      return buildErr(
-        "ErrConflict",
-        409,
-        "identities has been submitted and being verified"
-      );
-    }
-  } catch (e) {
-    return buildErr("ErrUnknown", 500);
-  }
-
-  input.data.identityStatus = IdentityStatuses.Enum.pending;
-  input.data.merchantId = merchant.merchantId;
-
-  try {
-    const encryptedKtp = await encrypt(input.data.identityKTP);
-    input.data.identityKTP = await uploadImg(encryptedKtp, {
-      filename: `ktp-${merchant.merchantId}`,
-      bucket: "vault",
-    });
-    images.push(input.data.identityKTP);
-    input.data.identitySKCK = await uploadImg(input.data.identitySKCK, {
-        filename: `skck-${merchant.merchantId}`,
-        bucket: "vault",
-      }
-    );
-    images.push(input.data.identitySKCK);
-    if (input.data.identityDocs) {
-      input.data.identityDocs = await uploadImg(input.data.identityDocs, {
-          filename: `docs-${merchant.merchantId}`,
-          bucket: "vault",
-        }
-      );
-      images.push(input.data.identityDocs);
-    }
-  } catch (e) {
-    images.map(async (image) => {
-      await deleteImg(image);
-    });
 
     if (e instanceof Error) {
       if (e.message === ErrorCode.ErrImgInvalidDataURL) {
@@ -103,16 +49,18 @@ export async function POST(req: NextRequest) {
       if (e.message === ErrorCode.ErrImgInvalidImageType) {
         return buildErr("ErrImgInvalidImageType", 400);
       }
+
+      if (e.message === ErrorCode.ErrConflict) {
+        return buildErr(
+          "ErrConflict",
+          409,
+          "identities has been submitted and being verified"
+        );
+      }
     }
 
     return buildErr("ErrUnknown", 500);
   }
 
-  try {
-    await addMerchantIdentities(input.data);
-  } catch (e) {
-    return buildErr("ErrUnknown", 500);
-  }
-
-  return buildRes({ status: "identities submitted successfully" });
+  return buildRes({status: "identities submitted successfully"});
 }

@@ -42,8 +42,8 @@ export const ResponseSchema = z.object({
 export const IdParam = z.object({
   params: z.object({
     id: z.string().cuid(),
-  })
-})
+  }),
+});
 
 export type IdParam = z.infer<typeof IdParam>;
 
