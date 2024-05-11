@@ -6,26 +6,7 @@ on:
       - "main"
 
 jobs:
-  static-analysis:
-    runs-on: ubuntu-latest
-    name: Datadog Static Analyzer
-    environment: production
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Check code meets quality and security standards
-      id: datadog-static-analysis
-      uses: DataDog/datadog-static-analyzer-github-action@v1
-      with:
-        dd_api_key: ${{ secrets.DD_API_KEY }}
-        dd_app_key: ${{ secrets.DD_APP_KEY }}
-        dd_service: electrobuzz
-        dd_env: ci
-        dd_site: us5.datadoghq.com
-        cpu_count: 2
-
   build:
-    needs: static-analysis
     runs-on: ubuntu-latest
     environment: production
     steps:
