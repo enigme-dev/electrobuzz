@@ -2,20 +2,18 @@
 import { Button } from "@/core/components/ui/button";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { getData, updateData } from "@/core/lib/service";
 import Image from "next/image";
-import { Card, CardContent } from "@/core/components/ui/card";
-import { MapPinIcon, PencilIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { Card } from "@/core/components/ui/card";
+import { PencilIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import RegisterForm from "@/users/components/registerForm";
 import OTPVerification from "@/users/components/otpVerification";
 import useEditProfile from "../hooks/useEditProfiles";
 import AddressForm from "@/users/components/addressForm";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loader from "@/core/components/loader";
-import { useToast } from "@/core/components/ui/use-toast";
 import AddressCard from "./addressCard";
 
 interface AddressData {
@@ -26,8 +24,8 @@ interface AddressData {
   addressZipCode: string | undefined;
 }
 
-const EditProfileForm = () => {
-  const { data: session } = useSession();
+const EditProfile = () => {
+  const { data: session, update } = useSession();
   const {
     startEditing,
     startEditName,
@@ -208,7 +206,7 @@ const EditProfileForm = () => {
               dialogTitle={"Add Address"}
               dialogContent={
                 <>
-                  <AddressForm />
+                  <AddressForm isEditing={false} />
                 </>
               }
               dialogTrigger={
@@ -245,4 +243,4 @@ const EditProfileForm = () => {
   );
 };
 
-export default EditProfileForm;
+export default EditProfile;

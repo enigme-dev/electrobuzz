@@ -225,6 +225,11 @@ const OTPVerification = ({
                     disabled={isCountdown}
                   >
                     Get Code
+                    {!isCountdown && (
+                      <p className="text-gray-400 text-xs">
+                        tekan &quot;Get Code&quot;untuk <br /> mendapatkan kode
+                      </p>
+                    )}
                     <div className={countdown === 0 ? "hidden" : "block"}>
                       {" "}
                       {countdown > 0 ? (

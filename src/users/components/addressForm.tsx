@@ -70,7 +70,6 @@ const AddressForm = ({
       }
     },
     onError: (error: any) => {
-      console.log(error.response.data.status);
       if (error.response.data.status === "ErrValidation") {
         toast({
           title: "Tambah alamat gagal!",

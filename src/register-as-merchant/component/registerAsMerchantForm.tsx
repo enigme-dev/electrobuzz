@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,90 +15,13 @@ import {
 import { Button } from "@/core/components/ui/button";
 import { Input } from "@/core/components/ui/input";
 import { useToast } from "@/core/components/ui/use-toast";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/core/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/core/components/ui/calendar";
-import { cn } from "@/core/lib/shadcn";
-import { format } from "date-fns";
+
+import { RegisterMerchantSchema } from "@/merchants/types";
 import MultipleSelector, { Option } from "@/core/components/multi-select";
-
-const optionSchema = z.object({
-  label: z.string(),
-  value: z.string(),
-  disable: z.boolean().optional(),
-});
-
-const FormSchema = z.object({
-  merchantName: z.string({
-    required_error: "tolong deskripsikan keluhanmu",
-  }),
-  merchantCategory: z.array(optionSchema).min(1),
-  merchantProvince: z.string({
-    required_error: "tolong isi provinsimu",
-  }),
-  merchantCity: z.string({
-    required_error: "tolong isi kotamu",
-  }),
-  merchantLat: z.string({
-    required_error: "tolong isi alamatmu",
-  }),
-  merchantLong: z.string({
-    required_error: "tolong isi alamatmu",
-  }),
-
-  merchantDesc: z.string({
-    required_error: "tolong deskripsikan tentang tokomu",
-  }),
-  merchantPhotoUrl: z.string().refine(
-    (value) => {
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto bannermu harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  merchantIdentity: z.object({
-    identityKTP: z.string().refine(
-      (value) => {
-        const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-        return allowedExtensions.test(value);
-      },
-      {
-        message: "Foto bannermu harus berupa file JPG atau PNG",
-        path: ["foto"],
-      }
-    ),
-    identitySKCK: z.string().refine(
-      (value) => {
-        const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-        return allowedExtensions.test(value);
-      },
-      {
-        message: "Foto bannermu harus berupa file JPG atau PNG",
-        path: ["foto"],
-      }
-    ),
-    identityDocs: z.string().refine(
-      (value) => {
-        const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-        return allowedExtensions.test(value);
-      },
-      {
-        message: "Foto bannermu harus berupa file JPG atau PNG",
-        path: ["foto"],
-      }
-    ),
-  }),
-});
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 
 interface RegisterAsMerchantFormProps {
-  onPrevious: Function;
   onNext: Function;
 }
 
@@ -113,26 +35,26 @@ const OPTIONS: Option[] = [
   { label: "Microwave", value: "Microwave" },
 ];
 
-const RegisterAsMerchantForm = ({
-  onNext,
-  onPrevious,
-}: RegisterAsMerchantFormProps) => {
+const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof RegisterMerchantSchema>>({
+    resolver: zodResolver(RegisterMerchantSchema),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    onNext();
+  const { mutate: addMerchantData, isPending: updateLoading } = useMutation({
+    mutationFn: (values: RegisterMerchantSchema) =>
+      axios.post(`/api/merchant/identity`, values),
+    onSuccess: () => {
+      toast({
+        title: "Formulir anda telah terkirim!",
+        description: "mohon menunggu konfirmasi admin",
+      });
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof RegisterMerchantSchema>) {
+    addMerchantData(data);
   }
 
   return (
@@ -161,8 +83,20 @@ const RegisterAsMerchantForm = ({
                 <FormLabel>Kategori</FormLabel>
                 <FormControl>
                   <MultipleSelector
-                    value={field.value}
-                    onChange={field.onChange}
+                    value={
+                      field.value
+                        ? field.value.map((value) => ({
+                            label: value,
+                            value,
+                          }))
+                        : []
+                    }
+                    onChange={(selectedOptions) => {
+                      const selectedValues = selectedOptions.map(
+                        (option) => option.value
+                      );
+                      field.onChange(selectedValues);
+                    }}
                     defaultOptions={OPTIONS}
                     hidePlaceholderWhenSelected
                     placeholder="Pilih kategorimu"

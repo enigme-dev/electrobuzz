@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 
 export const IdentityStatuses = z.enum(["pending", "verified", "rejected"]);
 
@@ -38,7 +38,11 @@ export const MerchantSchema = z.object({
   merchantProvince: z.string(),
   merchantLat: z.number(),
   merchantLong: z.number(),
-  merchantCategory: z.string().array(),
+  merchantCategory: z
+    .array(z.string())
+    .refine((value) => value.some((item) => item), {
+      message: "Pilih satu kategori",
+    }),
   merchantRating: z.number().optional(),
   merchantReviewCt: z.number().int().optional(),
   merchantVerified: z.boolean().optional(),

@@ -40,7 +40,7 @@ const FormSchema = z.object({
   foto: z.string().refine(
     (value) => {
       // Regular expression to match JPG and PNG file extensions
-      const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+      const allowedExtensions = /\.(jpg|jpeg|png|webp)$/i;
       return allowedExtensions.test(value);
     },
     {

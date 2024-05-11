@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import RegisterAsMerchantStart from "../component/registerAsMerchantStart";
 import RegisterAsMerchantForm from "../component/registerAsMerchantForm";
-import RegisterAsMerchantTermsAndConditions from "../component/registerAsMerchantTermsAndConditions";
+import { RegisterAsMerchantTermsAndConditions } from "../component/registerAsMerchantTermsAndConditions";
 
 export default function Page() {
   const { data: session } = useSession();
@@ -33,12 +33,7 @@ export default function Page() {
         );
         break;
       case 2:
-        setView(
-          <RegisterAsMerchantForm
-            onPrevious={() => handlePrev()}
-            onNext={() => handleNext()}
-          />
-        );
+        setView(<RegisterAsMerchantForm onNext={() => handleNext()} />);
         break;
     }
   }, [step]);
