@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const IdentityStatuses = z.enum(["pending", "verified", "rejected"]);
 
-export type IdentityStatuses = z.infer<typeof IdentityStatuses>;
+export type TIdentityStatuses = z.infer<typeof IdentityStatuses>;
 
 export const MerchantIdentitiesSchema = z.object({
   identityKTP: z.string(),
@@ -12,13 +12,13 @@ export const MerchantIdentitiesSchema = z.object({
   merchantId: z.string().optional(),
 });
 
-export type MerchantIdentitiesModel = z.infer<typeof MerchantIdentitiesSchema>;
+export type TMerchantIdentityModel = z.infer<typeof MerchantIdentitiesSchema>;
 
 export const EditMerchantIdentitySchema = z.object({
   identityStatus: IdentityStatuses,
 });
 
-export type EditMerchantIdentityModel = z.infer<
+export type TEditMerchantIdentitySchema = z.infer<
   typeof EditMerchantIdentitySchema
 >;
 
@@ -27,9 +27,9 @@ export const IdentitiesParam = z.object({
   id: z.string().optional(),
 });
 
-export type IdentitiesParam = z.infer<typeof IdentitiesParam>;
+export type TIdentitiesParam = z.infer<typeof IdentitiesParam>;
 
-export const MerchantSchema = z.object({
+export const MerchantModel = z.object({
   merchantId: z.string().cuid().optional(),
   merchantName: z.string(),
   merchantDesc: z.string(),
@@ -48,19 +48,17 @@ export const MerchantSchema = z.object({
   merchantVerified: z.boolean().optional(),
   merchantAvailable: z.boolean().optional(),
   merchantCreatedAt: z.date().optional(),
-  merchantIdentity: MerchantIdentitiesSchema.pick({
-    identityStatus: true,
-  }).optional(),
+  merchantIdentity: MerchantIdentitiesSchema.optional(),
   userId: z.string().cuid().optional(),
 });
 
-export type MerchantModel = z.infer<typeof MerchantSchema>;
+export type TMerchantModel = z.infer<typeof MerchantModel>;
 
-export const RegisterMerchantSchema = MerchantSchema.extend({
+export const RegisterMerchantSchema = MerchantModel.extend({
   merchantIdentity: MerchantIdentitiesSchema,
 });
 
-export type RegisterMerchantSchema = z.infer<typeof RegisterMerchantSchema>;
+export type TRegisterMerchantSchema = z.infer<typeof RegisterMerchantSchema>;
 
 export const MerchantAlbumSchema = z.object({
   merchantAlbumId: z.string().cuid().optional(),
@@ -68,7 +66,7 @@ export const MerchantAlbumSchema = z.object({
   merchantId: z.string().cuid().optional(),
 });
 
-export type MerchantAlbumModel = z.infer<typeof MerchantAlbumSchema>;
+export type TMerchantAlbumSchema = z.infer<typeof MerchantAlbumSchema>;
 
 export const AlbumsSchema = z.object({
   albums: MerchantAlbumSchema.array()
@@ -76,4 +74,4 @@ export const AlbumsSchema = z.object({
     .max(4, "album must between 1 to 4 photos"),
 });
 
-export type AlbumsSchema = z.infer<typeof AlbumsSchema>;
+export type TAlbumsSchema = z.infer<typeof AlbumsSchema>;

@@ -1,7 +1,11 @@
-import {BaseRepository} from "@/core/repositories/BaseRepository";
-import {SearchParams} from "@/core/lib/utils";
-import {RegisterMerchantSchema} from "@/merchants/types";
-import {AlgoliaClient} from "@/core/adapters/algolia";
+import { BaseRepository } from "@/core/repositories/BaseRepository";
+import { SearchParams } from "@/core/lib/utils";
+import { MerchantModel, TRegisterMerchantSchema } from "@/merchants/types";
+import { AlgoliaClient } from "@/core/adapters/algolia";
+import { z } from "zod";
+
+export const UpdateMerchantSchema = MerchantModel.partial();
+export type UpdateMerchantSchema = z.infer<typeof UpdateMerchantSchema>;
 
 export class MerchantRepository extends BaseRepository {
   private static readonly index = AlgoliaClient.initIndex("merchants");
@@ -17,7 +21,7 @@ export class MerchantRepository extends BaseRepository {
     });
   }
 
-  static create(userId: string, data: RegisterMerchantSchema) {
+  static create(userId: string, data: TRegisterMerchantSchema) {
     return this.db.merchant.create({
       data: {
         merchantId: userId,
@@ -69,13 +73,6 @@ export class MerchantRepository extends BaseRepository {
           mode: "insensitive",
         },
       },
-      include: {
-        merchantIdentity: {
-          select: {
-            identityStatus: true,
-          },
-        },
-      },
     });
   }
 
@@ -86,8 +83,30 @@ export class MerchantRepository extends BaseRepository {
       },
       include: {
         merchantAlbums: {
-          select: {merchantAlbumId: true, albumPhotoUrl: true},
+          select: { merchantAlbumId: true, albumPhotoUrl: true },
         },
+      },
+    });
+  }
+
+  static update(id: string, data: UpdateMerchantSchema) {
+    return this.db.merchant.update({
+      where: {
+        merchantId: id,
+      },
+      data: {
+        merchantName: data.merchantName,
+        merchantDesc: data.merchantDesc,
+        merchantPhotoUrl: data.merchantPhotoUrl,
+        merchantCity: data.merchantCity,
+        merchantProvince: data.merchantProvince,
+        merchantLat: data.merchantLat,
+        merchantLong: data.merchantLong,
+        merchantCategory: data.merchantCategory,
+        merchantRating: data.merchantRating,
+        merchantReviewCt: data.merchantReviewCt,
+        merchantVerified: data.merchantVerified,
+        merchantAvailable: data.merchantAvailable,
       },
     });
   }

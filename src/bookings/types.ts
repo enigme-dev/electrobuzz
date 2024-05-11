@@ -23,4 +23,4 @@ export const BookingModel = z.object({
   merchantId: z.string().cuid().optional(),
 });
 
-export type BookingModel = z.infer<typeof BookingModel>;
+export type TBookingModel = z.infer<typeof BookingModel>;

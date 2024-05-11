@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -16,7 +15,10 @@ import { Button } from "@/core/components/ui/button";
 import { Input } from "@/core/components/ui/input";
 import { useToast } from "@/core/components/ui/use-toast";
 
-import { RegisterMerchantSchema } from "@/merchants/types";
+import {
+  RegisterMerchantSchema,
+  TRegisterMerchantSchema,
+} from "@/merchants/types";
 import MultipleSelector, { Option } from "@/core/components/multi-select";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
@@ -38,12 +40,12 @@ const OPTIONS: Option[] = [
 const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof RegisterMerchantSchema>>({
+  const form = useForm<TRegisterMerchantSchema>({
     resolver: zodResolver(RegisterMerchantSchema),
   });
 
   const { mutate: addMerchantData, isPending: updateLoading } = useMutation({
-    mutationFn: (values: RegisterMerchantSchema) =>
+    mutationFn: (values: TRegisterMerchantSchema) =>
       axios.post(`/api/merchant/identity`, values),
     onSuccess: () => {
       toast({
@@ -53,7 +55,7 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof RegisterMerchantSchema>) {
+  function onSubmit(data: TRegisterMerchantSchema) {
     addMerchantData(data);
   }
 
