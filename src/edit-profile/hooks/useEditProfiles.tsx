@@ -4,7 +4,6 @@ import { getData, updateData } from "@/core/lib/service";
 import { UpdateProfileModel } from "@/users/types";
 
 const useEditProfile = () => {
-  const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [isEditName, setIsEditName] = useState(false);
   const [isEditPhone, setIsEditPhone] = useState(false);

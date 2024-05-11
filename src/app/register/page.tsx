@@ -38,7 +38,6 @@ export default function Page() {
             onNext={() => handleNext()}
             isEditPhone={false}
             isEditing={false}
-            initialOTPFormValue={{ verifId: "", code: "" }}
           />
         );
         break;

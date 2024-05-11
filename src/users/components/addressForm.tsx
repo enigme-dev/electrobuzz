@@ -16,21 +16,90 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { AddressModel, AddressSchema } from "@/users/types";
+import { AddressModel, AddressSchema, UpdateProfileModel } from "@/users/types";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AddressProps {
-  onPrevious: Function;
+  onPrevious?: Function;
   isEditing?: boolean;
+  initialAddressData?: any;
+  handleOnOpenDialog?: Function;
 }
 
-const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
+const AddressForm = ({
+  onPrevious,
+  isEditing,
+  initialAddressData,
+  handleOnOpenDialog,
+}: AddressProps) => {
   const router = useRouter();
-
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
   const [provinceOptions, setProvinceOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
 
-  const Addressform = useForm<AddressModel>({
+  const AddressForm = useForm<AddressModel>({
     resolver: zodResolver(AddressSchema),
+    defaultValues: {
+      addressId: isEditing ? initialAddressData?.addressId : undefined,
+      addressCity: "",
+      addressProvince: "",
+      addressDetail: isEditing ? initialAddressData?.addressDetail : "",
+      addressZipCode: isEditing ? initialAddressData?.addressZipCode : "",
+      userId: isEditing ? session?.user?.id : undefined,
+    },
+  });
+
+  console.log(isEditing);
+
+  const { mutate: addAddressData, isPending: addAddressLoading } = useMutation({
+    mutationFn: (values: AddressModel) =>
+      axios.post(`/api/user/address`, values),
+    onSuccess: () => {
+      toast({ title: "Tambah alamat berhasil!" });
+      if (handleOnOpenDialog) {
+        handleOnOpenDialog();
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["userAddressData", session?.user?.id],
+      });
+      if (isEditing === undefined) {
+        router.push("/");
+      }
+    },
+    onError: (error: any) => {
+      console.log(error.response.data.status);
+      if (error.response.data.status === "ErrValidation") {
+        toast({
+          title: "Tambah alamat gagal!",
+          description: "Maximum alamat hanya 3",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  console.log(initialAddressData);
+
+  const { mutate: editAddress, isPending: editAddressLoading } = useMutation({
+    mutationFn: (values: AddressModel) =>
+      axios.patch(`/api/user/address/${initialAddressData.addressId}`, values),
+
+    onSuccess: () => {
+      toast({ title: "edit alamat berhasil!" });
+      queryClient.invalidateQueries({
+        queryKey: ["userAddressData", session?.user?.id],
+      });
+      if (handleOnOpenDialog) {
+        handleOnOpenDialog();
+      }
+    },
+
+    onError: () => {
+      toast({ title: "Edit alamat gagal!", variant: "destructive" });
+    },
   });
 
   async function getProvince() {
@@ -79,51 +148,30 @@ const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
     getCityLocation();
   }, [isEditing]);
 
-  async function handleSubmit(AddressForm: AddressModel) {
-    const response = await postData(`/api/user/address/`, AddressForm);
-    handleError(response);
-    if (response.status === 200) {
-      router.push("/");
-    }
-  }
-
-  function handleError(response: any) {
-    switch (response.data.status) {
-      case "ErrOTPIncorrect":
-        toast({
-          title: "OTP yang anda masukan salah",
-          variant: "destructive",
-        });
-        break;
-      case "ErrOTPExpired":
-        toast({
-          title: "OTP anda telah expired",
-          variant: "destructive",
-        });
-        break;
-      default:
-    }
-  }
-
-  function onSubmitAddressForm(Addressform: AddressModel) {
+  function onSubmitAddressForm(AddressForm: AddressModel) {
     try {
-      handleSubmit(Addressform);
+      console.log("trigger");
+      if (!isEditing || isEditing === undefined) {
+        addAddressData(AddressForm);
+      } else {
+        editAddress(AddressForm);
+      }
     } catch (error) {
       console.error(error);
     }
   }
   console.log(isEditing);
-
+  console.log(AddressForm.getValues("addressId"));
   return (
     <div>
-      <Form {...Addressform}>
+      <Form {...AddressForm}>
         <form
           className="w-full"
-          onSubmit={Addressform.handleSubmit(onSubmitAddressForm)}
+          onSubmit={AddressForm.handleSubmit(onSubmitAddressForm)}
         >
           <>
             <FormField
-              control={Addressform.control}
+              control={AddressForm.control}
               name="addressDetail"
               render={({ field }) => (
                 <FormItem>
@@ -140,7 +188,7 @@ const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
               )}
             />
             <FormField
-              control={Addressform.control}
+              control={AddressForm.control}
               name="addressProvince"
               render={({ field }) => (
                 <FormItem>
@@ -166,7 +214,7 @@ const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
               )}
             />
             <FormField
-              control={Addressform.control}
+              control={AddressForm.control}
               name="addressCity"
               render={({ field }) => (
                 <FormItem>
@@ -191,7 +239,7 @@ const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
             />
 
             <FormField
-              control={Addressform.control}
+              control={AddressForm.control}
               name="addressZipCode"
               render={({ field }) => (
                 <FormItem>
@@ -210,11 +258,16 @@ const AddressForm = ({ onPrevious, isEditing }: AddressProps) => {
           </>
           <div
             className={
-              isEditing ? "flex justify-end pt-5" : "lex justify-between pt-5"
+              isEditing !== undefined
+                ? "flex justify-end pt-5"
+                : "lex justify-between pt-5"
             }
           >
-            {!isEditing && <Button onClick={() => onPrevious()}>Back</Button>}
-
+            {isEditing === undefined && (
+              <Button onClick={() => (onPrevious ? onPrevious() : undefined)}>
+                Back
+              </Button>
+            )}
             <Button
               type="submit"
               variant="secondary"

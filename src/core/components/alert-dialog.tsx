@@ -10,37 +10,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { Button } from "./ui/button";
 import { ReactNode } from "react";
 
 interface AlertDialogProps {
   dialogDescription: ReactNode;
-  buttonTitle: string;
+  dialogTrigger: ReactNode;
   dialogTitle: string;
-  buttonContinueLink: string;
-  buttonVariant:
-    | "link"
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | null;
+  alerDialogAction: ReactNode;
 }
 
 export function AlertDialogComponent({
   dialogDescription,
-  buttonTitle,
+  dialogTrigger,
   dialogTitle,
-  buttonContinueLink,
-  buttonVariant,
+  alerDialogAction,
 }: AlertDialogProps) {
-  const router = useRouter();
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant={buttonVariant}>{buttonTitle}</Button>
-      </AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{dialogTrigger}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
@@ -48,14 +35,7 @@ export function AlertDialogComponent({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Kembali</AlertDialogCancel>
-
-          <AlertDialogAction
-            onClick={() => {
-              router.push(buttonContinueLink);
-            }}
-          >
-            Lanjut
-          </AlertDialogAction>
+          {alerDialogAction}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

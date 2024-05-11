@@ -31,7 +31,7 @@ export function DialogGeneral({
     <Dialog open={onOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-w-[325px] rounded-lg">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>

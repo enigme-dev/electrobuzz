@@ -25,14 +25,13 @@ import { useCountdown } from "@/core/hooks/useCountdown";
 import { useLocalStorage } from "@/core/hooks/useLocalStorage";
 import { useSession } from "next-auth/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Loader from "@/core/components/loader";
 
 interface OTPProps {
   onNext: Function;
   onPrevious: Function;
   isEditing?: boolean;
   isEditPhone?: boolean;
-  handleCloseDialog: Function;
+  handleCloseDialog?: Function;
 }
 const OTPVerification = ({
   onNext,
@@ -66,7 +65,6 @@ const OTPVerification = ({
 
   async function handleCountdown(response: any) {
     setIsCountdown(true);
-    console.log(response);
 
     let expiredTime;
 
@@ -91,7 +89,6 @@ const OTPVerification = ({
     }
 
     const currentTime = new Date();
-    console.log({ expiredTime, currentTime });
 
     const timeDifference = expiredTime.getTime() - currentTime.getTime();
     const minutesDifference = Math.floor(timeDifference / 1000);
@@ -106,7 +103,6 @@ const OTPVerification = ({
         setVerifId(response.data.data.verifId);
       })
       .catch((error) => {
-        console.log(error);
         handleCountdown(error);
         handleError(error);
       });
@@ -116,10 +112,7 @@ const OTPVerification = ({
     OTPform.setValue("verifId", verifId);
   }, [verifId, OTPform]);
 
-  console.log(OTPform.getValues("verifId"));
-
   function handleError(error: any) {
-    console.log(error.response.data.status);
     switch (error.response.data.status) {
       case "ErrOTPIncorrect":
         toast({
@@ -186,17 +179,17 @@ const OTPVerification = ({
     await axios
       .post("/api/user/otp", values)
       .then((response) => {
-        console.log(response);
         if (response.data.status === "phone verified successfully") {
           onNext();
           if (isEditing) {
-            handleCloseDialog();
+            if (handleCloseDialog) {
+              handleCloseDialog();
+            }
             updateNumberStatus();
           }
         }
       })
       .catch((error) => {
-        console.log(error.response.status);
         handleError(error);
       });
   }

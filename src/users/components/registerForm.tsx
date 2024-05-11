@@ -53,7 +53,7 @@ const RegisterForm = ({
 
   const { mutate: updateProfile, isPending: updateLoading } = useMutation({
     mutationFn: (values: UpdateProfileModel) =>
-      axios.patch(`/api//user/${session?.user?.id}`, values),
+      axios.patch(`/api/user/${session?.user?.id}`, values),
     onSuccess: () => {
       toast({ title: "Edit profile berhasil!" });
       queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
@@ -80,8 +80,6 @@ const RegisterForm = ({
       console.error(error);
     }
   }
-
-  console.log(isEditing, isEditPhone, isEditName);
 
   return (
     <Form {...form}>

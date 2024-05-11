@@ -16,6 +16,15 @@ import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loader from "@/core/components/loader";
 import { useToast } from "@/core/components/ui/use-toast";
+import AddressCard from "./addressCard";
+
+interface AddressData {
+  addressId: string | undefined;
+  addressDetail: string | undefined;
+  addressCity: string | undefined;
+  addressProvince: string | undefined;
+  addressZipCode: string | undefined;
+}
 
 const EditProfileForm = () => {
   const { data: session } = useSession();
@@ -31,18 +40,24 @@ const EditProfileForm = () => {
     setOnOpenDialog,
   } = useEditProfile();
 
-  const {
-    isLoading: isLoading,
-    error,
-    data,
-    refetch,
-  } = useQuery({
+  const { isLoading: isLoading, data } = useQuery({
     queryKey: ["user", session?.user?.id],
-    queryFn: () => axios.get(`/api//user/${session?.user?.id}`),
+    queryFn: () => axios.get(`/api/user/${session?.user?.id}`),
     enabled: !!session?.user?.id,
   });
 
-  console.log(data?.data.data.name);
+  const {
+    isLoading: addressLoading,
+    error: fetchAddressError,
+    data: userAddressData,
+  } = useQuery({
+    queryKey: ["userAddressData", session?.user?.id],
+    queryFn: () =>
+      axios.get(`/api/user/address`).then((response) => {
+        return response.data.data as AddressData;
+      }),
+    enabled: !!session?.user?.id,
+  });
 
   const [step, setStep] = useState(0);
   const [view, setView] = useState<React.ReactNode | null>(null);
@@ -186,40 +201,44 @@ const EditProfileForm = () => {
         )}
       </div>
       <div>
-        <h2 className="text-md sm:text-xl font-bold">Alamat</h2>
-        <div className="grid gap-4 pt-5 lg:grid-cols-3">
-          <div className="flex gap-2 w-full items-center">
-            <p className="font-bold text-xl">1.</p>
-            <Card className="p-5 w-full flex items-center gap-4 sm:gap-10">
-              <MapPinIcon />
-              <CardContent className="p-0 text-sm">
-                <p>Villa Pasimas Blok A no.23</p>
-                <p>Bogor Jawa Barat</p>
-                <p>16119</p>
-              </CardContent>
-            </Card>
+        <div className="flex items-center gap-4 pt-5">
+          <h2 className="text-md sm:text-xl font-bold">Alamat</h2>
+          <div>
+            <DialogGeneral
+              dialogTitle={"Add Address"}
+              dialogContent={
+                <>
+                  <AddressForm />
+                </>
+              }
+              dialogTrigger={
+                <Card
+                  className="rounded-full w-fit block"
+                  onClick={() => cancelEditing()}
+                >
+                  <PlusIcon
+                    className="p-1 hover:bg-gray-100 rounded-full hover:cursor-pointer"
+                    size={30}
+                  />
+                </Card>
+              }
+            />
           </div>
         </div>
-        <div>
-          <DialogGeneral
-            dialogTitle={isEditing ? "Edit Address" : "Add Address"}
-            dialogContent={
-              <>
-                <AddressForm isEditing={isEditing} onPrevious={() => {}} />
-              </>
-            }
-            dialogTrigger={
-              <Card
-                className="rounded-full w-fit"
-                onClick={() => startEditing()}
-              >
-                <PlusIcon
-                  className="p-3 hover:bg-gray-100 rounded-full hover:cursor-pointer"
-                  size={50}
+        <div className="flex gap-4 pt-5 flex-col lg:flex-row items-center w-full justify-evenly">
+          {userAddressData &&
+            Object.entries(userAddressData).map(([key, value], index) => {
+              return (
+                <AddressCard
+                  key={key}
+                  addressCity={value.addressCity}
+                  addressDetail={value.addressDetail}
+                  addressProvince={value.addressProvince}
+                  addressZipCode={value.addressZipCode}
+                  addressId={value.addressId}
                 />
-              </Card>
-            }
-          />
+              );
+            })}
         </div>
       </div>
     </div>
