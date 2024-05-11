@@ -7,15 +7,15 @@ Electrobuzz merupakan aplikasi berbasis web yang bisa digunakan untuk menjual / 
 
 ## 🚀 Quickstart
 1. Create .env file locally and fill in exactly like .env.example
-2. Set up postgres db and insert postgres credentials in .env then run:
+2. Set up Postgres and insert Postgres credentials in .env then run:
    ```
    npx prisma db push
    ```
-3. Set up Minio server and create "assets" and "vault" buckets
-4. Set up Algolia index called "merchants"
+3. Set up S3-compatible object storage server and create "assets" and "vault" buckets
+4. Set up [Algolia](https://algolia.com/) index called "merchants"
 5. Set up [Watzap.id](https://watzap.id/) service
 6. Create asymmetric key pair (public & private key)
-7. Fill every credentials in .env
+7. Fill in every credentials in .env
 8. Install dependencies with:
 ```
 npm install
