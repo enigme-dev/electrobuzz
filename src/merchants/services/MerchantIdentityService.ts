@@ -1,19 +1,29 @@
-import {IdentityStatuses, MerchantIdentitiesModel} from "@/merchants/types";
-import {decrypt, encrypt} from "@/core/lib/security";
-import {deleteImg, getImg, uploadImg} from "@/core/lib/image";
-import {MerchantIdentityRepository} from "@/merchants/repositories/MerchantIdentityRepository";
-import {ErrorCode} from "@/core/lib/errors";
-import {addMerchantIndex, getMerchant} from "@/merchants/services/MerchantService";
+import {
+  TIdentityStatuses,
+  TMerchantIdentityModel,
+  IdentityStatuses,
+} from "@/merchants/types";
+import { decrypt, encrypt } from "@/core/lib/security";
+import { deleteImg, getImg, uploadImg } from "@/core/lib/image";
+import { MerchantIdentityRepository } from "@/merchants/repositories/MerchantIdentityRepository";
+import { ErrorCode } from "@/core/lib/errors";
+import {
+  addMerchantIndex,
+  getMerchant,
+} from "@/merchants/services/MerchantService";
 
-export async function addMerchantIdentity(merchantId: string, data: MerchantIdentitiesModel) {
-  let images = [], merchantIdentity;
+export async function addMerchantIdentity(
+  merchantId: string,
+  data: TMerchantIdentityModel
+) {
+  let images = [],
+    merchantIdentity;
 
   try {
     merchantIdentity = await MerchantIdentityRepository.findOne(merchantId);
-  } catch (e) {
-  }
+  } catch (e) {}
   if (merchantIdentity) {
-    throw new Error(ErrorCode.ErrConflict)
+    throw new Error(ErrorCode.ErrConflict);
   }
 
   data.identityStatus = IdentityStatuses.Enum.pending;
@@ -28,23 +38,21 @@ export async function addMerchantIdentity(merchantId: string, data: MerchantIden
 
     const encryptedSKCK = await encrypt(data.identitySKCK);
     data.identitySKCK = await uploadImg(encryptedSKCK, {
-        filename: `skck-${merchantId}`,
-        bucket: "vault",
-      }
-    );
+      filename: `skck-${merchantId}`,
+      bucket: "vault",
+    });
     images.push(data.identitySKCK);
 
     if (data.identityDocs) {
-      const encryptedDocs = await encrypt(data.identityDocs)
+      const encryptedDocs = await encrypt(data.identityDocs);
       data.identityDocs = await uploadImg(encryptedDocs, {
-          filename: `docs-${merchantId}`,
-          bucket: "vault",
-        }
-      );
+        filename: `docs-${merchantId}`,
+        bucket: "vault",
+      });
       images.push(data.identityDocs);
     }
 
-    await MerchantIdentityRepository.create(data)
+    await MerchantIdentityRepository.create(data);
   } catch (e) {
     images.map(async (image) => {
       await deleteImg(image);
@@ -54,7 +62,10 @@ export async function addMerchantIdentity(merchantId: string, data: MerchantIden
   }
 }
 
-export async function editMerchantIdentity(merchantId: string, status: IdentityStatuses) {
+export async function editMerchantIdentity(
+  merchantId: string,
+  status: TIdentityStatuses
+) {
   await MerchantIdentityRepository.update(merchantId, status);
 
   if (status === IdentityStatuses.Enum.rejected) {
@@ -66,6 +77,7 @@ export async function editMerchantIdentity(merchantId: string, status: IdentityS
     }
   } else if (status === IdentityStatuses.Enum.verified) {
     const merchant = await getMerchant(merchantId);
+    // TODO: update merchantVerified
     await addMerchantIndex(merchant);
   }
 }

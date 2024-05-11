@@ -19,6 +19,7 @@ import axios from "axios";
 import { useToast } from "@/core/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "@/core/components/loader";
+import { Value } from "@radix-ui/react-select";
 
 interface RegisterProps {
   onNext: Function;
@@ -37,7 +38,7 @@ const RegisterForm = ({
   initialFormValues,
   handleCloseDialog,
 }: RegisterProps) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const { toast } = useToast();
   const form = useForm<UpdateProfileModel>({
     resolver: zodResolver(UpdateProfileSchema),
@@ -57,6 +58,9 @@ const RegisterForm = ({
     onSuccess: () => {
       toast({ title: "Edit profile berhasil!" });
       queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
+      update({
+        name: form.getValues("name"),
+      });
     },
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/core/components/ui/input";
-import { MerchantSchema } from "@/merchants/types";
+import { MerchantModel } from "@/merchants/types";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState, ChangeEvent, useCallback } from "react";
@@ -18,7 +18,7 @@ import {
 } from "@/core/components/ui/pagination";
 
 const MerchantsResponse = z.object({
-  data: MerchantSchema.array(),
+  data: MerchantModel.array(),
 });
 
 type MerchantsResponse = z.infer<typeof MerchantsResponse>;

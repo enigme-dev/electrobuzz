@@ -1,8 +1,8 @@
-import {BaseRepository} from "@/core/repositories/BaseRepository";
-import {IdentityStatuses, MerchantIdentitiesModel} from "@/merchants/types";
+import { BaseRepository } from "@/core/repositories/BaseRepository";
+import { TIdentityStatuses, TMerchantIdentityModel } from "@/merchants/types";
 
 export class MerchantIdentityRepository extends BaseRepository {
-  static create(data: MerchantIdentitiesModel) {
+  static create(data: TMerchantIdentityModel) {
     return this.db.merchantIdentity.create({
       data: {
         identityKTP: data.identityKTP,
@@ -15,14 +15,16 @@ export class MerchantIdentityRepository extends BaseRepository {
           },
         },
       },
-    })
+    });
   }
 
   static findOne(merchantId: string) {
-    return this.db.merchantIdentity.findUniqueOrThrow({where: {merchantId: merchantId}});
+    return this.db.merchantIdentity.findUniqueOrThrow({
+      where: { merchantId: merchantId },
+    });
   }
 
-  static update(merchantId: string, status: IdentityStatuses) {
+  static update(merchantId: string, status: TIdentityStatuses) {
     return this.db.merchantIdentity.update({
       where: {
         merchantId: merchantId,
