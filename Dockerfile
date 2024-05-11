@@ -21,9 +21,6 @@ RUN --mount=type=secret,id=ASSETS_URL echo "ASSETS_URL=$(cat /run/secrets/ASSETS
 RUN --mount=type=secret,id=MINIO_ENDPOINT echo "MINIO_ENDPOINT=$(cat /run/secrets/MINIO_ENDPOINT)" >> .env.production
 RUN --mount=type=secret,id=MINIO_ACCESS_KEY echo "MINIO_ACCESS_KEY=$(cat /run/secrets/MINIO_ACCESS_KEY)" >> .env.production
 RUN --mount=type=secret,id=MINIO_SECRET_KEY echo "MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)" >> .env.production
-RUN --mount=type=secret,id=TWILIO_ACCOUNT_SID echo "TWILIO_ACCOUNT_SID=$(cat /run/secrets/TWILIO_ACCOUNT_SID)" >> .env.production
-RUN --mount=type=secret,id=TWILIO_AUTH_TOKEN echo "TWILIO_AUTH_TOKEN=$(cat /run/secrets/TWILIO_AUTH_TOKEN)" >> .env.production
-RUN --mount=type=secret,id=TWILIO_SERVICE_ID echo "TWILIO_SERVICE_ID=$(cat /run/secrets/TWILIO_SERVICE_ID)" >> .env.production
 
 RUN npm run build && rm .env.production
 
