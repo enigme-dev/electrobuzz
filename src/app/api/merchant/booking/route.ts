@@ -1,8 +1,6 @@
 import {buildErr} from "@/core/lib/errors";
 import {buildRes, parseParams} from "@/core/lib/utils";
-import countBookings from "@/merchants/queries/countBookings";
-import getBookings from "@/merchants/queries/getBookings";
-import {getMerchant} from "@/merchants/services/MerchantService";
+import {getMerchantBookings, countMerchantBookings} from "@/bookings/services/BookingService";
 import {Prisma} from "@prisma/client";
 import {getToken} from "next-auth/jwt";
 import {NextRequest} from "next/server";
@@ -21,16 +19,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    merchant = await getMerchant(userId.data);
-    bookings = await getBookings(merchant.merchantId, {
-      page: skip,
-      startDate,
-      endDate,
-    });
-    bookingsCt = await countBookings(merchant.merchantId, {
-      startDate,
-      endDate,
-    });
+    bookings = await getMerchantBookings(userId.data, {page: skip, startDate, endDate});
+    bookingsCt = await countMerchantBookings(userId.data, {startDate, endDate});
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -41,6 +31,7 @@ export async function GET(req: NextRequest) {
         );
       }
     }
+
     return buildErr("ErrUnknown", 500);
   }
 

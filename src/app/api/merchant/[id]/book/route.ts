@@ -1,8 +1,6 @@
-import getAddress from "@/addresses/queries/getAddress";
-import addBooking from "@/bookings/mutations/addBooking";
-import { BookingModel, BookStatusEnum } from "@/bookings/types";
-import {buildErr, ErrorCode} from "@/core/lib/errors";
-import { deleteImg, uploadImg } from "@/core/lib/image";
+import { addBooking } from "@/bookings/services/BookingService";
+import { BookingModel } from "@/bookings/types";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
 import { buildRes, IdParam } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -10,7 +8,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 export async function POST(req: NextRequest, { params }: IdParam) {
-  let body;
+  let body, result: any;
   const token = await getToken({ req });
 
   try {
@@ -34,43 +32,35 @@ export async function POST(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
-  if (merchantId.data === userId.data) {
-    return buildErr("ErrConflict", 409, "user can not book their own merchant");
-  }
-
-  try {
-    await getAddress(input.data.addressId);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr("ErrNotFound", 404, "address does not exist");
-      }
-    }
-    return buildErr("ErrUnknown", 500);
-  }
-
   try {
     input.data.userId = userId.data;
     input.data.merchantId = merchantId.data;
-    input.data.bookingPhotoUrl = await uploadImg(input.data.bookingPhotoUrl);
-    input.data.bookingStatus = BookStatusEnum.Enum.pending;
-
-    await addBooking(input.data);
+    result = await addBooking(input.data);
   } catch (e) {
-    await deleteImg(input.data.bookingPhotoUrl);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildErr("ErrValidation", 500, "merchant does not exist");
+      }
+    }
 
     if (e instanceof Error) {
-      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
-        return buildErr("ErrImgInvalidDataURL", 400);
-      }
-
-      if (e.message === ErrorCode.ErrImgInvalidImageType) {
-        return buildErr("ErrImgInvalidImageType", 400);
+      switch (e.message) {
+        case ErrorCode.ErrImgInvalidDataURL:
+          return buildErr("ErrImgInvalidDataURL", 400);
+        case ErrorCode.ErrImgInvalidImageType:
+          return buildErr("ErrImgInvalidImageType", 400);
+        case "user can not book their own merchant":
+          return buildErr("ErrConflict", 409, e.message);
+        case "user does not own this address":
+          return buildErr("ErrValidation", 400, "address does not exist");
       }
     }
 
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ status: "booking added successfully" });
+  return buildRes({
+    status: "booking added successfully",
+    data: { bookingId: result.bookingId },
+  });
 }
