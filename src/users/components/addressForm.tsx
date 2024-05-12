@@ -24,15 +24,21 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 interface AddressProps {
   onPrevious?: Function;
   isEditing?: boolean;
-  initialAddressData?: any;
-  handleOnOpenDialog?: Function;
+  initialAddressData?: {
+    addressId: string;
+    addressDetail: string;
+    addressProvince: string;
+    addressCity: string;
+    addressZipCode: string;
+  };
+  handleOnCloseDialog: Function;
 }
 
 const AddressForm = ({
   onPrevious,
   isEditing,
   initialAddressData,
-  handleOnOpenDialog,
+  handleOnCloseDialog,
 }: AddressProps) => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -52,16 +58,11 @@ const AddressForm = ({
     },
   });
 
-  console.log(isEditing);
-
   const { mutate: addAddressData, isPending: addAddressLoading } = useMutation({
-    mutationFn: (values: AddressModel) =>
-      axios.post(`/api/user/address`, values),
+    mutationFn: async (values: AddressModel) =>
+      await axios.post(`/api/user/address`, values),
     onSuccess: () => {
       toast({ title: "Tambah alamat berhasil!" });
-      if (handleOnOpenDialog) {
-        handleOnOpenDialog();
-      }
       queryClient.invalidateQueries({
         queryKey: ["userAddressData", session?.user?.id],
       });
@@ -80,22 +81,19 @@ const AddressForm = ({
     },
   });
 
-  console.log(initialAddressData);
-
   const { mutate: editAddress, isPending: editAddressLoading } = useMutation({
-    mutationFn: (values: AddressModel) =>
-      axios.patch(`/api/user/address/${initialAddressData.addressId}`, values),
+    mutationFn: async (values: AddressModel) =>
+      await axios.patch(
+        `/api/user/address/${initialAddressData?.addressId}`,
+        values
+      ),
 
     onSuccess: () => {
       toast({ title: "edit alamat berhasil!" });
       queryClient.invalidateQueries({
         queryKey: ["userAddressData", session?.user?.id],
       });
-      if (handleOnOpenDialog) {
-        handleOnOpenDialog();
-      }
     },
-
     onError: () => {
       toast({ title: "Edit alamat gagal!", variant: "destructive" });
     },
@@ -149,18 +147,16 @@ const AddressForm = ({
 
   function onSubmitAddressForm(AddressForm: AddressModel) {
     try {
-      console.log("trigger");
       if (!isEditing || isEditing === undefined) {
         addAddressData(AddressForm);
       } else {
         editAddress(AddressForm);
+        handleOnCloseDialog();
       }
     } catch (error) {
       console.error(error);
     }
   }
-  console.log(isEditing);
-  console.log(AddressForm.getValues("addressId"));
   return (
     <div>
       <Form {...AddressForm}>
@@ -174,7 +170,7 @@ const AddressForm = ({
               name="addressDetail"
               render={({ field }) => (
                 <FormItem>
-                  <div className="pt-5 flex-col justify-between md:flex ">
+                  <div className="flex-col justify-between md:flex ">
                     <div>
                       <h1 className="pb-2 font-semibold">Alamat lengkap</h1>
                       <FormControl>
@@ -259,7 +255,7 @@ const AddressForm = ({
             className={
               isEditing !== undefined
                 ? "flex justify-end pt-5"
-                : "lex justify-between pt-5"
+                : "flex justify-between pt-5"
             }
           >
             {isEditing === undefined && (

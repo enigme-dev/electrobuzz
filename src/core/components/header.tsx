@@ -6,7 +6,7 @@ import { SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toggleTheme } from "@/core/lib/shadcn";
 import Link from "next/link";
-import AuthBar from "./auth-bar";
+import { AuthBar } from "./auth-bar";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();

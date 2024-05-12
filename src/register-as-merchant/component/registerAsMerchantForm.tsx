@@ -22,6 +22,7 @@ import {
 import MultipleSelector, { Option } from "@/core/components/multi-select";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
+import { fileInputToDataURL } from "@/core/lib/utils";
 
 interface RegisterAsMerchantFormProps {
   onNext: Function;
@@ -56,8 +57,26 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
   });
 
   function onSubmit(data: TRegisterMerchantSchema) {
+    const fileKTPImage = form.getValues("merchantIdentity.identityKTP");
     addMerchantData(data);
   }
+
+  const handleFileInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: any
+  ) => {
+    const fileInput = event.target;
+    const file = fileInput.files?.[0];
+    if (file) {
+      fileInputToDataURL(fileInput)
+        .then((dataURL) => {
+          field.onChange(dataURL);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  };
 
   return (
     <div className="wrapper pt-10 sm:pt-0 px-4">
@@ -162,7 +181,11 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               <FormItem>
                 <FormLabel>Foto Banner</FormLabel>
                 <FormControl>
-                  <Input id="picture" type="file" {...field} />
+                  <Input
+                    onChange={(e) => handleFileInputChange(e, field)}
+                    id="picture"
+                    type="file"
+                  />
                 </FormControl>
                 <FormDescription>Foto Bannermu nanti</FormDescription>
                 <FormMessage />
@@ -177,7 +200,11 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               <FormItem>
                 <FormLabel>Foto KTP</FormLabel>
                 <FormControl>
-                  <Input id="picture" type="file" {...field} />
+                  <Input
+                    onChange={(e) => handleFileInputChange(e, field)}
+                    id="picture"
+                    type="file"
+                  />
                 </FormControl>
                 <FormDescription>Foto KTP asli</FormDescription>
                 <FormMessage />
@@ -193,7 +220,11 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
                   Foto SKCK (Surat Keterangan Catatan Kepolisian)
                 </FormLabel>
                 <FormControl>
-                  <Input id="picture" type="file" {...field} />
+                  <Input
+                    onChange={(e) => handleFileInputChange(e, field)}
+                    id="picture"
+                    type="file"
+                  />
                 </FormControl>
                 <FormDescription>Foto SKCK asli </FormDescription>
                 <FormMessage />
@@ -207,7 +238,11 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               <FormItem>
                 <FormLabel>Dokumen Sertifikasi</FormLabel>
                 <FormControl>
-                  <Input id="picture" type="file" {...field} />
+                  <Input
+                    onChange={(e) => handleFileInputChange(e, field)}
+                    id="picture"
+                    type="file"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -216,7 +216,7 @@ const OTPVerification = ({
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
-                <FormDescription>
+                <FormDescription className="flex items-center">
                   <Button
                     variant="link"
                     type="button"
@@ -225,24 +225,24 @@ const OTPVerification = ({
                     disabled={isCountdown}
                   >
                     Get Code
-                    {!isCountdown && (
-                      <p className="text-gray-400 text-xs">
-                        tekan &quot;Get Code&quot;untuk <br /> mendapatkan kode
-                      </p>
-                    )}
-                    <div className={countdown === 0 ? "hidden" : "block"}>
-                      {" "}
-                      {countdown > 0 ? (
-                        <p className="text-gray-400 text-xs">
-                          Time remaining: {Math.floor(countdown / 60)}:
-                          {countdown % 60 < 10 ? "0" : ""}
-                          {countdown % 60}
-                        </p>
-                      ) : (
-                        <p></p>
-                      )}
-                    </div>
                   </Button>
+                  {!isCountdown && (
+                    <p className="text-gray-400 text-xs">
+                      tekan &quot;Get Code&quot;untuk <br /> mendapatkan kode
+                    </p>
+                  )}
+                  <div className={countdown === 0 ? "hidden" : "block"}>
+                    {" "}
+                    {countdown > 0 ? (
+                      <p className="text-gray-400 text-xs">
+                        Time remaining: {Math.floor(countdown / 60)}:
+                        {countdown % 60 < 10 ? "0" : ""}
+                        {countdown % 60}
+                      </p>
+                    ) : (
+                      <p></p>
+                    )}
+                  </div>
                 </FormDescription>
                 <FormMessage />
               </FormItem>

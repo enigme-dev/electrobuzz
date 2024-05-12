@@ -16,6 +16,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/core/components/ui/pagination";
+import Link from "next/link";
+import Image from "next/image";
 
 const MerchantsResponse = z.object({
   data: MerchantModel.array(),
@@ -33,7 +35,6 @@ export default function Page() {
         params: { query },
         withCredentials: true,
       });
-
       return data;
     },
     placeholderData: keepPreviousData,
@@ -51,31 +52,39 @@ export default function Page() {
   }
 
   return (
-    <div className="wrapper">
+    <div className="wrapper py-10">
       <Input
         type="text"
         placeholder="Search merchant name"
         onChange={handleChange}
+        className="px-7 py-5"
       />
-      <div>
+      <div className="pt-10" />
+      <div className="border border-gray-400 rounded-lg p-7 max-h-[60vh] overflow-auto">
         {data?.data.data.map((merchant) => (
-          <a
+          <div
             key={merchant.merchantId}
-            href={`/admin/merchants/${merchant.merchantId}`}
+            className="border border-gray-200 rounded-lg "
           >
-            <div className="flex items-center gap-4">
-              <img
-                src={merchant.merchantPhotoUrl}
-                alt={merchant.merchantName}
-                className="w-8 h-8"
-              />
-              <div className="grid grow">
-                <span>{merchant.merchantName}</span>
-                <span>{merchant.merchantCity}</span>
+            <Link href={`/admin/merchants/${merchant.merchantId}`}>
+              <div className="flex items-center gap-4 p-5">
+                <Image
+                  src={merchant.merchantPhotoUrl}
+                  alt={merchant.merchantName}
+                  width={50}
+                  height={50}
+                  className="w-8 h-8 aspect-square rounded-full"
+                />
+                <div className="grid grow">
+                  <span>{merchant.merchantName}</span>
+                  <span>{merchant.merchantCity}</span>
+                </div>
+                <span className="bg-gray-200 py-2 px-4 rounded-lg ">
+                  {merchant.merchantIdentity?.identityStatus}
+                </span>
               </div>
-              <span>{merchant.merchantIdentity?.identityStatus}</span>
-            </div>
-          </a>
+            </Link>
+          </div>
         ))}
       </div>
       <Pagination>

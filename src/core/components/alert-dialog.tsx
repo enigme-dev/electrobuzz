@@ -1,4 +1,3 @@
-import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,14 +15,18 @@ interface AlertDialogProps {
   dialogDescription: ReactNode;
   dialogTrigger: ReactNode;
   dialogTitle: string;
-  alerDialogAction: ReactNode;
+  alertDialogTitle: string;
+  submitAction: Function;
+  className?: string;
 }
 
 export function AlertDialogComponent({
   dialogDescription,
   dialogTrigger,
   dialogTitle,
-  alerDialogAction,
+  alertDialogTitle,
+  submitAction,
+  className,
 }: AlertDialogProps) {
   return (
     <AlertDialog>
@@ -35,7 +38,12 @@ export function AlertDialogComponent({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Kembali</AlertDialogCancel>
-          {alerDialogAction}
+          <AlertDialogAction
+            className={className}
+            onClick={() => submitAction()}
+          >
+            {alertDialogTitle}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

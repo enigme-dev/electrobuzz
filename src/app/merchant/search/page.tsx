@@ -1,8 +1,8 @@
 "use client";
 
 import MerchantCard from "@/core/components/merchantsCard";
-import { Hit } from "@/merchant-list/component/hit";
-import { MenuSelect } from "@/merchant-list/component/menuSelect";
+import { Hit } from "@/search/component/hit";
+import { MenuSelect } from "@/search/component/menuSelect";
 import algoliasearch from "algoliasearch/lite";
 import { MapPin, Search, SearchCheckIcon } from "lucide-react";
 import Image from "next/image";
@@ -14,8 +14,8 @@ import {
   RefinementList,
   useInstantSearch,
 } from "react-instantsearch";
-import { NoResultsBoundary } from "@/merchant-list/component/noResultBondaries";
-import { NoResults } from "@/merchant-list/component/noResult";
+import { NoResultsBoundary } from "@/search/component/noResultBondaries";
+import { NoResults } from "@/search/component/noResult";
 import { GeneralAccordion } from "@/core/components/general-accordion";
 
 const searchClient = algoliasearch(

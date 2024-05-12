@@ -4,31 +4,40 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Link from "next/link";
-import { HomeIcon, NotepadText, Settings, UserRound } from "lucide-react";
+import {
+  HomeIcon,
+  NotepadText,
+  Settings,
+  UserRound,
+  Users,
+} from "lucide-react";
 
-export const navList = [
-  {
-    label: "Dashboard",
-    link: "/",
-    icon: <HomeIcon size="20" />,
-  },
-  {
-    label: "My Bookings",
-    link: "/user/my-bookings",
-    icon: <NotepadText size="20" />,
-  },
-  {
-    label: "Edit Profile",
-    link: "/user/profile",
-    icon: <Settings size="20" />,
-  },
-];
-
-export default function AuthBar() {
+export function AuthBar() {
   const { data: session } = useSession();
   const handleSignOut = () => {
     signOut();
   };
+
+  const isMerchant = true;
+
+  const navList = [
+    {
+      label: "My Bookings",
+      link: "/user/my-bookings",
+      icon: <NotepadText size="20" />,
+    },
+    {
+      label: "Edit Profile",
+      link: "/user/profile",
+      icon: <Settings size="20" />,
+    },
+    {
+      label: "Admin Dashboard",
+      link: "/admin",
+      icon: <Users size="20" />,
+      isAdmin: session?.user?.isAdmin,
+    },
+  ];
 
   return (
     <>
@@ -75,13 +84,26 @@ export default function AuthBar() {
                   </div>
                 ))}
                 <ul className="flex justify-between gap-5">
-                  <li className="pt-5 text-center">
-                    <Button variant="outline">
-                      <Link href="/merchant/register">
-                        Register as merchant
-                      </Link>
-                    </Button>
-                  </li>
+                  {isMerchant ? (
+                    <li className="pt-5 text-center">
+                      <Button
+                        variant="outline"
+                        className="bg-yellow-400 hover:bg-yellow-300"
+                      >
+                        <Link href="/merchant/dashboard">
+                          Merchant Dashboard
+                        </Link>
+                      </Button>
+                    </li>
+                  ) : (
+                    <li className="pt-5 text-center">
+                      <Button variant="outline">
+                        <Link href="/merchant/register">
+                          Register as merchant
+                        </Link>
+                      </Button>
+                    </li>
+                  )}
                   <li className="pt-5 text-center">
                     <Button
                       variant="destructive"
