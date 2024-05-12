@@ -26,7 +26,6 @@ jobs:
           cpu_count: 2
   
   software-composition-analysis:
-    needs: static-analysis
     runs-on: ubuntu-latest
     name: Datadog SBOM Generation and Upload
     environment: production
@@ -39,6 +38,6 @@ jobs:
         with:
           dd_api_key: ${{ secrets.DD_API_KEY }}
           dd_app_key: ${{ secrets.DD_APP_KEY }}
-          dd_service: my-app
+          dd_service: electrobuzz
           dd_env: ci
           dd_site: us5.datadoghq.com

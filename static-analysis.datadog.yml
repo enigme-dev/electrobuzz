@@ -1,0 +1,6 @@
+rulesets:
+  - tsx-react
+  - typescript-best-practices
+  - typescript-node-security
+
+ignore-gitignore: true
