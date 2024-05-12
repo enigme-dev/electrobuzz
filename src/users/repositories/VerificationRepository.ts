@@ -1,6 +1,10 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
 
 export class VerificationRepository extends BaseRepository {
+  static delete(verifId: string) {
+    return this.db.verification.delete({ where: { verifId } });
+  }
+
   static findOne(verifId: string) {
     return this.db.verification.findUniqueOrThrow({ where: { verifId } });
   }

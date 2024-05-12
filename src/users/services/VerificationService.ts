@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { generateOTP } from "../lib/verification";
 import { VerifyStatuses } from "../types";
 import { hash } from "@/core/lib/security";
+import { Prisma } from "@prisma/client";
 
 export async function checkOTP(verifId: string, code: string) {
   let verification;
@@ -11,6 +12,12 @@ export async function checkOTP(verifId: string, code: string) {
   try {
     verification = await VerificationRepository.findOne(verifId);
   } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return VerifyStatuses.Enum.not_found;
+      }
+    }
+
     return VerifyStatuses.Enum.error;
   }
 
@@ -19,12 +26,24 @@ export async function checkOTP(verifId: string, code: string) {
   }
 
   if (dayjs().diff(verification.createdAt, "minute") >= 2) {
+    try {
+      await VerificationRepository.delete(verifId);
+    } catch (e) {
+      return VerifyStatuses.Enum.error;
+    }
+
     return VerifyStatuses.Enum.expired;
   }
 
   const hashedCode = hash(code);
   if (verification.code != hashedCode) {
     return VerifyStatuses.Enum.incorrect;
+  }
+
+  try {
+    await VerificationRepository.delete(verifId);
+  } catch (e) {
+    return VerifyStatuses.Enum.error;
   }
 
   return VerifyStatuses.Enum.correct;
