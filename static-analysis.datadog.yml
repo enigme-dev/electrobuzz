@@ -2,5 +2,9 @@ rulesets:
   - tsx-react
   - typescript-best-practices
   - typescript-node-security
+  - docker-best-practices
+    rules:
+      tag-image-version:
+        ignore: "Dockerfile"
 
 ignore-gitignore: true
