@@ -3,7 +3,7 @@ import React from "react";
 
 const DashboardMerchant = () => {
   return (
-    <div className="wrapper py-10">
+    <div className="">
       <MerchantDashboard />
     </div>
   );
