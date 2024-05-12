@@ -22,7 +22,8 @@ export async function checkOTP(verifId: string, code: string) {
     return VerifyStatuses.Enum.expired;
   }
 
-  if (verification.code != code) {
+  const hashedCode = hash(code);
+  if (verification.code != hashedCode) {
     return VerifyStatuses.Enum.incorrect;
   }
 
@@ -31,11 +32,11 @@ export async function checkOTP(verifId: string, code: string) {
 
 export async function sendOTP(phoneNumber: string) {
   let verification, expiredAt;
-  const hashed = hash(phoneNumber);
+  const verifId = hash(phoneNumber);
   const code = generateOTP();
 
   try {
-    verification = await VerificationRepository.findOne(hashed);
+    verification = await VerificationRepository.findOne(verifId);
     expiredAt = dayjs(verification?.createdAt).add(2, "minute");
     if (verification && dayjs().diff(verification.createdAt, "minute") < 2) {
       return {
@@ -45,12 +46,13 @@ export async function sendOTP(phoneNumber: string) {
     }
   } catch (e) {}
 
-  verification = await VerificationRepository.upsert(hashed, code);
+  const hashedCode = hash(code);
+  verification = await VerificationRepository.upsert(verifId, hashedCode);
   expiredAt = dayjs(verification?.createdAt).add(2, "minute");
   await SendMessage(
     phoneNumber,
     `Kode verifikasi akun Electrobuzz anda adalah ${code}`
   );
 
-  return { data: hashed, expiredAt };
+  return { data: verifId, expiredAt };
 }
