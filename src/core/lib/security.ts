@@ -1,3 +1,4 @@
+import { createHmac } from "crypto";
 import * as openpgp from "openpgp";
 
 export async function decrypt(data: string) {
@@ -31,4 +32,9 @@ export async function encrypt(data: string) {
   });
 
   return encrypted.toString();
+}
+
+export function hash(data: string) {
+  const salt = process.env.NEXTAUTH_SECRET as string;
+  return createHmac("sha256", salt).update(data).digest("base64");
 }
