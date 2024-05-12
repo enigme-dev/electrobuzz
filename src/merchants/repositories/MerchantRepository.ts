@@ -1,11 +1,8 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
 import { SearchParams } from "@/core/lib/utils";
-import { MerchantModel, TRegisterMerchantSchema } from "@/merchants/types";
+import { TRegisterMerchantSchema } from "@/merchants/types";
 import { AlgoliaClient } from "@/core/adapters/algolia";
-import { z } from "zod";
-
-export const UpdateMerchantSchema = MerchantModel.partial();
-export type UpdateMerchantSchema = z.infer<typeof UpdateMerchantSchema>;
+import { Prisma } from "@prisma/client";
 
 export class MerchantRepository extends BaseRepository {
   private static readonly index = AlgoliaClient.initIndex("merchants");
@@ -89,7 +86,7 @@ export class MerchantRepository extends BaseRepository {
     });
   }
 
-  static update(id: string, data: UpdateMerchantSchema) {
+  static update(id: string, data: Prisma.MerchantUpdateInput) {
     return this.db.merchant.update({
       where: {
         merchantId: id,

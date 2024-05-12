@@ -1,10 +1,7 @@
 import { IdentityStatuses, TRegisterMerchantSchema } from "@/merchants/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { encrypt } from "@/core/lib/security";
-import {
-  MerchantRepository,
-  UpdateMerchantSchema,
-} from "@/merchants/repositories/MerchantRepository";
+import { MerchantRepository } from "@/merchants/repositories/MerchantRepository";
 import { SearchParams } from "@/core/lib/utils";
 
 export async function addMerchantIndex(data: any) {
@@ -71,8 +68,6 @@ export async function registerMerchant(
   }
 }
 
-// TODO: add update merchant
-export async function updateMerchant(
-  merchantId: string,
-  data: UpdateMerchantSchema
-) {}
+export async function updateMerchantVerified(merchantId: string, merchantVerified: boolean) {
+  return MerchantRepository.update(merchantId, { merchantVerified });
+}

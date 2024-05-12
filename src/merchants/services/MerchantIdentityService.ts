@@ -10,6 +10,7 @@ import { ErrorCode } from "@/core/lib/errors";
 import {
   addMerchantIndex,
   getMerchant,
+  updateMerchantVerified,
 } from "@/merchants/services/MerchantService";
 
 export async function addMerchantIdentity(
@@ -62,10 +63,7 @@ export async function addMerchantIdentity(
   }
 }
 
-export async function editMerchantIdentity(
-  merchantId: string,
-  status: TIdentityStatuses
-) {
+export async function editMerchantIdentity(merchantId: string, status: TIdentityStatuses) {
   await MerchantIdentityRepository.update(merchantId, status);
 
   if (status === IdentityStatuses.Enum.rejected) {
@@ -77,7 +75,7 @@ export async function editMerchantIdentity(
     }
   } else if (status === IdentityStatuses.Enum.verified) {
     const merchant = await getMerchant(merchantId);
-    // TODO: update merchantVerified
+    await updateMerchantVerified(merchantId, true)
     await addMerchantIndex(merchant);
   }
 }
