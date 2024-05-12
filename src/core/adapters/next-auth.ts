@@ -1,15 +1,15 @@
-import {PrismaAdapter} from "@auth/prisma-adapter";
-import {type GetServerSidePropsContext} from "next";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
   type NextAuthOptions,
   type DefaultUser,
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import {prisma} from "@/core/adapters/prisma";
-import {PrismaClient} from "@prisma/client";
-import {getPrivateProfile} from "@/users/services/UserService";
-import {getMerchant} from "@/merchants/services/MerchantService";
+import { prisma } from "@/core/adapters/prisma";
+import { PrismaClient } from "@prisma/client";
+import { getPrivateProfile } from "@/users/services/UserService";
+import { getMerchant } from "@/merchants/services/MerchantService";
 
 interface IUser extends DefaultUser {
   isAdmin?: boolean;
@@ -17,16 +17,14 @@ interface IUser extends DefaultUser {
 }
 
 declare module "next-auth" {
-  interface User extends IUser {
-  }
+  interface User extends IUser {}
 
   interface Session {
     user?: User;
   }
 }
 declare module "next-auth/jwt" {
-  interface JWT extends IUser {
-  }
+  interface JWT extends IUser {}
 }
 
 export const authOptions: NextAuthOptions = {
@@ -38,15 +36,18 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({token, user, trigger, session}) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         // check if user is admin
         const profile = await getPrivateProfile(user.id);
         token.isAdmin = profile?.isAdmin;
 
         // check if user is registered as merchant
-        const merchant = await getMerchant(user.id);
-        token.isMerchant = Boolean(merchant?.merchantId)
+        let merchant;
+        try {
+          merchant = await getMerchant(user.id);
+        } catch (e) {}
+        token.isMerchant = Boolean(merchant?.merchantId);
       }
 
       if (trigger === "update") {
@@ -57,7 +58,7 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async session({session, token}) {
+    async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.sub ?? "";
         session.user.isAdmin = token.isAdmin;
@@ -66,7 +67,7 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    async redirect({baseUrl}) {
+    async redirect({ baseUrl }) {
       return baseUrl + "/register";
     },
   },
