@@ -1,16 +1,15 @@
-import {buildErr, ErrorCode} from "@/core/lib/errors";
-import {registerMerchant} from "@/merchants/services/MerchantService";
-import {RegisterMerchantSchema} from "@/merchants/types";
-import {getPrivateProfile} from "@/users/services/UserService";
-import {Prisma} from "@prisma/client";
-import {getToken} from "next-auth/jwt";
-import {NextRequest} from "next/server";
-import {z} from "zod";
-import {buildRes} from "@/core/lib/utils";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { registerMerchant } from "@/merchants/services/MerchantService";
+import { RegisterMerchantSchema } from "@/merchants/types";
+import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { buildRes } from "@/core/lib/utils";
 
 export async function POST(req: NextRequest) {
   let body;
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   try {
     body = await req.json();
@@ -29,15 +28,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const user = await getPrivateProfile(userId.data);
-    if (!user?.phoneVerified) {
-      return buildErr("ErrForbidden", 403, "phone has not been verified");
-    }
-  } catch (e) {
-    return buildErr("ErrUnknown", 500);
-  }
-
-  try {
     await registerMerchant(userId.data, input.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -51,16 +41,18 @@ export async function POST(req: NextRequest) {
     }
 
     if (e instanceof Error) {
-      if (e.message === ErrorCode.ErrImgInvalidDataURL) {
-        return buildErr("ErrImgInvalidDataURL", 400);
-      }
-
-      if (e.message === ErrorCode.ErrImgInvalidImageType) {
-        return buildErr("ErrImgInvalidImageType", 400);
+      switch (e.message) {
+        case "phone has not been verified":
+          return buildErr("ErrForbidden", 403, e.message);
+        case ErrorCode.ErrImgInvalidDataURL:
+          return buildErr("ErrImgInvalidDataURL", 400);
+        case ErrorCode.ErrImgInvalidImageType:
+          return buildErr("ErrImgInvalidImageType", 400);
       }
     }
+
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "merchant registered successfully"});
+  return buildRes({ status: "merchant registered successfully" });
 }
