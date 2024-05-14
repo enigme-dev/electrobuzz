@@ -9,10 +9,6 @@ export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
 }
 
-export async function countMerchants(options?: SearchParams) {
-  return MerchantRepository.count(options);
-}
-
 export async function getMerchant(merchantId: string) {
   return MerchantRepository.findOne(merchantId);
 }

@@ -1,9 +1,6 @@
 import { buildErr } from "@/core/lib/errors";
 import { buildRes, parseParams } from "@/core/lib/utils";
-import {
-  countMerchants,
-  getMerchants,
-} from "@/merchants/services/MerchantService";
+import { getMerchants } from "@/merchants/services/MerchantService";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -13,8 +10,7 @@ export async function GET(req: NextRequest) {
   const { query, page, skip } = parseParams(searchParams);
 
   try {
-    merchants = await getMerchants({ query, page: skip });
-    merchantsCt = await countMerchants({ query });
+    [merchants, merchantsCt] = await getMerchants({ query, page: skip });
   } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
