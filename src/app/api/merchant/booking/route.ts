@@ -1,17 +1,17 @@
-import {buildErr} from "@/core/lib/errors";
-import {buildRes, parseParams} from "@/core/lib/utils";
-import {getMerchantBookings, countMerchantBookings} from "@/bookings/services/BookingService";
-import {Prisma} from "@prisma/client";
-import {getToken} from "next-auth/jwt";
-import {NextRequest} from "next/server";
-import {z} from "zod";
+import { buildErr } from "@/core/lib/errors";
+import { buildRes, parseParams } from "@/core/lib/utils";
+import { getMerchantBookings } from "@/bookings/services/BookingService";
+import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
 export async function GET(req: NextRequest) {
-  let merchant, bookings, bookingsCt;
-  const token = await getToken({req});
+  let bookings, bookingsCt;
+  const token = await getToken({ req });
 
   const searchParams = req.nextUrl.searchParams;
-  const {page, skip, startDate, endDate} = parseParams(searchParams);
+  const { page, skip, startDate, endDate } = parseParams(searchParams);
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -19,8 +19,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    bookings = await getMerchantBookings(userId.data, {page: skip, startDate, endDate});
-    bookingsCt = await countMerchantBookings(userId.data, {startDate, endDate});
+    [bookings, bookingsCt] = await getMerchantBookings(userId.data, {
+      page: skip,
+      startDate,
+      endDate,
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -35,5 +38,5 @@ export async function GET(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({data: bookings, page, total: bookingsCt});
+  return buildRes({ data: bookings, page, total: bookingsCt });
 }
