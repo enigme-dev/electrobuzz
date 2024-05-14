@@ -30,6 +30,8 @@ import {
   MarkerF,
   useJsApiLoader,
 } from "@react-google-maps/api";
+import { getData } from "@/core/lib/service";
+import { SelectOption } from "@/core/components/select-option";
 
 interface RegisterAsMerchantFormProps {
   onNext: Function;
@@ -45,12 +47,19 @@ const OPTIONS: Option[] = [
   { label: "Microwave", value: "Microwave" },
 ];
 
+interface latLng {
+  lat: number | null;
+  lng: number | null;
+}
 const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
   const { toast } = useToast();
-  const [selectedLocation, setSelectedLocation] = useState({
-    lat: -6.2,
-    lng: 106.816666,
+  const [selectedLocation, setSelectedLocation] = useState<latLng>({
+    lat: null,
+    lng: null,
   });
+  const [provinceOptions, setProvinceOptions] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
+
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const libraries: LoadScriptProps["libraries"] = ["places"];
 
@@ -91,13 +100,29 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
     setSelectedLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
   }
 
+  const defaultLocation = {
+    lat: -6.2,
+    lng: 106.816666,
+  };
+
+  const validLocation = {
+    lat:
+      selectedLocation.lat !== null
+        ? selectedLocation.lat
+        : defaultLocation.lat,
+    lng:
+      selectedLocation.lng !== null
+        ? selectedLocation.lng
+        : defaultLocation.lng,
+  };
+
   useEffect(() => {
-    if (selectedLocation) {
-      console.log(selectedLocation);
+    if (selectedLocation.lat !== null && selectedLocation.lng !== null) {
       form.setValue("merchantLat", selectedLocation.lat);
       form.setValue("merchantLong", selectedLocation.lng);
     }
   }, [selectedLocation]);
+
   const form = useForm<TRegisterMerchantSchema>({
     resolver: zodResolver(RegisterMerchantSchema),
   });
@@ -134,6 +159,55 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
         });
     }
   };
+
+  async function getProvince() {
+    const provinceResponse = await getData(
+      "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+    );
+    const provinceOptions = provinceResponse.map((province: any) => ({
+      item: province.name,
+      value: province.name,
+      id: province.id,
+    }));
+    setProvinceOptions(provinceOptions);
+  }
+
+  async function getCityLocation(id?: string) {
+    const cityResponse = await getData(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`
+    );
+    if (id) {
+      const cityOptions = cityResponse?.map((city: any) => ({
+        item: city.name,
+        value: city.name,
+      }));
+      setCityOptions(cityOptions);
+    }
+  }
+
+  function getCityByProvinceId(value?: {
+    item: string;
+    value: string;
+    id?: string;
+  }) {
+    const selectedValue: any = provinceOptions.filter((item: any) => {
+      return item.value === value;
+    });
+    if (selectedValue.length > 0) {
+      const id = selectedValue[0].id;
+      getCityLocation(id);
+    } else {
+      return undefined;
+    }
+  }
+
+  useEffect(() => {
+    if (form) {
+      getProvince();
+      getCityLocation();
+    }
+  }, [form]);
+
   if (!isLoaded) {
     return null;
   }
@@ -200,11 +274,24 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
             name="merchantProvince"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Provinsi</FormLabel>
-                <FormControl>
-                  <Input placeholder="Provinsi" {...field} />
-                </FormControl>
-                <FormMessage />
+                <div className="pt-5 flex-col justify-between md:flex ">
+                  <div>
+                    <h1 className="pb-2 font-semibold">Provinsi</h1>
+                    <FormControl>
+                      <SelectOption
+                        placeholder="Pilih Provinsi"
+                        selectLabel={"Provinsi"}
+                        selectList={provinceOptions}
+                        defaultValue={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          getCityByProvinceId(value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </div>
               </FormItem>
             )}
           />
@@ -213,14 +300,26 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
             name="merchantCity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Kota</FormLabel>
-                <FormControl>
-                  <Input placeholder="Kota" {...field} />
-                </FormControl>
-                <FormMessage />
+                <div className="pt-5 flex-col justify-between md:flex ">
+                  <div>
+                    <h1 className="pb-2 font-semibold">Kota</h1>
+                    <FormControl>
+                      <SelectOption
+                        placeholder="Pilih Kota"
+                        selectLabel={"Kota"}
+                        selectList={cityOptions}
+                        defaultValue={undefined}
+                        onValueChange={field.onChange}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </div>
               </FormItem>
             )}
           />
+
           <div className="flex items-start justify-start gap-10">
             <div className="flex flex-col gap-5">
               <FormField
@@ -264,17 +363,20 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               <div>
                 <MyMapComponent
                   isLoaded={isLoaded}
-                  locLatLng={selectedLocation}
+                  locLatLng={validLocation}
                   marker={
-                    <MarkerF
-                      draggable
-                      position={{
-                        lat: selectedLocation.lat,
-                        lng: selectedLocation.lng,
-                      }}
-                      onClick={markerClicked}
-                      onDragEnd={markerFinish}
-                    />
+                    selectedLocation.lat !== null &&
+                    selectedLocation.lng !== null ? (
+                      <MarkerF
+                        draggable
+                        position={{
+                          lat: selectedLocation.lat,
+                          lng: selectedLocation.lng,
+                        }}
+                        onClick={markerClicked}
+                        onDragEnd={markerFinish}
+                      />
+                    ) : null
                   }
                 />
               </div>

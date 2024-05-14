@@ -21,7 +21,6 @@ const merchantDashboardNavList = [
 
 const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
-  console.log(pathname);
   return (
     <div className="flex h-screen w-[30vh]">
       <div className="w-[30vh] grid-rows-2 place-items-start p-10 ">
