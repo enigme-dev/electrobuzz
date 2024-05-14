@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -23,6 +22,14 @@ import MultipleSelector, { Option } from "@/core/components/multi-select";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { fileInputToDataURL } from "@/core/lib/utils";
+import { useCallback, useEffect, useRef, useState } from "react";
+import MyMapComponent from "@/core/components/google-maps";
+import {
+  Autocomplete,
+  LoadScriptProps,
+  MarkerF,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 
 interface RegisterAsMerchantFormProps {
   onNext: Function;
@@ -40,7 +47,57 @@ const OPTIONS: Option[] = [
 
 const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
   const { toast } = useToast();
+  const [selectedLocation, setSelectedLocation] = useState({
+    lat: -6.2,
+    lng: 106.816666,
+  });
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const libraries: LoadScriptProps["libraries"] = ["places"];
 
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
+    libraries: libraries,
+  });
+
+  const options = {
+    componentRestrictions: { country: "idn" },
+    fields: ["address_components", "geometry", "icon", "name"],
+  };
+
+  const onLoad = useCallback(
+    (autocomplete: google.maps.places.Autocomplete) => {
+      autocompleteRef.current = autocomplete;
+    },
+    []
+  );
+
+  const handlePlaceChanged = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+      if (place.geometry?.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        setSelectedLocation({ lat: lat, lng: lng });
+      }
+    }
+  };
+
+  const markerClicked = (e: any) => {
+    setSelectedLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+  };
+
+  function markerFinish(e: any) {
+    setSelectedLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+  }
+
+  useEffect(() => {
+    if (selectedLocation) {
+      console.log(selectedLocation);
+      form.setValue("merchantLat", selectedLocation.lat);
+      form.setValue("merchantLong", selectedLocation.lng);
+    }
+  }, [selectedLocation]);
   const form = useForm<TRegisterMerchantSchema>({
     resolver: zodResolver(RegisterMerchantSchema),
   });
@@ -77,6 +134,9 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
         });
     }
   };
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <div className="wrapper pt-10 sm:pt-0 px-4">
@@ -140,9 +200,9 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
             name="merchantProvince"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Alamat Rumah atau Toko</FormLabel>
+                <FormLabel>Provinsi</FormLabel>
                 <FormControl>
-                  <Input placeholder="Alamat lengkap" {...field} />
+                  <Input placeholder="Provinsi" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -153,14 +213,73 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
             name="merchantCity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Alamat Rumah atau Toko</FormLabel>
+                <FormLabel>Kota</FormLabel>
                 <FormControl>
-                  <Input placeholder="Alamat lengkap" {...field} />
+                  <Input placeholder="Kota" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <div className="flex items-start justify-start gap-10">
+            <div className="flex flex-col gap-5">
+              <FormField
+                control={form.control}
+                name="merchantLat"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lat</FormLabel>
+                    <FormControl>
+                      <Input disabled placeholder="Lat" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="merchantLong"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lng</FormLabel>
+                    <FormControl>
+                      <Input disabled placeholder="Lng" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="pt-8">
+              <Autocomplete
+                onLoad={onLoad}
+                options={options}
+                onPlaceChanged={handlePlaceChanged}
+              >
+                <Input placeholder="Enter a location" />
+              </Autocomplete>
+              <p className="italic text-gray-400 pt-5 text-sm">
+                geser marker untuk mendapatkan lokasi detailmu
+              </p>
+              <div>
+                <MyMapComponent
+                  isLoaded={isLoaded}
+                  locLatLng={selectedLocation}
+                  marker={
+                    <MarkerF
+                      draggable
+                      position={{
+                        lat: selectedLocation.lat,
+                        lng: selectedLocation.lng,
+                      }}
+                      onClick={markerClicked}
+                      onDragEnd={markerFinish}
+                    />
+                  }
+                />
+              </div>
+            </div>
+          </div>
           <FormField
             control={form.control}
             name="merchantDesc"
@@ -192,7 +311,6 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="merchantIdentity.identityKTP"
@@ -248,7 +366,6 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               </FormItem>
             )}
           />
-
           <div className="text-right">
             <Button
               type="submit"

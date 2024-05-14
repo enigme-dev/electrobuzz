@@ -18,7 +18,7 @@ export function AuthBar() {
     signOut();
   };
 
-  const isMerchant = true;
+  const isMerchant = false;
 
   const navList = [
     {
