@@ -1,11 +1,14 @@
-import {buildErr} from "@/core/lib/errors";
-import {editMerchantIdentity, getMerchantIdentity} from "@/merchants/services/MerchantIdentityService";
-import {NextRequest} from "next/server";
-import {z} from "zod";
-import {buildRes, IdParam} from "@/core/lib/utils";
-import {EditMerchantIdentitySchema} from "@/merchants/types";
+import { buildErr } from "@/core/lib/errors";
+import {
+  editMerchantIdentity,
+  getMerchantIdentity,
+} from "@/merchants/services/MerchantIdentityService";
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { buildRes, IdParam } from "@/core/lib/utils";
+import { EditMerchantIdentitySchema } from "@/merchants/types";
 
-export async function GET(req: NextRequest, {params}: IdParam) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   let result;
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
@@ -15,16 +18,16 @@ export async function GET(req: NextRequest, {params}: IdParam) {
   try {
     result = await getMerchantIdentity(merchantId.data);
     if (!result) {
-      return buildErr("ErrNotFound", 404)
+      return buildErr("ErrNotFound", 404);
     }
   } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({data: result});
+  return buildRes({ data: result });
 }
 
-export async function PATCH(req: NextRequest, {params}: IdParam) {
+export async function PATCH(req: NextRequest, { params }: IdParam) {
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
@@ -48,5 +51,5 @@ export async function PATCH(req: NextRequest, {params}: IdParam) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "merchant updated successfully"});
+  return buildRes({ status: "merchant updated successfully" });
 }

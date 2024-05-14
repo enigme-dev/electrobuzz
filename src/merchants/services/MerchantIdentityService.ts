@@ -63,7 +63,10 @@ export async function addMerchantIdentity(
   }
 }
 
-export async function editMerchantIdentity(merchantId: string, status: TIdentityStatuses) {
+export async function editMerchantIdentity(
+  merchantId: string,
+  status: TIdentityStatuses
+) {
   await MerchantIdentityRepository.update(merchantId, status);
 
   if (status === IdentityStatuses.Enum.rejected) {
@@ -75,13 +78,13 @@ export async function editMerchantIdentity(merchantId: string, status: TIdentity
     }
   } else if (status === IdentityStatuses.Enum.verified) {
     const merchant = await getMerchant(merchantId);
-    await updateMerchantVerified(merchantId, true)
+    await updateMerchantVerified(merchantId, true);
     await addMerchantIndex(merchant);
   }
 }
 
 export async function getMerchantIdentity(merchantId: string) {
-  let result, ktp, skck, cert;
+  let result, ktp, skck;
 
   result = await MerchantIdentityRepository.findOne(merchantId);
   if (!result) return;
@@ -89,14 +92,11 @@ export async function getMerchantIdentity(merchantId: string) {
   ktp = await getImg(result.identityKTP as string, "vault");
   skck = await getImg(result.identitySKCK as string, "vault");
   if (result?.identityDocs) {
-    cert = await getImg(result.identityDocs, "vault");
+    result.identityDocs = await getImg(result.identityDocs, "vault");
   }
 
   result.identityKTP = await decrypt(ktp);
   result.identitySKCK = await decrypt(skck);
-  if (cert) {
-    result.identityDocs = await decrypt(cert);
-  }
 
   return result;
 }
