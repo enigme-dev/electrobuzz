@@ -70,6 +70,13 @@ export class MerchantRepository extends BaseRepository {
           mode: "insensitive",
         },
       },
+      include: {
+        merchantIdentity: {
+          select: {
+            identityStatus: true,
+          },
+        },
+      },
     });
   }
 
