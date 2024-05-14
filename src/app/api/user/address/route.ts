@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
   try {
     added = await addAddress(userId.data, data.data);
   } catch (e) {
-    console.error(e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2001") {
         return buildErr("ErrNotFound", 404, "invalid user id");
