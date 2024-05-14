@@ -26,7 +26,7 @@ const searchClient = algoliasearch(
 export default function Page() {
   return (
     <div className="flex flex-col wrapper">
-      <div className="rounded-lg px-10 h-screen sm:h-[80vh]">
+      <div className="rounded-lg px-10 h-fit sm:h-[80vh]">
         <div className="flex items-center justify-center md:pt-10">
           <Image
             src="/House searching-cuate.svg"
@@ -84,7 +84,7 @@ export default function Page() {
               </GeneralAccordion>
             </div>
 
-            <div className="flex flex-col gap-6 w-full  max-h-full overflow-auto rounded-lg sm:p-10 no-scrollbar">
+            <div className="flex flex-col gap-6 w-full h-[80vh]   max-h-full overflow-auto rounded-lg sm:p-10 no-scrollbar">
               <NoResultsBoundary fallback={<NoResults />}>
                 <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
               </NoResultsBoundary>

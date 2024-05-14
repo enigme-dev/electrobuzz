@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/core/components/ui/button";
 import { File, Folder, User } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const merchantDashboardNavList = [
@@ -11,12 +14,14 @@ const merchantDashboardNavList = [
   },
   {
     title: "Transactions",
-    link: "/merchant/transaction-history",
+    link: "/merchant/dashboard/transaction",
     icon: <Folder />,
   },
 ];
 
 const MerchantDashboardSideBar = () => {
+  const pathname = usePathname();
+  console.log(pathname);
   return (
     <div className="flex h-screen w-[30vh]">
       <div className="w-[30vh] grid-rows-2 place-items-start p-10 ">
@@ -33,7 +38,11 @@ const MerchantDashboardSideBar = () => {
                 <Link href={value.link}>
                   <Button
                     variant={"ghost"}
-                    className="w-full flex gap-5 justify-start "
+                    className={
+                      pathname === value.link
+                        ? "w-full flex gap-5 justify-start bg-accent"
+                        : "w-full flex gap-5 justify-start"
+                    }
                   >
                     <span>{value.icon}</span>
                     <p className="text-md max-w-fit">{value.title}</p>

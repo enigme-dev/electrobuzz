@@ -90,7 +90,7 @@ export function AuthBar() {
                         variant="outline"
                         className="bg-yellow-400 hover:bg-yellow-300"
                       >
-                        <Link href="/merchant/dashboard">
+                        <Link href="/merchant/dashboard/profile">
                           Merchant Dashboard
                         </Link>
                       </Button>
@@ -123,7 +123,7 @@ export function AuthBar() {
           <div>
             <Button
               variant={"link"}
-              className="grid gap-2 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
+              className="grid gap-1 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
             >
               <UserRound strokeWidth={2} size={20} />
               <p className="text-[0.6rem]">Login</p>
