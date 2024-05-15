@@ -49,6 +49,16 @@ export async function checkOTP(verifId: string, code: string) {
   return VerifyStatuses.Enum.correct;
 }
 
+export async function deleteExpiredOTP() {
+  const now = new Date();
+  const epoch = new Date(0);
+
+  const startDate = epoch;
+  const endDate = dayjs(now).subtract(1, "hours").toDate();
+
+  return VerificationRepository.deleteMany(startDate, endDate);
+}
+
 export async function sendOTP(phoneNumber: string) {
   let verification, expiredAt;
   const verifId = hash(phoneNumber);
