@@ -1,31 +1,56 @@
 "use client";
 
-import MerchantCard from "@/core/components/merchantsCard";
 import { Hit } from "@/search/component/hit";
 import { MenuSelect } from "@/search/component/menuSelect";
 import algoliasearch from "algoliasearch/lite";
-import { MapPin, Search, SearchCheckIcon } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import {
   InstantSearch,
   SearchBox,
   Hits,
-  Menu,
   RefinementList,
-  useInstantSearch,
+  Configure,
 } from "react-instantsearch";
 import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { GeneralAccordion } from "@/core/components/general-accordion";
+import { useEffect, useState } from "react";
+import { useToast } from "@/core/components/ui/use-toast";
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
+  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string,
 );
 
 export default function Page() {
+  const [latLng, setLatLng] = useState("");
+  const { toast } = useToast();
+
+  const onGeoSuccess = (position: GeolocationPosition) => {
+    setLatLng(`${position.coords.latitude},${position.coords.longitude}`);
+  };
+
+  const onGeoError = () =>
+    toast({
+      description: "Unable to retrieve location",
+      variant: "destructive",
+    });
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      toast({
+        description: "Geolocation is not supported by your browser",
+        variant: "destructive",
+      });
+    } else {
+      navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError);
+    }
+  }, []);
+
   return (
     <div className="flex flex-col wrapper">
+      <span>{latLng}</span>
       <div className="rounded-lg px-10 h-fit sm:h-[80vh]">
         <div className="flex items-center justify-center md:pt-10">
           <Image
@@ -40,7 +65,15 @@ export default function Page() {
           searchClient={searchClient}
           indexName="merchants"
           routing
+          future={{ preserveSharedStateOnUnmount: true }}
         >
+          <Configure
+            // aroundLatLng={latLng}
+            aroundRadius={50000}
+            aroundLatLngViaIP
+            filters="merchantAvailable:true"
+            getRankingInfo
+          />
           <div className="rounded-lg w-full flex justify-center items-center">
             <div className="flex gap-2 items-center rounded-lg px-6 shadow-md border w-full justify-center">
               <SearchBox

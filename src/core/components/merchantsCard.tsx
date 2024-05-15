@@ -12,6 +12,7 @@ interface Props {
   serviceCategory: string[];
   location: string;
   merchantId: string;
+  distance: number;
 }
 
 const MerchantsCard: React.FC<Props> = ({
@@ -21,6 +22,7 @@ const MerchantsCard: React.FC<Props> = ({
   serviceCategory,
   location,
   merchantId,
+  distance,
 }: Props) => {
   const router = useRouter();
   return (
@@ -59,6 +61,7 @@ const MerchantsCard: React.FC<Props> = ({
             <Star size={20} />
           </div> */}
         </div>
+        <span>{distance + " meters"}</span>
       </Card>
     </div>
   );
