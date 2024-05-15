@@ -5,6 +5,12 @@ export class VerificationRepository extends BaseRepository {
     return this.db.verification.delete({ where: { verifId } });
   }
 
+  static deleteMany(startDate: Date, endDate: Date) {
+    return this.db.verification.deleteMany({
+      where: { createdAt: { gte: startDate, lte: endDate } },
+    });
+  }
+
   static findOne(verifId: string) {
     return this.db.verification.findUniqueOrThrow({ where: { verifId } });
   }
