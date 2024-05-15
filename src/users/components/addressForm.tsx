@@ -62,6 +62,7 @@ const AddressForm = ({
     mutationFn: async (values: AddressModel) =>
       await axios.post(`/api/user/address`, values),
     onSuccess: () => {
+      handleOnCloseDialog();
       toast({ title: "Tambah alamat berhasil!" });
       queryClient.invalidateQueries({
         queryKey: ["userAddressData", session?.user?.id],
@@ -94,6 +95,7 @@ const AddressForm = ({
         queryKey: ["userAddressData", session?.user?.id],
       });
     },
+
     onError: () => {
       toast({ title: "Edit alamat gagal!", variant: "destructive" });
     },

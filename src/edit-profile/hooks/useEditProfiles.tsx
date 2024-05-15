@@ -40,6 +40,8 @@ const useEditProfile = () => {
     onOpenDialog,
     isEditAddress,
     setIsEditAddress,
+    setIsEditPhone,
+    setIsEditName,
   };
 };
 

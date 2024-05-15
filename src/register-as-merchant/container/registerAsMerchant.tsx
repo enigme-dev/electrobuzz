@@ -6,9 +6,7 @@ import RegisterAsMerchantForm from "../component/registerAsMerchantForm";
 import { RegisterAsMerchantTermsAndConditions } from "../component/registerAsMerchantTermsAndConditions";
 
 export default function Page() {
-  const { data: session } = useSession();
-
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
   const [view, setView] = useState(<></>);
 
   const handlePrev = () => {

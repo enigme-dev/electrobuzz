@@ -36,6 +36,8 @@ const EditProfile = () => {
     isEditing,
     onOpenDialog,
     setOnOpenDialog,
+    setIsEditName,
+    setIsEditPhone,
   } = useEditProfile();
 
   const { isLoading: isLoading, data } = useQuery({
@@ -108,6 +110,14 @@ const EditProfile = () => {
             />
           );
           break;
+        case 2:
+          newView = (
+            <AddressForm
+              isEditing={false}
+              handleOnCloseDialog={() => setOnOpenDialog(false)}
+            />
+          );
+          break;
         default:
           newView = null;
       }
@@ -152,6 +162,7 @@ const EditProfile = () => {
                   startEditing();
                   startEditName();
                   setOnOpenDialog(true);
+                  setStep(0);
                 }}
               >
                 <PencilIcon className="hover:shadow-lg" size={15} />
@@ -175,6 +186,7 @@ const EditProfile = () => {
                   startEditing();
                   startEditPhone();
                   setOnOpenDialog(true);
+                  setStep(0);
                 }}
               >
                 <PencilIcon className="hover:shadow-lg" size={15} />
@@ -204,14 +216,9 @@ const EditProfile = () => {
           <div>
             <DialogGeneral
               dialogTitle={"Add Address"}
-              dialogContent={
-                <>
-                  <AddressForm
-                    isEditing={false}
-                    handleOnCloseDialog={() => {}}
-                  />
-                </>
-              }
+              dialogContent={<>{view}</>}
+              onOpen={onOpenDialog}
+              onOpenChange={handleOpenChange}
               dialogTrigger={
                 <Card
                   className="rounded-full w-fit block"
@@ -220,6 +227,13 @@ const EditProfile = () => {
                   <PlusIcon
                     className="p-1 hover:bg-gray-100 rounded-full hover:cursor-pointer"
                     size={30}
+                    onClick={() => {
+                      setOnOpenDialog(true);
+                      cancelEditing();
+                      setIsEditName(false);
+                      setIsEditPhone(false);
+                      setStep(2);
+                    }}
                   />
                 </Card>
               }
