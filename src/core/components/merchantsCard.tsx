@@ -48,7 +48,7 @@ const MerchantsCard: React.FC<Props> = ({
             />
           </div>
           <div className="grid place-items-start gap-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-start sm:items-center gap-2 flex-col sm:flex-row">
               <h1 className="text-sm sm:text-md font-semibold ">{merchName}</h1>
               <p className="text-xs text-gray-400">{meterToKilometer} Km</p>
             </div>
