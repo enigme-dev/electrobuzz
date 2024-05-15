@@ -25,6 +25,10 @@ const MerchantsCard: React.FC<Props> = ({
   distance,
 }: Props) => {
   const router = useRouter();
+  const meterToKilometer = distance / 1000;
+  const renderedCategories = serviceCategory.slice(0, 5).join(", ");
+  const remainingCategories = serviceCategory.slice(5);
+
   return (
     <div>
       <Card
@@ -39,29 +43,37 @@ const MerchantsCard: React.FC<Props> = ({
               className="aspect-square p-3 rounded-full flex justify-center items-center"
               src={imgSource}
               alt={imgAlt}
-              width={70}
-              height={70}
+              width={85}
+              height={85}
             />
           </div>
           <div className="grid place-items-start gap-1">
-            <h1 className="text-sm sm:text-md font-semibold ">{merchName}</h1>
-            <div className="flex gap-4 items-center">
-              <h2 className="rounded-lg text-gray-400 text-[0.6rem] sm:text-sm flex items-center gap-2">
+            <div className="flex items-start sm:items-center gap-2 flex-col sm:flex-row">
+              <h1 className="text-sm sm:text-md font-semibold ">{merchName}</h1>
+              <p className="text-xs text-gray-400">{meterToKilometer} Km</p>
+            </div>
+            <div className="flex gap-4 items-center ">
+              <h2 className="rounded-lg text-gray-400 text-[0.6rem]  sm:text-sm flex items-center gap-2">
                 <Lightbulb className="w-4" />
-                {serviceCategory}
-              </h2>
-              <h2 className="text-gray-400 text-[0.6rem] sm:text-sm  flex items-center gap-2 ">
-                <MapPinIcon className="w-4 " />
-                {location}
+                <div>
+                  <span>{renderedCategories}</span>
+                  {remainingCategories.length > 0 && (
+                    <span className="ml-1">...</span>
+                  )}
+                </div>
               </h2>
             </div>
+            <h2 className="text-gray-400 text-[0.6rem] sm:text-sm  flex items-center gap-2 ">
+              <MapPinIcon className="w-4 " />
+              {location}
+            </h2>
           </div>
           {/* <div className="flex items-center gap-2">
             <p className="text-xs sm:text-sm">4,8/5</p>
             <Star size={20} />
           </div> */}
         </div>
-        <span>{distance + " meters"}</span>
+        <span></span>
       </Card>
     </div>
   );
