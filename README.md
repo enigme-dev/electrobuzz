@@ -1,7 +1,6 @@
 # Electrobuzz ⚡
 
 [![analyze](https://github.com/alkuinvito/electrobuzz/actions/workflows/analyze.yml/badge.svg)](https://github.com/alkuinvito/electrobuzz/actions/workflows/analyze.yml)
-[![deploy](https://github.com/alkuinvito/electrobuzz/actions/workflows/deploy.yml/badge.svg)](https://github.com/alkuinvito/electrobuzz/actions/workflows/deploy.yml)
 
 ## 💬 Introduction
 Electrobuzz merupakan aplikasi berbasis web yang bisa digunakan untuk menjual / membeli jasa servis elektronik. Aplikasi ini akan menyediakan beberapa servis elektronik seperti servis AC, servis gadget (telepon selular dan tablet), servis komputer, servis TV dan servis kulkas. Aplikasi ini bersifat individualisme, dimana orang yang menjual jasa tidak terikat dengan instansi tertentu dan memiliki sertifikasi dalam bidang servis yang diminati. Untuk menganalisa sertifikasi tersebut, pihak penjual jasa diwajibkan untuk mengunggah sertifikasi / portofolio servis jasa yang diminati yang selanjutnya akan di verifikasi oleh pihak “electrobuzz” supaya penjual dapat dipercaya dan kompeten dalam bidangnya.
