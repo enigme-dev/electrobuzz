@@ -1,8 +1,15 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
+import { Prisma } from "@prisma/client";
 
 export class VerificationRepository extends BaseRepository {
   static delete(verifId: string) {
     return this.db.verification.delete({ where: { verifId } });
+  }
+
+  static deleteMany(startDate: Date, endDate: Date) {
+    return this.db.verification.deleteMany({
+      where: { createdAt: { gte: startDate, lte: endDate } },
+    });
   }
 
   static findOne(verifId: string) {
