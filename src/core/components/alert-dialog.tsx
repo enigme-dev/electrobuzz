@@ -15,7 +15,7 @@ interface AlertDialogProps {
   dialogDescription: ReactNode;
   dialogTrigger: ReactNode;
   dialogTitle: string;
-  alertDialogTitle: string;
+  alertDialogSubmitTitle: string;
   submitAction: Function;
   className?: string;
 }
@@ -24,7 +24,7 @@ export function AlertDialogComponent({
   dialogDescription,
   dialogTrigger,
   dialogTitle,
-  alertDialogTitle,
+  alertDialogSubmitTitle,
   submitAction,
   className,
 }: AlertDialogProps) {
@@ -42,7 +42,7 @@ export function AlertDialogComponent({
             className={className}
             onClick={() => submitAction()}
           >
-            {alertDialogTitle}
+            {alertDialogSubmitTitle}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

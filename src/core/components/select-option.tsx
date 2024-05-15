@@ -16,7 +16,6 @@ interface SelectProps {
   defaultValue: string | undefined;
   onValueChange: (value: { item: string; value: string }) => void;
   placeholder: React.ReactNode;
-  onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
 }
 
 export function SelectOption({
@@ -25,7 +24,6 @@ export function SelectOption({
   defaultValue,
   onValueChange,
   placeholder,
-  onClick,
 }: SelectProps) {
   return (
     <Select defaultValue={defaultValue} onValueChange={onValueChange}>

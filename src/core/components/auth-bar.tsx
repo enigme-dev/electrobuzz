@@ -18,24 +18,24 @@ export function AuthBar() {
     signOut();
   };
 
-  const isMerchant = false;
-
   const navList = [
     {
       label: "My Bookings",
       link: "/user/my-bookings",
       icon: <NotepadText size="20" />,
+      isAdmin: false,
     },
     {
       label: "Edit Profile",
       link: "/user/profile",
       icon: <Settings size="20" />,
+      isAdmin: false,
     },
     {
       label: "Admin Dashboard",
       link: "/admin",
       icon: <Users size="20" />,
-      isAdmin: session?.user?.isAdmin,
+      isAdmin: true,
     },
   ];
 
@@ -84,7 +84,7 @@ export function AuthBar() {
                   </div>
                 ))}
                 <ul className="flex justify-between gap-5">
-                  {isMerchant ? (
+                  {session.user.isMerchant ? (
                     <li className="pt-5 text-center">
                       <Button
                         variant="outline"

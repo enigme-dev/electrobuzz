@@ -107,12 +107,10 @@ const BookingDetail = () => {
               />
               <AlertDialogComponent
                 dialogTitle="Apakah kamu yakin?"
-                buttonVariant={"outline"}
-                buttonContinueLink={`${pathname}/booking-detail`}
-                dialogDescription={
-                  "Pastikan budgetmu cukup untuk membayar teknisi ya.."
-                }
-                buttonTitle={"Terima"}
+                alertDialogSubmitTitle="submit"
+                dialogDescription="Pastikan kamu memiliki budget yang cukup ya..."
+                submitAction={() => {}}
+                dialogTrigger={<Button variant={"outline"}>Terima</Button>}
               />
             </div>
           </div>

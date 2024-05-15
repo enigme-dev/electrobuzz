@@ -91,7 +91,7 @@ const AddressCard = ({
               }
             />
             <AlertDialogComponent
-              alertDialogTitle="Submit"
+              alertDialogSubmitTitle="Submit"
               submitAction={() => deleteAddress()}
               className="bg-yellow-400 text-black hover:bg-yellow-300"
               dialogDescription={"Apakah kamu yakin akan menghapus alamat ini?"}

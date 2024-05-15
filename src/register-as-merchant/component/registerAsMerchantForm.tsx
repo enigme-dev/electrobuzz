@@ -32,6 +32,7 @@ import {
 } from "@react-google-maps/api";
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
+import { useSession } from "next-auth/react";
 
 interface RegisterAsMerchantFormProps {
   onNext: Function;
@@ -41,7 +42,7 @@ const OPTIONS: Option[] = [
   { label: "AC", value: "AC" },
   { label: "TV", value: "TV" },
   { label: "Kulkas", value: "Kulkas" },
-  { label: "Smartphone", value: "Smartphon" },
+  { label: "Smartphone", value: "Smartphone" },
   { label: "Mesin Cuci", value: "Mesin Cuci" },
   { label: "Laptop", value: "Laptop" },
   { label: "Microwave", value: "Microwave" },
@@ -52,6 +53,7 @@ interface latLng {
   lng: number | null;
 }
 const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
+  const { update } = useSession();
   const { toast } = useToast();
   const [selectedLocation, setSelectedLocation] = useState<latLng>({
     lat: null,
@@ -129,17 +131,19 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
 
   const { mutate: addMerchantData, isPending: updateLoading } = useMutation({
     mutationFn: (values: TRegisterMerchantSchema) =>
-      axios.post(`/api/merchant/identity`, values),
+      axios.post(`/api/merchant`, values),
     onSuccess: () => {
       toast({
         title: "Formulir anda telah terkirim!",
         description: "mohon menunggu konfirmasi admin",
       });
+      update({
+        isMerchant: true,
+      });
     },
   });
 
   function onSubmit(data: TRegisterMerchantSchema) {
-    const fileKTPImage = form.getValues("merchantIdentity.identityKTP");
     addMerchantData(data);
   }
 
@@ -320,7 +324,7 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
             )}
           />
 
-          <div className="flex items-start justify-start gap-10">
+          <div className="flex items-start justify-start gap-10 flex-col-reverse sm:flex-row">
             <div className="flex flex-col gap-5">
               <FormField
                 control={form.control}
