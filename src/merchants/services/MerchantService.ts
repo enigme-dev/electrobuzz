@@ -1,18 +1,12 @@
 import { IdentityStatuses, TRegisterMerchantSchema } from "@/merchants/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { encrypt } from "@/core/lib/security";
-import {
-  MerchantRepository,
-  UpdateMerchantSchema,
-} from "@/merchants/repositories/MerchantRepository";
+import { MerchantRepository } from "@/merchants/repositories/MerchantRepository";
 import { SearchParams } from "@/core/lib/utils";
+import { getPrivateProfile } from "@/users/services/UserService";
 
 export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
-}
-
-export async function countMerchants(options?: SearchParams) {
-  return MerchantRepository.count(options);
 }
 
 export async function getMerchant(merchantId: string) {
@@ -28,6 +22,9 @@ export async function registerMerchant(
   data: TRegisterMerchantSchema
 ) {
   let images = [];
+
+  const user = await getPrivateProfile(userId);
+  if (!user?.phoneVerified) throw new Error("phone has not been verified");
 
   try {
     data.merchantPhotoUrl = await uploadImg(data.merchantPhotoUrl);
@@ -71,8 +68,9 @@ export async function registerMerchant(
   }
 }
 
-// TODO: add update merchant
-export async function updateMerchant(
+export async function updateMerchantVerified(
   merchantId: string,
-  data: UpdateMerchantSchema
-) {}
+  merchantVerified: boolean
+) {
+  return MerchantRepository.update(merchantId, { merchantVerified });
+}

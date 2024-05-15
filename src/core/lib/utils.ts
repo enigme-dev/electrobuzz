@@ -56,3 +56,33 @@ export function buildRes(response: ResponseSchema) {
 
   return Response.json({ ...response, length, perpage });
 }
+
+export function fileInputToDataURL(
+  fileInput: HTMLInputElement
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Ensure files are selected
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      reject(new Error("No files selected."));
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Failed to read file."));
+      }
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Failed to read file."));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}

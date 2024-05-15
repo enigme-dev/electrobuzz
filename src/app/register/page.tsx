@@ -42,7 +42,12 @@ export default function Page() {
         );
         break;
       case 2:
-        setView(<AddressForm onPrevious={() => handlePrev()} />);
+        setView(
+          <AddressForm
+            onPrevious={() => handlePrev()}
+            handleOnCloseDialog={() => {}}
+          />
+        );
         break;
     }
   }, [step]);

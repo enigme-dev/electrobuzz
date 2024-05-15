@@ -1,20 +1,8 @@
-import {BaseRepository} from "@/core/repositories/BaseRepository";
-import {TBookingModel} from "@/bookings/types";
-import {SearchParams} from "@/core/lib/utils";
+import { BaseRepository } from "@/core/repositories/BaseRepository";
+import { TBookingModel } from "@/bookings/types";
+import { SearchParams } from "@/core/lib/utils";
 
 export class BookingRepository extends BaseRepository {
-  static countByMerchantId(merchantId: string, options?: SearchParams) {
-    return this.db.booking.count({
-      where: {merchantId, bookingSchedule: {gte: options?.startDate, lte: options?.endDate}}
-    })
-  }
-
-  static countByUserId(userId: string, options?: SearchParams) {
-    return this.db.booking.count({
-      where: {userId, bookingSchedule: {gte: options?.startDate, lte: options?.endDate}}
-    })
-  }
-
   static create(data: TBookingModel) {
     return this.db.booking.create({
       data: {
@@ -38,22 +26,44 @@ export class BookingRepository extends BaseRepository {
           },
         },
       },
-    })
+    });
   }
 
   static findByMerchantId(merchantId: string, options?: SearchParams) {
-    return this.db.booking.findMany({
-      skip: options?.page,
-      take: 10,
-      where: {merchantId, bookingSchedule: {gte: options?.startDate, lte: options?.endDate}}
-    })
+    return this.db.$transaction([
+      this.db.booking.findMany({
+        skip: options?.page,
+        take: 10,
+        where: {
+          merchantId,
+          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+        },
+      }),
+      this.db.booking.count({
+        where: {
+          merchantId,
+          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+        },
+      }),
+    ]);
   }
 
   static findByUserId(userId: string, options?: SearchParams) {
-    return this.db.booking.findMany({
-      skip: options?.page,
-      take: 10,
-      where: {userId, bookingSchedule: {gte: options?.startDate, lte: options?.endDate}}
-    })
+    return this.db.$transaction([
+      this.db.booking.findMany({
+        skip: options?.page,
+        take: 10,
+        where: {
+          userId,
+          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+        },
+      }),
+      this.db.booking.count({
+        where: {
+          userId,
+          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+        },
+      }),
+    ]);
   }
 }

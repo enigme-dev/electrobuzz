@@ -1,15 +1,17 @@
-import {buildErr} from "@/core/lib/errors";
-import {checkOTP, sendOTP} from "@/users/lib/verification";
-import {getPrivateProfile, updatePhoneVerification} from "@/users/services/UserService";
-import {VerifyOTPSchema, VerifyStatuses} from "@/users/types";
-import {getToken} from "next-auth/jwt";
-import {NextRequest} from "next/server";
-import {z} from "zod";
-import {buildRes} from "@/core/lib/utils";
+import { ErrorCode, buildErr } from "@/core/lib/errors";
+import {
+  checkPhoneVerification,
+  requestPhoneVerification,
+} from "@/users/services/UserService";
+import { VerifyOTPSchema, VerifyStatuses } from "@/users/types";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { buildRes } from "@/core/lib/utils";
 
 export async function GET(req: NextRequest) {
   let result;
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -17,32 +19,32 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const user = await getPrivateProfile(userId.data);
-    if (!user?.phone) {
-      return buildErr("ErrOTPNotRegistered", 409, "phone is not registered");
-    }
+    result = await requestPhoneVerification(userId.data);
 
-    if (user?.phoneVerified) {
-      return buildErr("ErrOTPVerified", 409, "phone has been verified already");
-    }
-
-    result = await sendOTP(user?.phone);
     if (result.error === "ErrTooManyRequest") {
-      return buildErr(
-        "ErrTooManyRequest",
-        429,
-        {message: "OTP can be requested every 2 minutes", expiredAt: result.expiredAt?.toISOString()}
-      );
-    } else if (result.error === "ErrUnknown") {
-      return buildErr("ErrUnknown", 500);
+      return buildErr("ErrTooManyRequest", 429, {
+        message: "OTP can be requested every 2 minutes",
+        expiredAt: result.expiredAt?.toISOString(),
+      });
     }
   } catch (e) {
+    if (e instanceof Error) {
+      switch (e.message) {
+        case ErrorCode.ErrNotFound:
+          return buildErr("ErrNotFound", 404, "user does not exist");
+        case ErrorCode.ErrOTPNotRegistered:
+          return buildErr("ErrOTPNotRegistered", 409, e.message);
+        case ErrorCode.ErrOTPVerified:
+          return buildErr("ErrOTPVerified", 409, e.message);
+      }
+    }
+
     return buildErr("ErrUnknown", 500);
   }
 
   return buildRes({
     status: "OTP sent successfully",
-    data: {verifId: result.data, expiredAt: result.expiredAt},
+    data: { verifId: result.data, expiredAt: result.expiredAt },
   });
 }
 
@@ -55,7 +57,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -68,16 +70,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const user = await getPrivateProfile(userId.data);
-    if (!user?.phone) {
-      return buildErr("ErrOTPNotRegistered", 409, "phone is not registered");
-    }
-
-    if (user?.phoneVerified) {
-      return buildErr("ErrOTPVerified", 409, "phone has been verified already");
-    }
-
-    const response = await checkOTP(data.data.verifId, data.data.code);
+    const response = await checkPhoneVerification(userId.data, data.data);
     switch (response) {
       case VerifyStatuses.Enum.incorrect:
         return buildErr("ErrOTPIncorrect", 400, "incorrect OTP code");
@@ -88,11 +81,9 @@ export async function POST(req: NextRequest) {
       case VerifyStatuses.Enum.error:
         return buildErr("ErrOTPUnknown", 500);
     }
-
-    await updatePhoneVerification(userId.data, true);
   } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "phone verified successfully"});
+  return buildRes({ status: "phone verified successfully" });
 }

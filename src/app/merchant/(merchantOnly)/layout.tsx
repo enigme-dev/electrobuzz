@@ -15,13 +15,13 @@ const MerchantLayout = ({ children }: any) => {
     enabled: !!session?.user?.id,
   });
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  // if (isLoading) {
+  //   return <Loader />;
+  // }
 
-  if (isError) {
-    router.push("/merchant/register");
-  }
+  // if (isError) {
+  //   router.push("/merchant/register");
+  // }
 
   return <div>{children}</div>;
 };

@@ -1,15 +1,15 @@
-import {buildErr} from "@/core/lib/errors";
-import {Prisma} from "@prisma/client";
-import {getToken} from "next-auth/jwt";
-import {NextRequest} from "next/server";
-import {z} from "zod";
-import {addAddress, getAddresses} from "@/users/services/AddressService";
-import {buildRes} from "@/core/lib/utils";
-import {AddressSchema} from "@/users/types";
+import { buildErr } from "@/core/lib/errors";
+import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { addAddress, getAddresses } from "@/users/services/AddressService";
+import { buildRes } from "@/core/lib/utils";
+import { AddressSchema } from "@/users/types";
 
 export async function GET(req: NextRequest) {
   let addresses;
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -17,12 +17,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    addresses = await getAddresses(userId.data);
+    [addresses] = await getAddresses(userId.data);
   } catch (e) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({data: addresses});
+  return buildRes({ data: addresses });
 }
 
 export async function POST(req: NextRequest) {
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    added = await addAddress(userId.data, data.data)
+    added = await addAddress(userId.data, data.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2001") {
@@ -66,6 +66,6 @@ export async function POST(req: NextRequest) {
 
   return buildRes({
     status: "address added successfully",
-    data: {id: added.addressId},
+    data: { id: added.addressId },
   });
 }

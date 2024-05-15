@@ -50,8 +50,8 @@ const EditProfile = () => {
     data: userAddressData,
   } = useQuery({
     queryKey: ["userAddressData", session?.user?.id],
-    queryFn: () =>
-      axios.get(`/api/user/address`).then((response) => {
+    queryFn: async () =>
+      await axios.get(`/api/user/address`).then((response) => {
         return response.data.data as AddressData;
       }),
     enabled: !!session?.user?.id,
@@ -206,7 +206,10 @@ const EditProfile = () => {
               dialogTitle={"Add Address"}
               dialogContent={
                 <>
-                  <AddressForm isEditing={false} />
+                  <AddressForm
+                    isEditing={false}
+                    handleOnCloseDialog={() => {}}
+                  />
                 </>
               }
               dialogTrigger={
@@ -223,7 +226,7 @@ const EditProfile = () => {
             />
           </div>
         </div>
-        <div className="flex gap-4 pt-5 flex-col lg:flex-row items-center w-full justify-evenly">
+        <div className="flex gap-8 pt-5 flex-col lg:flex-row items-center w-full justify-evenly">
           {userAddressData &&
             Object.entries(userAddressData).map(([key, value], index) => {
               return (

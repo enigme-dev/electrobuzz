@@ -10,6 +10,7 @@ import { ErrorCode } from "@/core/lib/errors";
 import {
   addMerchantIndex,
   getMerchant,
+  updateMerchantVerified,
 } from "@/merchants/services/MerchantService";
 
 export async function addMerchantIdentity(
@@ -77,13 +78,13 @@ export async function editMerchantIdentity(
     }
   } else if (status === IdentityStatuses.Enum.verified) {
     const merchant = await getMerchant(merchantId);
-    // TODO: update merchantVerified
+    await updateMerchantVerified(merchantId, true);
     await addMerchantIndex(merchant);
   }
 }
 
 export async function getMerchantIdentity(merchantId: string) {
-  let result, ktp, skck, cert;
+  let result, ktp, skck;
 
   result = await MerchantIdentityRepository.findOne(merchantId);
   if (!result) return;
@@ -91,14 +92,11 @@ export async function getMerchantIdentity(merchantId: string) {
   ktp = await getImg(result.identityKTP as string, "vault");
   skck = await getImg(result.identitySKCK as string, "vault");
   if (result?.identityDocs) {
-    cert = await getImg(result.identityDocs, "vault");
+    result.identityDocs = await getImg(result.identityDocs, "vault");
   }
 
   result.identityKTP = await decrypt(ktp);
   result.identitySKCK = await decrypt(skck);
-  if (cert) {
-    result.identityDocs = await decrypt(cert);
-  }
 
   return result;
 }

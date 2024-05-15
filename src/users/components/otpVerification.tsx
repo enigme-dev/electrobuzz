@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { VerifyOTPModel, VerifyOTPSchema } from "../types";
+import { TVerifyOTPSchema, VerifyOTPSchema } from "../types";
 import {
   Form,
   FormControl,
@@ -47,7 +47,7 @@ const OTPVerification = ({
 
   const { toast } = useToast();
 
-  const OTPform = useForm<VerifyOTPModel>({
+  const OTPform = useForm<TVerifyOTPSchema>({
     resolver: zodResolver(VerifyOTPSchema),
     defaultValues: {
       code: "",
@@ -167,7 +167,7 @@ const OTPVerification = ({
     }
   }
 
-  function onSubmitOTP(OTPvalues: VerifyOTPModel) {
+  function onSubmitOTP(OTPvalues: TVerifyOTPSchema) {
     try {
       checkOTPValid(OTPvalues);
     } catch (error) {
@@ -175,7 +175,7 @@ const OTPVerification = ({
     }
   }
 
-  async function checkOTPValid(values: VerifyOTPModel) {
+  async function checkOTPValid(values: TVerifyOTPSchema) {
     await axios
       .post("/api/user/otp", values)
       .then((response) => {
@@ -216,7 +216,7 @@ const OTPVerification = ({
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
-                <FormDescription>
+                <FormDescription className="flex items-center">
                   <Button
                     variant="link"
                     type="button"
@@ -225,24 +225,24 @@ const OTPVerification = ({
                     disabled={isCountdown}
                   >
                     Get Code
-                    {!isCountdown && (
-                      <p className="text-gray-400 text-xs">
-                        tekan &quot;Get Code&quot;untuk <br /> mendapatkan kode
-                      </p>
-                    )}
-                    <div className={countdown === 0 ? "hidden" : "block"}>
-                      {" "}
-                      {countdown > 0 ? (
-                        <p className="text-gray-400 text-xs">
-                          Time remaining: {Math.floor(countdown / 60)}:
-                          {countdown % 60 < 10 ? "0" : ""}
-                          {countdown % 60}
-                        </p>
-                      ) : (
-                        <p></p>
-                      )}
-                    </div>
                   </Button>
+                  {!isCountdown && (
+                    <p className="text-gray-400 text-xs">
+                      tekan &quot;Get Code&quot;untuk <br /> mendapatkan kode
+                    </p>
+                  )}
+                  <div className={countdown === 0 ? "hidden" : "block"}>
+                    {" "}
+                    {countdown > 0 ? (
+                      <p className="text-gray-400 text-xs">
+                        Time remaining: {Math.floor(countdown / 60)}:
+                        {countdown % 60 < 10 ? "0" : ""}
+                        {countdown % 60}
+                      </p>
+                    ) : (
+                      <p></p>
+                    )}
+                  </div>
                 </FormDescription>
                 <FormMessage />
               </FormItem>

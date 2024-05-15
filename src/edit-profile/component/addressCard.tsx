@@ -45,19 +45,13 @@ const AddressCard = ({
 
   const { mutate: deleteAddress, isPending: deleteAddressLoading } =
     useMutation({
-      mutationFn: () =>
-        axios
-          .delete(`/api/user/address/${initialAddressData.addressId}`)
-          .then((response) => {
-            console.log(response);
-          })
-          .catch((error) => console.log(error)),
+      mutationFn: async () =>
+        await axios.delete(`/api/user/address/${initialAddressData.addressId}`),
       onSuccess: () => {
         toast({ title: "Delete alamat berhasil!" });
         queryClient.invalidateQueries({
           queryKey: ["userAddressData", session?.user?.id],
         });
-        handleChange();
       },
       onError: () => {
         toast({ title: "Delete alamat gagal!", variant: "destructive" });
@@ -91,21 +85,15 @@ const AddressCard = ({
                     onPrevious={() => {}}
                     isEditing={true}
                     initialAddressData={initialAddressData}
-                    handleOnOpenDialog={handleChange}
+                    handleOnCloseDialog={() => handleChange()}
                   />
                 </>
               }
             />
             <AlertDialogComponent
-              alerDialogAction={
-                <Button
-                  variant={"default"}
-                  className="bg-yellow-400 text-black hover:bg-yellow-300"
-                  onClick={() => deleteAddress()}
-                >
-                  Submit
-                </Button>
-              }
+              alertDialogSubmitTitle="Submit"
+              submitAction={() => deleteAddress()}
+              className="bg-yellow-400 text-black hover:bg-yellow-300"
               dialogDescription={"Apakah kamu yakin akan menghapus alamat ini?"}
               dialogTitle="Delete Address"
               dialogTrigger={

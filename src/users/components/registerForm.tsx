@@ -58,9 +58,11 @@ const RegisterForm = ({
     onSuccess: () => {
       toast({ title: "Edit profile berhasil!" });
       queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
-      update({
-        name: form.getValues("name"),
-      });
+      if (isEditing) {
+        update({
+          name: form.getValues("name"),
+        });
+      }
     },
   });
 

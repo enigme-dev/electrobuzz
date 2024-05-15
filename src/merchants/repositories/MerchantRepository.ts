@@ -1,25 +1,11 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
 import { SearchParams } from "@/core/lib/utils";
-import { MerchantModel, TRegisterMerchantSchema } from "@/merchants/types";
+import { TRegisterMerchantSchema } from "@/merchants/types";
 import { AlgoliaClient } from "@/core/adapters/algolia";
-import { z } from "zod";
-
-export const UpdateMerchantSchema = MerchantModel.partial();
-export type UpdateMerchantSchema = z.infer<typeof UpdateMerchantSchema>;
+import { Prisma } from "@prisma/client";
 
 export class MerchantRepository extends BaseRepository {
   private static readonly index = AlgoliaClient.initIndex("merchants");
-
-  static count(options?: SearchParams) {
-    return this.db.merchant.count({
-      where: {
-        merchantName: {
-          contains: options?.query,
-          mode: "insensitive",
-        },
-      },
-    });
-  }
 
   static create(userId: string, data: TRegisterMerchantSchema) {
     return this.db.merchant.create({
@@ -33,6 +19,7 @@ export class MerchantRepository extends BaseRepository {
         merchantLong: data.merchantLong,
         merchantCategory: data.merchantCategory,
         merchantPhotoUrl: data.merchantPhotoUrl,
+        merchantAvailable: true,
         merchantIdentity: {
           create: {
             identityStatus: data.merchantIdentity.identityStatus,
@@ -53,27 +40,46 @@ export class MerchantRepository extends BaseRepository {
   static createIndex(data: any) {
     return this.index.saveObject({
       objectID: data.merchantId,
-      _tags: data.merchantCategory,
       merchantName: data.merchantName,
       merchantPhotoUrl: data.merchantPhotoUrl,
       merchantCity: data.merchantCity,
-      merchantLat: data.merchantLat,
-      merchantLong: data.merchantLong,
-      isAvailable: data.merchantAvailable,
+      merchantAvailable: data.merchantAvailable,
+      _tags: data.merchantCategory,
+      _geoloc: {
+        lat: data.merchantLat,
+        lng: data.merchantLong,
+      },
     });
   }
 
   static findAll(options?: SearchParams) {
-    return this.db.merchant.findMany({
-      skip: options?.page,
-      take: 10,
-      where: {
-        merchantName: {
-          contains: options?.query,
-          mode: "insensitive",
+    return this.db.$transaction([
+      this.db.merchant.findMany({
+        skip: options?.page,
+        take: 10,
+        where: {
+          merchantName: {
+            contains: options?.query,
+            mode: "insensitive",
+          },
         },
-      },
-    });
+        include: {
+          merchantIdentity: {
+            select: {
+              identityStatus: true,
+            },
+          },
+        },
+      }),
+      this.db.merchant.count({
+        where: {
+          merchantName: {
+            contains: options?.query,
+            mode: "insensitive",
+          },
+        },
+      }),
+    ]);
   }
 
   static findOne(id: string) {
@@ -89,7 +95,7 @@ export class MerchantRepository extends BaseRepository {
     });
   }
 
-  static update(id: string, data: UpdateMerchantSchema) {
+  static update(id: string, data: Prisma.MerchantUpdateInput) {
     return this.db.merchant.update({
       where: {
         merchantId: id,
