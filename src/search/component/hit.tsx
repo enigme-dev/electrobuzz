@@ -6,10 +6,9 @@ const SearchItem = z.object({
   merchantCity: z.string(),
   merchantPhotoUrl: z.string().url(),
   objectID: z.string().cuid(),
-  __position: z.number(),
-  _highlightResult: z.any(),
+  merchantAvailable: z.boolean(),
   _tags: z.string().array(),
-  isAvailable: z.boolean(),
+  _rankingInfo: z.object({ geoDistance: z.number() }),
 });
 
 type SearchItem = z.infer<typeof SearchItem>;
@@ -23,6 +22,7 @@ export function Hit({ hit }: Readonly<{ hit: SearchItem }>) {
       serviceCategory={hit._tags}
       location={hit.merchantCity}
       merchantId={hit.objectID}
+      distance={hit._rankingInfo.geoDistance}
     />
   );
 }

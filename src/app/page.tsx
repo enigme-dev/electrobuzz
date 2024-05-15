@@ -3,7 +3,8 @@
 import { Banner } from "@/dashboard/banner";
 import Category from "@/category/container/category";
 import StepByStep from "@/step-by-step/container/stepBystep";
-import PopularMerchants from "@/popular-merchants/container/popularMerchants";
+import NearestMerchants from "@/NearestMerchants/container/NearestMerchants";
+import { useGeoLocation } from "@/core/hooks/useGeolocation";
 
 export default function Home() {
   return (
@@ -18,7 +19,7 @@ export default function Home() {
         <Category />
       </section>
       <section className="wrapper pt-10 sm:pt-20">
-        <PopularMerchants />
+        <NearestMerchants />
       </section>
     </main>
   );

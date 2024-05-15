@@ -1,4 +1,5 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
+import { Prisma } from "@prisma/client";
 
 export class VerificationRepository extends BaseRepository {
   static delete(verifId: string) {
