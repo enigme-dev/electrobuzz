@@ -14,7 +14,7 @@ interface SelectProps {
   selectLabel?: string;
   selectList: { item: string; value: string; id?: string }[];
   defaultValue: string | undefined;
-  onValueChange: (value: { item: string; value: string }) => void;
+  onValueChange: (value: any) => void;
   placeholder: React.ReactNode;
 }
 
