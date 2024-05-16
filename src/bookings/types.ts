@@ -91,3 +91,11 @@ export const GetMerchantBookingDone = GetMerchantBookingAccepted.extend({
 });
 
 export type TGetMerchantBookingDone = z.infer<typeof GetMerchantBookingDone>;
+
+export const AcceptBookingSchema = z.object({
+  bookingPrice: z.number({
+    required_error: "estimation price can not be empty",
+  }),
+});
+
+export type TAcceptBookingSchema = z.infer<typeof AcceptBookingSchema>;
