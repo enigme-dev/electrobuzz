@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+export const UserModel = z.object({
+  id: z.string().cuid(),
+  name: z.string().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  phoneVerified: z.boolean(),
+  image: z.string(),
+  isAdmin: z.boolean(),
+});
+
+export type TUserModel = z.infer<typeof UserModel>;
+
 export const UpdateProfileSchema = z.object({
   name: z
     .string({ required_error: "name tidak boleh kosong" })
