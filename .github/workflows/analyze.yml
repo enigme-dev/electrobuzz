@@ -10,7 +10,6 @@ jobs:
   static-analysis:
     runs-on: ubuntu-latest
     name: Datadog Static Analyzer
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +27,6 @@ jobs:
   software-composition-analysis:
     runs-on: ubuntu-latest
     name: Datadog SBOM Generation and Upload
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
