@@ -27,6 +27,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@react-google-maps/api": "^2.19.3",
     "@tanstack/react-query": "^5.29.0",
+    "@upstash/qstash": "^2.5.2",
     "algoliasearch": "^4.23.2",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
