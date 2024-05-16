@@ -2,20 +2,27 @@ import { z } from "zod";
 
 export function parseParams(searchParams: URLSearchParams) {
   let startDate, endDate;
+
   const query = searchParams.get("query") ?? "";
   const page = parseInt(searchParams.get("page") || "1");
   const skip = (page - 1) * 10;
+
   const startDateParam = z.coerce
+    .string()
     .date()
     .safeParse(searchParams.get("start-date"));
   if (startDateParam.success) {
-    startDateParam.data.setHours(0o0, 0o0, 0o0);
-    startDate = startDateParam.data;
+    startDate = new Date(startDateParam.data);
+    startDate.setHours(0o0, 0o0, 0o0);
   }
-  const endDateParam = z.coerce.date().safeParse(searchParams.get("end-date"));
+
+  const endDateParam = z
+    .string()
+    .date()
+    .safeParse(searchParams.get("end-date"));
   if (endDateParam.success) {
-    endDateParam.data.setHours(23, 59, 59);
-    endDate = endDateParam.data;
+    endDate = new Date(endDateParam.data);
+    endDate.setHours(23, 59, 59);
   }
 
   return { query, page, skip, startDate, endDate };
