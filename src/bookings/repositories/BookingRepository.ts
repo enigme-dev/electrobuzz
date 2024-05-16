@@ -66,4 +66,15 @@ export class BookingRepository extends BaseRepository {
       }),
     ]);
   }
+
+  static findOne(id: string) {
+    return this.db.booking.findUniqueOrThrow({ where: { bookingId: id } });
+  }
+
+  static findOnePrivate(id: string) {
+    return this.db.booking.findUniqueOrThrow({
+      where: { bookingId: id },
+      include: { address: true, user: true },
+    });
+  }
 }
