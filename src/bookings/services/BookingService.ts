@@ -6,6 +6,7 @@ import {
   GetMerchantBookingPending,
   GetMerchantBookingRejected,
   GetMerchantBookings,
+  TAcceptBookingSchema,
   TBookingModel,
   TGetMerchantBookings,
 } from "@/bookings/types";
@@ -15,6 +16,14 @@ import { getAddress } from "@/users/services/AddressService";
 import { SearchParams } from "@/core/lib/utils";
 import { ErrorCode } from "@/core/lib/errors";
 import { getMerchant } from "@/merchants/services/MerchantService";
+
+export async function acceptBooking(
+  merchantId: string,
+  bookingId: string,
+  data: TAcceptBookingSchema
+) {
+  return await BookingRepository.acceptBooking(merchantId, bookingId, data);
+}
 
 export async function addBooking(data: TBookingModel) {
   let result;

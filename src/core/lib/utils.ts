@@ -1,3 +1,4 @@
+import { BookStatusEnum } from "@/bookings/types";
 import { z } from "zod";
 
 export function parseParams(searchParams: URLSearchParams) {
@@ -56,12 +57,15 @@ export type IdParam = z.infer<typeof IdParam>;
 
 export type ResponseSchema = z.infer<typeof ResponseSchema>;
 
-export function buildRes(response: ResponseSchema) {
-  const length =
-    response.data instanceof Array ? response.data.length : undefined;
+export function buildRes(data: string | ResponseSchema) {
+  if (typeof data === "string") {
+    return Response.json({ status: data });
+  }
+
+  const length = data.data instanceof Array ? data.data.length : undefined;
   const perpage = length ? 10 : undefined;
 
-  return Response.json({ ...response, length, perpage });
+  return Response.json({ ...data, length, perpage });
 }
 
 export function fileInputToDataURL(
