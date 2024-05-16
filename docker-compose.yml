@@ -1,0 +1,24 @@
+services:
+  nextjs:
+    container_name: nextjs
+    restart: unless-stopped
+    image: alkuinvito/electrobuzz:latest
+    env_file: .env
+    expose:
+      - 3000
+    networks:
+      enigme-net:
+        ipv4_address: 10.44.0.3
+  tunnel:
+    container_name: cloudflared-tunnel
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    networks:
+      enigme-net:
+        ipv4_address: 10.44.0.2
+networks:
+  enigme-net:
+    external: true
