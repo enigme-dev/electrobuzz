@@ -22,6 +22,8 @@ RUN --mount=type=secret,id=ASSETS_URL echo "ASSETS_URL=$(cat /run/secrets/ASSETS
 RUN --mount=type=secret,id=MINIO_ENDPOINT echo "MINIO_ENDPOINT=$(cat /run/secrets/MINIO_ENDPOINT)" >> .env.production
 RUN --mount=type=secret,id=MINIO_ACCESS_KEY echo "MINIO_ACCESS_KEY=$(cat /run/secrets/MINIO_ACCESS_KEY)" >> .env.production
 RUN --mount=type=secret,id=MINIO_SECRET_KEY echo "MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)" >> .env.production
+RUN --mount=type=secret,id=QSTASH_CURRENT_SIGNING_KEY echo "QSTASH_CURRENT_SIGNING_KEY=$(cat /run/secrets/QSTASH_CURRENT_SIGNING_KEY)" >> .env.production
+RUN --mount=type=secret,id=QSTASH_NEXT_SIGNING_KEY echo "QSTASH_NEXT_SIGNING_KEY=$(cat /run/secrets/QSTASH_NEXT_SIGNING_KEY)" >> .env.production
 
 RUN npm run build && rm .env.production
 
