@@ -1,5 +1,4 @@
-import { setStatusAccepted } from "@/bookings/services/BookingService";
-import { AcceptBookingSchema } from "@/bookings/types";
+import { setStatusInProgress } from "@/bookings/services/BookingService";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
@@ -7,14 +6,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 export async function PATCH(req: NextRequest, { params }: IdParam) {
-  let body;
   const token = await getToken({ req });
-
-  try {
-    body = await req.json();
-  } catch (e) {
-    return buildErr("ErrValidation", 400);
-  }
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -26,13 +18,8 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, "invalid booking id");
   }
 
-  const input = AcceptBookingSchema.safeParse(body);
-  if (!input.success) {
-    return buildErr("ErrValidation", 400, input.error);
-  }
-
   try {
-    await setStatusAccepted(userId.data, bookingId.data, input.data);
+    await setStatusInProgress(userId.data, bookingId.data);
   } catch (e) {
     if (e instanceof Error) {
       switch (e.message) {
@@ -40,10 +27,12 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr(
             "ErrConflict",
             409,
-            "can only accept a pending booking"
+            "can only set in progress an accepted booking"
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
+        case ErrorCode.ErrBookWrongSchedule:
+          return buildErr("ErrBookWrongSchedule", 409, e.message);
       }
     }
 

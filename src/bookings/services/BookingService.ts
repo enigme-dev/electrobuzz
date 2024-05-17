@@ -3,12 +3,14 @@ import {
   GetMerchantBookingAccepted,
   GetMerchantBookingCanceled,
   GetMerchantBookingDone,
+  GetMerchantBookingInProgress,
   GetMerchantBookingPending,
   GetMerchantBookingRejected,
   GetMerchantBookings,
   TAcceptBookingSchema,
   TBookingModel,
   TGetMerchantBookings,
+  TRejectBookingSchema,
 } from "@/bookings/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { BookingRepository } from "@/bookings/repositories/BookingRepository";
@@ -16,14 +18,7 @@ import { getAddress } from "@/users/services/AddressService";
 import { SearchParams } from "@/core/lib/utils";
 import { ErrorCode } from "@/core/lib/errors";
 import { getMerchant } from "@/merchants/services/MerchantService";
-
-export async function acceptBooking(
-  merchantId: string,
-  bookingId: string,
-  data: TAcceptBookingSchema
-) {
-  return await BookingRepository.acceptBooking(merchantId, bookingId, data);
-}
+import { Prisma } from "@prisma/client";
 
 export async function addBooking(data: TBookingModel) {
   let result;
@@ -69,6 +64,8 @@ export async function getMerchantBooking(
       return GetMerchantBookingRejected.parse(booking);
     case BookStatusEnum.Enum.canceled:
       return GetMerchantBookingCanceled.parse(booking);
+    case BookStatusEnum.Enum.in_progress:
+      return GetMerchantBookingInProgress.parse(booking);
     case BookStatusEnum.Enum.done:
       return GetMerchantBookingDone.parse(booking);
     default:
@@ -91,4 +88,62 @@ export async function getMerchantBookings(
 
 export async function getUserBookings(userId: string, options?: SearchParams) {
   return await BookingRepository.findByUserId(userId, options);
+}
+
+export async function setStatusAccepted(
+  merchantId: string,
+  bookingId: string,
+  input: TAcceptBookingSchema
+) {
+  const data: Prisma.BookingUpdateInput = {
+    bookingStatus: BookStatusEnum.Enum.accepted,
+    bookingPrice: input.bookingPrice,
+  };
+
+  await BookingRepository.updateBookingStatus(
+    merchantId,
+    bookingId,
+    BookStatusEnum.Enum.pending,
+    data
+  );
+}
+
+export async function setStatusInProgress(
+  merchantId: string,
+  bookingId: string
+) {
+  const booking = await getMerchantBooking(merchantId, bookingId);
+  const now = new Date().toLocaleDateString();
+  if (now !== booking.bookingSchedule.toLocaleDateString()) {
+    throw new Error(ErrorCode.ErrBookWrongSchedule);
+  }
+
+  const data: Prisma.BookingUpdateInput = {
+    bookingStatus: BookStatusEnum.Enum.in_progress,
+  };
+
+  await BookingRepository.updateBookingStatus(
+    merchantId,
+    bookingId,
+    BookStatusEnum.Enum.accepted,
+    data
+  );
+}
+
+export async function setStatusRejected(
+  merchantId: string,
+  bookingId: string,
+  input: TRejectBookingSchema
+) {
+  const data: Prisma.BookingUpdateInput = {
+    bookingStatus: BookStatusEnum.Enum.rejected,
+    bookingReason: input.bookingReason,
+  };
+
+  await BookingRepository.updateBookingStatus(
+    merchantId,
+    bookingId,
+    BookStatusEnum.Enum.pending,
+    data
+  );
 }

@@ -22,7 +22,6 @@ export async function GET(req: NextRequest, { params }: IdParam) {
   try {
     booking = await getMerchantBooking(userId.data, bookingId.data);
   } catch (e) {
-    console.error(e);
     return buildErr("ErrUnknown", 500);
   }
 

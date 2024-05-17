@@ -1,5 +1,5 @@
-import { setStatusAccepted } from "@/bookings/services/BookingService";
-import { AcceptBookingSchema } from "@/bookings/types";
+import { setStatusRejected } from "@/bookings/services/BookingService";
+import { RejectBookingSchema } from "@/bookings/types";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
@@ -26,13 +26,13 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, "invalid booking id");
   }
 
-  const input = AcceptBookingSchema.safeParse(body);
+  const input = RejectBookingSchema.safeParse(body);
   if (!input.success) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
   try {
-    await setStatusAccepted(userId.data, bookingId.data, input.data);
+    await setStatusRejected(userId.data, bookingId.data, input.data);
   } catch (e) {
     if (e instanceof Error) {
       switch (e.message) {
@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr(
             "ErrConflict",
             409,
-            "can only accept a pending booking"
+            "can only reject a pending booking"
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
