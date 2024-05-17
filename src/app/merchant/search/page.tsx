@@ -15,8 +15,6 @@ import {
 import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { GeneralAccordion } from "@/core/components/general-accordion";
-import { useEffect, useState } from "react";
-import { useToast } from "@/core/components/ui/use-toast";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
 
 const searchClient = algoliasearch(
@@ -25,7 +23,7 @@ const searchClient = algoliasearch(
 );
 
 export default function Page() {
-  const { latLng, error } = useGeoLocation();
+  const { latLng } = useGeoLocation();
 
   return (
     <div className="flex flex-col wrapper">
@@ -79,18 +77,22 @@ export default function Page() {
                   {" "}
                   <RefinementList
                     attribute="_tags"
+                    limit={7}
                     classNames={{
-                      root: "py-3",
-                      count: " p-1 rounded-md ml-3 text-gray-800 text-sm",
-                      labelText: "ml-3 ",
-                      item: "mb-3",
-                      list: "grid grid-cols-2 m-0 place-items-center items-center gap-5 justify-around p-4 bg-gray-200 dark:bg-[#030c24] rounded-lg",
+                      root: "",
+                      count: "hidden",
+                      checkbox: "hidden",
+                      label:
+                        "cursor-pointer w-full border text-center py-1 hover:border-yellow-300 hover:bg-yellow-300 hover:shadow-lg rounded rounded-sm transition-all duration-500",
+                      item: "mb-3 flex items-center justify-center w-full cursor-pointer rounded rounded-sm",
+                      selectedItem: "text-black bg-yellow-300 shadow-lg",
+                      list: " grid grid-cols-2 m-0 place-items-center items-center gap-5 justify-around p-2  rounded-lg",
                     }}
                   />
                 </GeneralAccordion>
-                <GeneralAccordion accordionTrigger="Rating">
+                {/* <GeneralAccordion accordionTrigger="Rating">
                   <div>Rating</div>
-                </GeneralAccordion>
+                </GeneralAccordion> */}
               </GeneralAccordion>
             </div>
 
