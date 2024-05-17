@@ -2,12 +2,27 @@ import React from "react";
 import Image from "next/image";
 import MerchantsCard from "../../core/components/merchantsCard";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
-import { Configure, Hits, InstantSearch } from "react-instantsearch";
+import {
+  Configure,
+  Hits,
+  InstantSearch,
+  useInstantSearch,
+} from "react-instantsearch";
 import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { Hit } from "@/search/component/hit";
 import algoliasearch from "algoliasearch";
-import { connectStateResults } from "react-instantsearch-dom";
+import Loader from "@/core/components/loader/loader";
+import SecondaryLoader from "@/core/components/loader/secondaryLoader";
+
+function LoadingIndicator() {
+  const { status } = useInstantSearch();
+
+  if (status === "stalled") {
+    return <Loader />;
+  }
+  return null;
+}
 
 const NearMerchants = () => {
   const { latLng } = useGeoLocation();
@@ -34,6 +49,7 @@ const NearMerchants = () => {
           <div className=" grid gap-4 max-h-[70vh] w-full lg:w-[50%] overflow-auto sm:p-10 no-scrollbar">
             <div>
               <NoResultsBoundary fallback={<NoResults />}>
+                <LoadingIndicator />
                 <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
               </NoResultsBoundary>
             </div>

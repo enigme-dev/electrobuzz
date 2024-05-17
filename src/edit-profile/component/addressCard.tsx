@@ -1,6 +1,6 @@
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
 import { Button } from "@/core/components/ui/button";
 import { Card, CardContent } from "@/core/components/ui/card";
 import { DialogContent } from "@/core/components/ui/dialog";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import Loader from "./loader";
+import Loader from "./loader/loader";
 import ButtonLoader from "./buttonLoader";
 
 interface ButtonWithLoaderProps {

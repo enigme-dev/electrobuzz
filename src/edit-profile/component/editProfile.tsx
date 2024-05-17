@@ -13,7 +13,7 @@ import useEditProfile from "../hooks/useEditProfiles";
 import AddressForm from "@/users/components/addressForm";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
 import AddressCard from "./addressCard";
 
 interface AddressData {
@@ -221,13 +221,13 @@ const EditProfile = () => {
                   onClick={() => {
                     setOnOpenDialog(true);
                     cancelEditing();
-                    setIsEditName(false);
-                    setIsEditPhone(false);
+                    setIsEditName(undefined);
+                    setIsEditPhone(undefined);
                     setStep(2);
                   }}
                 >
                   <PlusIcon
-                    className="p-1 hover:bg-gray-100 rounded-full hover:cursor-pointer"
+                    className="p-1 rounded-full hover:cursor-pointer"
                     size={20}
                   />
                   <p className="text-xs sm:text-sm ">Tambah alamat</p>

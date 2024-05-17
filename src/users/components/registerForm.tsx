@@ -18,7 +18,7 @@ import { updateData } from "@/core/lib/service";
 import axios from "axios";
 import { useToast } from "@/core/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
 import { Value } from "@radix-ui/react-select";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
 
