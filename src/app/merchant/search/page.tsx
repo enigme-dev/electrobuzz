@@ -27,7 +27,7 @@ export default function Page() {
 
   return (
     <div className="flex flex-col wrapper">
-      <div className="rounded-lg px-10 h-fit sm:h-[80vh]">
+      <div className="rounded-lg px-4 h-fit sm:h-[80vh]">
         <div className="flex items-center justify-center md:pt-10">
           <Image
             src="/House searching-cuate.svg"
