@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import MerchantsCard from "../../core/components/merchantsCard";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
@@ -31,6 +31,7 @@ const NearMerchants = () => {
     process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
     process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
   );
+
   return (
     <div className="w-full ">
       <div className="flex justify-between">
@@ -46,6 +47,7 @@ const NearMerchants = () => {
             filters="merchantAvailable:true"
             getRankingInfo
           />
+
           <div className=" grid gap-4 max-h-[70vh] w-full lg:w-[50%] overflow-auto sm:p-10 no-scrollbar">
             <div>
               <NoResultsBoundary fallback={<NoResults />}>
