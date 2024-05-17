@@ -1,6 +1,8 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
-import { TBookingModel } from "@/bookings/types";
+import { BookStatusEnum, TBookingModel } from "@/bookings/types";
 import { SearchParams } from "@/core/lib/utils";
+import { Prisma } from "@prisma/client";
+import { ErrorCode } from "@/core/lib/errors";
 
 export class BookingRepository extends BaseRepository {
   static create(data: TBookingModel) {
@@ -76,5 +78,34 @@ export class BookingRepository extends BaseRepository {
       where: { bookingId: id },
       include: { address: true, user: true },
     });
+  }
+
+  static updateBookingStatus(
+    merchantId: string,
+    bookingId: string,
+    prevStatus: BookStatusEnum,
+    data: Prisma.BookingUpdateInput
+  ) {
+    return this.db.$transaction(
+      async (tx) => {
+        const booking = await tx.booking.findUniqueOrThrow({
+          where: { bookingId },
+        });
+
+        if (booking.merchantId !== merchantId) {
+          throw new Error(ErrorCode.ErrNotFound);
+        }
+
+        if (booking.bookingStatus !== prevStatus) {
+          throw new Error(ErrorCode.ErrConflict);
+        }
+
+        return tx.booking.update({
+          where: { bookingId },
+          data,
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
   }
 }
