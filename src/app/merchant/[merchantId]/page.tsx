@@ -35,6 +35,7 @@ interface MerchantDetails {
   merchantRating: number | null;
   merchantReviewCt: number | null;
   merchantVerified: boolean;
+  merchantAlbums?: string[];
 }
 
 const MerchantDetailPage = () => {
@@ -93,19 +94,29 @@ const MerchantDetailPage = () => {
           {/* <StatusMerchant status={"online"} /> */}
         </div>
       </div>
-      <div className="px-4 grid sm:grid-cols-2 sm:flex-row gap-4 pt-10 w-full">
-        <div className="w-fit">
-          <CarouselImage
-            carouselContent={
-              <Image
-                src="/biaya-service-ac.svg"
-                width={300}
-                height={300}
-                alt="biaya-service-ac"
-                className="object-contain w-full"
+      <div className="px-4 grid sm:grid-cols-2 sm:flex-row gap-8 pt-10 w-full">
+        <div className="w-full">
+          {merchantDetails?.merchantAlbums &&
+          merchantDetails.merchantAlbums.length > 0 ? (
+            merchantDetails.merchantAlbums.map((value, index) => (
+              <CarouselImage
+                key={index}
+                carouselContent={
+                  <Image
+                    src={merchantDetails?.merchantAlbums ? value : ""}
+                    width={300}
+                    height={300}
+                    alt="biaya-service-ac"
+                    className="object-contain w-full"
+                  />
+                }
               />
-            }
-          />
+            ))
+          ) : (
+            <div className="flex justify-center items-center w-full h-[200px] sm:h-[300px] bg-gray-100 dark:bg-slate-900 rounded-xl">
+              <p>No Picture Available</p>
+            </div>
+          )}
         </div>
         <div className="flex flex-col justify-between gap-2">
           <div>
@@ -126,7 +137,7 @@ const MerchantDetailPage = () => {
             <Link href={`${pathname}/buat-janji`}>
               <Card className="flex gap-5 items-center sm:w-52 bg-yellow-400 text-black dark:text-black hover:bg-yellow-300 px-5 py-2 mt-10 sm:mb-10">
                 <PlusIcon width={15} />
-                <p className="text-sm sm:text-lg">Buat janji</p>
+                <p className="text-sm sm:text-lg">Buat Janji</p>
               </Card>
             </Link>
           </div>
