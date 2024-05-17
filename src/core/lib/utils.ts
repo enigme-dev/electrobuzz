@@ -1,4 +1,3 @@
-import { BookStatusEnum } from "@/bookings/types";
 import { z } from "zod";
 
 export const PER_PAGE = 10;
