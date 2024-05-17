@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from "zod";
 
 interface ErrorResponse {
   status: ErrorCodeStrings;
@@ -18,7 +18,7 @@ export enum ErrorCode {
   // otp
   ErrOTPIncorrect = "incorrect OTP code",
   ErrOTPNotFound = "verifId does not exist",
-  ErrOTPUnknown = "unknown error occurred",
+  ErrOTPUnknown = "OTP error occurred",
   ErrOTPExpired = "expired OTP code",
   ErrOTPVerified = "phone has been verified already",
   ErrOTPNotRegistered = "phone is not registered",
@@ -29,7 +29,10 @@ export enum ErrorCode {
   ErrImgFailedUpload = "failed to upload image",
 
   // album
-  ErrAlbumQuotaExceeded = "album cannot contain more than 4 photos"
+  ErrAlbumQuotaExceeded = "album cannot contain more than 4 photos",
+
+  // booking
+  ErrBookWrongSchedule = "wrong service schedule",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;
@@ -39,7 +42,7 @@ export function buildErr(
   status: number,
   message?: any
 ) {
-  const err: ErrorResponse = {status: code, data: ErrorCode[code]};
+  const err: ErrorResponse = { status: code, data: ErrorCode[code] };
   if (message) {
     if (message instanceof z.ZodError) {
       err.data = message.flatten().fieldErrors;
@@ -48,5 +51,5 @@ export function buildErr(
     }
   }
 
-  return Response.json(err, {status: status});
+  return Response.json(err, { status: status });
 }
