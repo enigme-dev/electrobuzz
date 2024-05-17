@@ -6,6 +6,7 @@ export const BookStatusEnum = z.enum([
   "accepted", // merchant accepted
   "rejected", // merchant rejected
   "canceled", // user canceled
+  "in_progress", // service in progress
   "done", // user done
 ]);
 
@@ -67,23 +68,27 @@ export type TGetMerchantBookingAccepted = z.infer<
   typeof GetMerchantBookingAccepted
 >;
 
-export const GetMerchantBookingRejected = GetMerchantBookingPending.extend({
-  bookingReason: z.string(),
-});
-
-export type TGetMerchantBookingRejected = z.infer<
-  typeof GetMerchantBookingRejected
->;
-
-export const GetMerchantBookingCanceled = BookingModel.omit({
+export const GetMerchantBookingRejected = BookingModel.omit({
   bookingPrice: true,
   userId: true,
   addressId: true,
   merchantId: true,
 });
 
+export type TGetMerchantBookingRejected = z.infer<
+  typeof GetMerchantBookingRejected
+>;
+
+export const GetMerchantBookingCanceled = GetMerchantBookingRejected;
+
 export type TGetMerchantBookingCanceled = z.infer<
   typeof GetMerchantBookingCanceled
+>;
+
+export const GetMerchantBookingInProgress = GetMerchantBookingAccepted;
+
+export type TGetMerchantBookingInProgress = z.infer<
+  typeof GetMerchantBookingInProgress
 >;
 
 export const GetMerchantBookingDone = GetMerchantBookingAccepted.extend({
@@ -91,3 +96,25 @@ export const GetMerchantBookingDone = GetMerchantBookingAccepted.extend({
 });
 
 export type TGetMerchantBookingDone = z.infer<typeof GetMerchantBookingDone>;
+
+export const AcceptBookingSchema = z.object({
+  bookingPrice: z
+    .number({
+      required_error: "estimation price can not be empty",
+    })
+    .min(20000, "estimation price can be between 20000 and 100000000")
+    .max(100000000, "estimation price can be between 20000 and 100000000"),
+});
+
+export type TAcceptBookingSchema = z.infer<typeof AcceptBookingSchema>;
+
+export const RejectBookingSchema = z.object({
+  bookingReason: z
+    .string({
+      required_error: "reason for rejecting can not be empty",
+    })
+    .min(8, "reason for rejecting can be between 8 and 256 characters")
+    .max(256, "reason for rejecting can be between 8 and 256 characters"),
+});
+
+export type TRejectBookingSchema = z.infer<typeof RejectBookingSchema>;
