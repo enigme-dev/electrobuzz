@@ -7,9 +7,11 @@ import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { Hit } from "@/search/component/hit";
 import algoliasearch from "algoliasearch";
+import { connectStateResults } from "react-instantsearch-dom";
 
 const NearMerchants = () => {
   const { latLng } = useGeoLocation();
+
   const searchClient = algoliasearch(
     process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
     process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string

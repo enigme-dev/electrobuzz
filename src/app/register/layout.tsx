@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from "@/core/components/loader";
 import FormLoader from "@/core/components/loader/formLoader";
 import { Toaster } from "@/core/components/ui/toaster";
 import { getData } from "@/core/lib/service";
@@ -24,11 +25,7 @@ export default function RegisterLayout({
   });
 
   if (isLoading || status === "loading") {
-    return (
-      <div className="wrapper pt-60">
-        <FormLoader />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!data?.data?.phoneVerified && userId)

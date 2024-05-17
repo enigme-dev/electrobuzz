@@ -20,6 +20,7 @@ import { useToast } from "@/core/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "@/core/components/loader";
 import { Value } from "@radix-ui/react-select";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
 
 interface RegisterProps {
   onNext: Function;
@@ -65,10 +66,6 @@ const RegisterForm = ({
       }
     },
   });
-
-  if (updateLoading) {
-    return <Loader />;
-  }
 
   function onSubmit(values: UpdateProfileModel) {
     try {
@@ -150,14 +147,14 @@ const RegisterForm = ({
             />
           </>
         )}
-        <div className="text-right pt-5">
-          <Button
+        <div className="flex justify-end w-full pt-5">
+          <ButtonWithLoader
+            isLoading={updateLoading}
             type="submit"
+            buttonText="Submit"
             variant="secondary"
-            className="hover:shadow-md hover:shadow-yellow-200 transition duration-500 "
-          >
-            Submit
-          </Button>
+            className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+          />
         </div>
       </form>
     </Form>
