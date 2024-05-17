@@ -3,7 +3,6 @@ import { buildErr } from "@/core/lib/errors";
 
 export default withAuth(function middleware(req) {
   const isAdmin = req.nextauth.token?.isAdmin;
-  console.log(isAdmin);
   if (!isAdmin) {
     if (req.nextUrl.pathname.startsWith("/admin")) {
       return Response.redirect(new URL("/", req.url));
@@ -14,4 +13,4 @@ export default withAuth(function middleware(req) {
   }
 });
 
-export const config = { matcher: ["/admin", "/api/admin"] };
+export const config = { matcher: ["/admin/:path*", "/api/admin/:path*"] };
