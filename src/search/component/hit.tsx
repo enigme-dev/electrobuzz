@@ -14,7 +14,6 @@ const SearchItem = z.object({
 type SearchItem = z.infer<typeof SearchItem>;
 
 export function Hit({ hit }: Readonly<{ hit: SearchItem }>) {
-  console.log(hit.objectID);
   return (
     <MerchantsCard
       imgSource={hit.merchantPhotoUrl}
