@@ -32,7 +32,6 @@ interface MerchantDetails {
 
 const MerchantDetailPage = () => {
   const pathname = usePathname();
-  const { data: session } = useSession();
   const splitPathname = pathname.split("/");
   const merchantId = splitPathname.pop() || "";
 
@@ -41,18 +40,17 @@ const MerchantDetailPage = () => {
     error: getMerchantDetailsError,
     data: merchantDetails,
   } = useQuery({
-    queryKey: ["getMerchantDetails", session?.user?.id],
+    queryKey: ["getMerchantDetails", merchantId],
     queryFn: async () =>
       await axios.get(`/api/merchant/${merchantId}`).then((response) => {
         return response.data.data as MerchantDetails;
       }),
-    enabled: !!session?.user?.id,
+    enabled: !!merchantId,
   });
 
   if (getMerchantDetailsloading) {
     return <Loader />;
   }
-  console.log(merchantDetails);
 
   return (
     <div className="wrapper pb-20 ">
