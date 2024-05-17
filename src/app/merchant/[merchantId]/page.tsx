@@ -6,7 +6,13 @@ import { Card } from "@/core/components/ui/card";
 import { useToast } from "@/core/components/ui/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { MapPinIcon, Newspaper, PlusIcon, Store } from "lucide-react";
+import {
+  Lightbulb,
+  MapPinIcon,
+  Newspaper,
+  PlusIcon,
+  Store,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -69,6 +75,9 @@ const MerchantDetailPage = () => {
               {merchantDetails?.merchantName}
             </h1>
             <h2 className="text-lg sm:text-2xl text-white flex  items-center gap-2">
+              <span className="bg-yellow-400 rounded-lg py-1 px-2">
+                <Lightbulb className="text-black w-4" />
+              </span>
               {merchantDetails?.merchantCategory.map((value, index) => (
                 <div key={index}>{value}</div>
               ))}
