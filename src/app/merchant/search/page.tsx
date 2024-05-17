@@ -83,9 +83,10 @@ export default function Page() {
                       count: "hidden",
                       checkbox: "hidden",
                       label:
-                        "cursor-pointer w-full border text-center py-1 hover:border-yellow-300 hover:bg-yellow-300 hover:shadow-lg rounded rounded-sm transition-all duration-500",
+                        "cursor-pointer w-full border text-center py-1 sm:dark:hover:text-black sm:hover:border-yellow-300 sm:hover:bg-yellow-300 sm:hover:shadow-lg rounded rounded-sm transition-all duration-500",
                       item: "mb-3 flex items-center justify-center w-full cursor-pointer rounded rounded-sm",
-                      selectedItem: "text-black bg-yellow-300 shadow-lg",
+                      selectedItem:
+                        "text-black bg-yellow-300 dark:bg-yellow-300 shadow-lg",
                       list: " grid grid-cols-2 m-0 place-items-center items-center gap-5 justify-around p-2  rounded-lg",
                     }}
                   />
