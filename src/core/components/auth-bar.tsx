@@ -17,25 +17,25 @@ export function AuthBar() {
   const handleSignOut = () => {
     signOut();
   };
-
+  const isAdmin = session?.user?.isAdmin;
   const navList = [
     {
       label: "My Bookings",
       link: "/user/my-bookings",
       icon: <NotepadText size="20" />,
-      isAdmin: false,
+      show: true,
     },
     {
       label: "Edit Profile",
       link: "/user/profile",
       icon: <Settings size="20" />,
-      isAdmin: false,
+      show: true,
     },
     {
       label: "Admin Dashboard",
       link: "/admin",
       icon: <Users size="20" />,
-      isAdmin: true,
+      show: isAdmin,
     },
   ];
 
@@ -72,15 +72,17 @@ export function AuthBar() {
                 </div>
                 {navList.map((value, index) => (
                   <div key={index} className="grid gap-2 text-start">
-                    <Link className="flex gap-4 pt-2" href={value.link}>
-                      <Button
-                        variant="ghost"
-                        className="w-full flex justify-start gap-5"
-                      >
-                        <span>{value.icon}</span>
-                        <span>{value.label}</span>
-                      </Button>
-                    </Link>
+                    {value.show && (
+                      <Link className="flex gap-4 pt-2" href={value.link}>
+                        <Button
+                          variant="ghost"
+                          className="w-full flex justify-start gap-5"
+                        >
+                          <span>{value.icon}</span>
+                          <span>{value.label}</span>
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 ))}
                 <ul className="flex justify-between gap-5">
