@@ -1,5 +1,5 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
-import { SearchParams } from "@/core/lib/utils";
+import { PER_PAGE, SearchParams } from "@/core/lib/utils";
 import { TRegisterMerchantSchema } from "@/merchants/types";
 import { AlgoliaClient } from "@/core/adapters/algolia";
 import { Prisma } from "@prisma/client";
@@ -56,7 +56,7 @@ export class MerchantRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.merchant.findMany({
         skip: options?.page,
-        take: 10,
+        take: PER_PAGE,
         where: {
           merchantName: {
             contains: options?.query,

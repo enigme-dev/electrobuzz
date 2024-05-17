@@ -1,6 +1,6 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
 import { BookStatusEnum, TBookingModel } from "@/bookings/types";
-import { SearchParams } from "@/core/lib/utils";
+import { PER_PAGE, SearchParams } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
 import { ErrorCode } from "@/core/lib/errors";
 
@@ -35,7 +35,7 @@ export class BookingRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.booking.findMany({
         skip: options?.page,
-        take: 10,
+        take: PER_PAGE,
         where: {
           merchantId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
@@ -54,7 +54,7 @@ export class BookingRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.booking.findMany({
         skip: options?.page,
-        take: 10,
+        take: PER_PAGE,
         where: {
           userId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
