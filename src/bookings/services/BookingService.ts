@@ -103,7 +103,7 @@ export async function setStatusAccepted(
   await BookingRepository.updateBookingStatus(
     merchantId,
     bookingId,
-    BookStatusEnum.Enum.pending,
+    [BookStatusEnum.Enum.pending],
     data
   );
 }
@@ -125,7 +125,7 @@ export async function setStatusInProgress(
   await BookingRepository.updateBookingStatus(
     merchantId,
     bookingId,
-    BookStatusEnum.Enum.accepted,
+    [BookStatusEnum.Enum.accepted],
     data
   );
 }
@@ -143,7 +143,7 @@ export async function setStatusRejected(
   await BookingRepository.updateBookingStatus(
     merchantId,
     bookingId,
-    BookStatusEnum.Enum.pending,
+    [BookStatusEnum.Enum.pending],
     data
   );
 }

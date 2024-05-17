@@ -83,7 +83,7 @@ export class BookingRepository extends BaseRepository {
   static updateBookingStatus(
     merchantId: string,
     bookingId: string,
-    prevStatus: BookStatusEnum,
+    prevStatus: BookStatusEnum[],
     data: Prisma.BookingUpdateInput
   ) {
     return this.db.$transaction(
@@ -96,7 +96,8 @@ export class BookingRepository extends BaseRepository {
           throw new Error(ErrorCode.ErrNotFound);
         }
 
-        if (booking.bookingStatus !== prevStatus) {
+        const status = BookStatusEnum.parse(booking.bookingStatus);
+        if (!prevStatus.includes(status)) {
           throw new Error(ErrorCode.ErrConflict);
         }
 
