@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, { params }: IdParam) {
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
-        return buildErr("ErrValidation", 500, "merchant does not exist");
+        return buildErr("ErrNotFound", 404, "merchant does not exist");
       }
     }
 
@@ -53,6 +53,8 @@ export async function POST(req: NextRequest, { params }: IdParam) {
           return buildErr("ErrConflict", 409, e.message);
         case "user does not own this address":
           return buildErr("ErrValidation", 400, "address does not exist");
+        case ErrorCode.ErrNotFound:
+          return buildErr("ErrNotFound", 404, "merchant does not exist");
       }
     }
 

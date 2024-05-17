@@ -1,12 +1,8 @@
 import { NextRequest } from "next/server";
+import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
 import { deleteExpiredOTP } from "@/users/services/VerificationService";
 
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
+async function handler(_req: NextRequest) {
   try {
     await deleteExpiredOTP();
   } catch (e) {
@@ -16,3 +12,5 @@ export async function GET(req: NextRequest) {
 
   return Response.json({ success: true });
 }
+
+export const POST = verifySignatureAppRouter(handler);
