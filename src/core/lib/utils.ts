@@ -1,12 +1,13 @@
-import { BookStatusEnum } from "@/bookings/types";
 import { z } from "zod";
+
+export const PER_PAGE = 10;
 
 export function parseParams(searchParams: URLSearchParams) {
   let startDate, endDate;
 
   const query = searchParams.get("query") ?? "";
   const page = parseInt(searchParams.get("page") || "1");
-  const skip = (page - 1) * 10;
+  const skip = (page - 1) * PER_PAGE;
 
   const startDateParam = z.coerce
     .string()
@@ -63,7 +64,7 @@ export function buildRes(data: string | ResponseSchema) {
   }
 
   const length = data.data instanceof Array ? data.data.length : undefined;
-  const perpage = length ? 10 : undefined;
+  const perpage = length ? PER_PAGE : undefined;
 
   return Response.json({ ...data, length, perpage });
 }
