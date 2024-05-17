@@ -10,6 +10,7 @@ import {
   Lightbulb,
   MapPinIcon,
   Newspaper,
+  PenBoxIcon,
   PlusIcon,
   Store,
 } from "lucide-react";
@@ -116,7 +117,7 @@ const MerchantDetailPage = () => {
             </h1>
             <p className="mt-10 flex items-center gap-4 max-w-[350px] sm:max-w-[500px] break-words">
               <span className="bg-green-500 py-1 px-2 rounded-full">
-                <Store className="text-white" />
+                <PenBoxIcon className="text-white" />
               </span>
               {merchantDetails?.merchantDesc}
             </p>
