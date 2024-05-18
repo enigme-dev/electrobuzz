@@ -11,17 +11,27 @@ import {
   Hits,
   RefinementList,
   Configure,
+  useInstantSearch,
 } from "react-instantsearch";
 import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { GeneralAccordion } from "@/core/components/general-accordion";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
+import Loader from "@/core/components/loader/loader";
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
 );
 
+function LoadingIndicator() {
+  const { status } = useInstantSearch();
+
+  if (status === "stalled") {
+    return <Loader />;
+  }
+  return null;
+}
 export default function Page() {
   const { latLng } = useGeoLocation();
 
@@ -99,6 +109,7 @@ export default function Page() {
 
             <div className="flex flex-col gap-6 w-full h-[80vh]   max-h-full overflow-auto rounded-lg sm:p-10 no-scrollbar">
               <NoResultsBoundary fallback={<NoResults />}>
+                <LoadingIndicator />
                 <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
               </NoResultsBoundary>
             </div>

@@ -20,6 +20,7 @@ import { AddressModel, AddressSchema, UpdateProfileModel } from "@/users/types";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
 
 interface AddressProps {
   onPrevious?: Function;
@@ -265,15 +266,15 @@ const AddressForm = ({
                 Back
               </Button>
             )}
-            <Button
+            <ButtonWithLoader
+              buttonText="Submit"
+              isLoading={addAddressLoading || editAddressLoading}
               type="submit"
               variant="secondary"
               className={
-                "hover:shadow-md hover:shadow-yellow-200 transition duration-500 "
+                " bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
               }
-            >
-              Submit
-            </Button>
+            />
           </div>
         </form>
       </Form>

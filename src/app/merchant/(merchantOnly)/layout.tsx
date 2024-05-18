@@ -1,5 +1,5 @@
 "use client";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";

@@ -25,6 +25,7 @@ import { useCountdown } from "@/core/hooks/useCountdown";
 import { useLocalStorage } from "@/core/hooks/useLocalStorage";
 import { useSession } from "next-auth/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
 
 interface OTPProps {
   onNext: Function;
@@ -56,7 +57,7 @@ const OTPVerification = ({
   });
 
   const { mutate: updateNumberStatus, isPending: updateLoading } = useMutation({
-    mutationFn: () => axios.get(`/api//user/${session?.user?.id}`),
+    mutationFn: () => axios.get(`/api/user/${session?.user?.id}`),
     onSuccess: () => {
       toast({ title: "Verifikasi Berhasil!" });
       queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
@@ -249,16 +250,22 @@ const OTPVerification = ({
             )}
           />
           <div className="flex justify-between pt-5">
-            <Button onClick={() => onPrevious()} type="button">
+            <Button
+              variant={"outline"}
+              onClick={() => onPrevious()}
+              type="button"
+            >
               Back
             </Button>
-            <Button
+            <ButtonWithLoader
+              buttonText="Submit"
+              isLoading={updateLoading}
               type="submit"
               variant="secondary"
-              className="hover:shadow-md hover:shadow-yellow-200 transition duration-500 "
-            >
-              Submit
-            </Button>
+              className={
+                " bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+              }
+            />
           </div>
         </form>
       </Form>
