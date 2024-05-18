@@ -61,6 +61,16 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   try {
     await updateMerchantProfile(merchantId.data, input.data);
   } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildErr(
+          "ErrForbidden",
+          403,
+          "user is not registered as merchant"
+        );
+      }
+    }
+
     if (e instanceof Error) {
       if (e.message === ErrorCode.ErrMerchantUnverified) {
         return buildErr("ErrForbidden", 401, e.message);

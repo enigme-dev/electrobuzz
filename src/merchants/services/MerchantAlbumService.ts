@@ -3,6 +3,7 @@ import { MerchantAlbumRepository } from "@/merchants/repositories/MerchantAlbumR
 import { TAlbumsSchema } from "@/merchants/types";
 import { ErrorCode } from "@/core/lib/errors";
 import { Prisma } from "@prisma/client";
+import { getMerchant } from "./MerchantService";
 
 export const ALBUM_QUOTA = 4;
 
@@ -11,6 +12,11 @@ export async function addMerchantAlbums(
   data: TAlbumsSchema
 ) {
   let images = [];
+
+  const merchant = await getMerchant(merchantId);
+  if (!merchant.merchantVerified) {
+    throw new Error(ErrorCode.ErrMerchantUnverified);
+  }
 
   const totalAlbum = await MerchantAlbumRepository.count(merchantId);
   const quotaLeft = ALBUM_QUOTA - totalAlbum;
