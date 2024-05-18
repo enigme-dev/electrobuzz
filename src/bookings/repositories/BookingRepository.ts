@@ -69,18 +69,14 @@ export class BookingRepository extends BaseRepository {
     ]);
   }
 
-  static findOne(id: string) {
-    return this.db.booking.findUniqueOrThrow({ where: { bookingId: id } });
-  }
-
-  static findOnePrivate(id: string) {
+  static findOne(id: string, include?: Prisma.BookingInclude) {
     return this.db.booking.findUniqueOrThrow({
       where: { bookingId: id },
-      include: { address: true, user: true },
+      include,
     });
   }
 
-  static updateBookingStatus(
+  static updateMerchantBookingStatus(
     merchantId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
@@ -93,6 +89,36 @@ export class BookingRepository extends BaseRepository {
         });
 
         if (booking.merchantId !== merchantId) {
+          throw new Error(ErrorCode.ErrNotFound);
+        }
+
+        const status = BookStatusEnum.parse(booking.bookingStatus);
+        if (!prevStatus.includes(status)) {
+          throw new Error(ErrorCode.ErrConflict);
+        }
+
+        return tx.booking.update({
+          where: { bookingId },
+          data,
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
+  }
+
+  static updateUserBookingStatus(
+    userId: string,
+    bookingId: string,
+    prevStatus: BookStatusEnum[],
+    data: Prisma.BookingUpdateInput
+  ) {
+    return this.db.$transaction(
+      async (tx) => {
+        const booking = await tx.booking.findUniqueOrThrow({
+          where: { bookingId },
+        });
+
+        if (booking.userId !== userId) {
           throw new Error(ErrorCode.ErrNotFound);
         }
 
