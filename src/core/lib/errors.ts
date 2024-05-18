@@ -33,6 +33,9 @@ export enum ErrorCode {
 
   // booking
   ErrBookWrongSchedule = "wrong service schedule",
+
+  // merchant
+  ErrMerchantUnverified = "merchant has not been verified",
 }
 
 export type ErrorCodeStrings = keyof typeof ErrorCode;

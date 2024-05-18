@@ -75,3 +75,53 @@ export const AlbumsSchema = z.object({
 });
 
 export type TAlbumsSchema = z.infer<typeof AlbumsSchema>;
+
+export const UpdateMerchantSchema = z
+  .object({
+    merchantName: z
+      .string()
+      .min(8, "name can be between 8 and 32 characters")
+      .max(32, "name can be between 8 and 32 characters"),
+    merchantPhotoUrl: z.string(),
+    merchantDesc: z
+      .string()
+      .min(32, "description can be between 32 and 1200 characters")
+      .max(1200, "description can be between 32 and 1200 characters"),
+    merchantCity: z.string(),
+    merchantProvince: z.string(),
+    merchantLat: z.number(),
+    merchantLong: z.number(),
+    merchantCategory: z.string().array().min(1, "pick at least 1 category"),
+    merchantAvailable: z.boolean(),
+  })
+  .partial();
+
+export type TUpdateMerchantSchema = z.infer<typeof UpdateMerchantSchema>;
+
+export const CreateIndexSchema = MerchantModel.pick({
+  merchantId: true,
+  merchantName: true,
+  merchantPhotoUrl: true,
+  merchantCity: true,
+  merchantAvailable: true,
+  merchantCategory: true,
+  merchantLat: true,
+  merchantLong: true,
+}).required();
+
+export type TCreateIndexSchema = z.infer<typeof CreateIndexSchema>;
+
+export const MerchantIndex = z.object({
+  objectID: z.string().cuid(),
+  merchantName: z.string(),
+  merchantPhotoUrl: z.string(),
+  merchantCity: z.string(),
+  merchantAvailable: z.boolean(),
+  _tags: z.string().array(),
+  _geoloc: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }),
+});
+
+export type TMerchantIndex = z.infer<typeof MerchantIndex>;
