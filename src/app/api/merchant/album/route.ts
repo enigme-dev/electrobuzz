@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await addMerchantAlbums(userId.data, data.data);
+    await addMerchantAlbums("casdgljkwqheroiu23", data.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2003") {
+      if (e.code === "P2025") {
         return buildErr(
           "ErrForbidden",
           403,
