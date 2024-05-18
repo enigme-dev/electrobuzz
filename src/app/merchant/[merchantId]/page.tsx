@@ -1,6 +1,7 @@
 "use client";
 import { CarouselImage } from "@/core/components/carousel-image";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
+
 import { Button } from "@/core/components/ui/button";
 import { Card } from "@/core/components/ui/card";
 import { useToast } from "@/core/components/ui/use-toast";

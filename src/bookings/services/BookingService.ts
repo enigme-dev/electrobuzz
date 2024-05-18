@@ -20,14 +20,6 @@ import { ErrorCode } from "@/core/lib/errors";
 import { getMerchant } from "@/merchants/services/MerchantService";
 import { Prisma } from "@prisma/client";
 
-export async function acceptBooking(
-  merchantId: string,
-  bookingId: string,
-  data: TAcceptBookingSchema
-) {
-  return await BookingRepository.acceptBooking(merchantId, bookingId, data);
-}
-
 export async function addBooking(data: TBookingModel) {
   let result;
   if (!data.userId || !data.merchantId) {
