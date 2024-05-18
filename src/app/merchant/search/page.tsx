@@ -11,25 +11,33 @@ import {
   Hits,
   RefinementList,
   Configure,
+  useInstantSearch,
 } from "react-instantsearch";
 import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { GeneralAccordion } from "@/core/components/general-accordion";
-import { useEffect, useState } from "react";
-import { useToast } from "@/core/components/ui/use-toast";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
+import Loader from "@/core/components/loader/loader";
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
 );
 
+function LoadingIndicator() {
+  const { status } = useInstantSearch();
+
+  if (status === "stalled") {
+    return <Loader />;
+  }
+  return null;
+}
 export default function Page() {
-  const { latLng, error } = useGeoLocation();
+  const { latLng } = useGeoLocation();
 
   return (
     <div className="flex flex-col wrapper">
-      <div className="rounded-lg px-10 h-fit sm:h-[80vh]">
+      <div className="rounded-lg px-4 h-fit sm:h-[80vh]">
         <div className="flex items-center justify-center md:pt-10">
           <Image
             src="/House searching-cuate.svg"
@@ -79,23 +87,29 @@ export default function Page() {
                   {" "}
                   <RefinementList
                     attribute="_tags"
+                    limit={7}
                     classNames={{
-                      root: "py-3",
-                      count: " p-1 rounded-md ml-3 text-gray-800 text-sm",
-                      labelText: "ml-3 ",
-                      item: "mb-3",
-                      list: "grid grid-cols-2 m-0 place-items-center items-center gap-5 justify-around p-4 bg-gray-200 dark:bg-[#030c24] rounded-lg",
+                      root: "",
+                      count: "hidden",
+                      checkbox: "hidden",
+                      label:
+                        "cursor-pointer w-full border text-center py-1 sm:dark:hover:text-black sm:hover:border-yellow-300 sm:hover:bg-yellow-300 sm:hover:shadow-lg rounded rounded-sm transition-all duration-500",
+                      item: "mb-3 flex items-center justify-center w-full cursor-pointer rounded rounded-sm",
+                      selectedItem:
+                        "text-black bg-yellow-300 dark:bg-yellow-300 shadow-lg",
+                      list: " grid grid-cols-2 m-0 place-items-center items-center gap-5 justify-around p-2  rounded-lg",
                     }}
                   />
                 </GeneralAccordion>
-                <GeneralAccordion accordionTrigger="Rating">
+                {/* <GeneralAccordion accordionTrigger="Rating">
                   <div>Rating</div>
-                </GeneralAccordion>
+                </GeneralAccordion> */}
               </GeneralAccordion>
             </div>
 
             <div className="flex flex-col gap-6 w-full h-[80vh]   max-h-full overflow-auto rounded-lg sm:p-10 no-scrollbar">
               <NoResultsBoundary fallback={<NoResults />}>
+                <LoadingIndicator />
                 <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
               </NoResultsBoundary>
             </div>

@@ -1,19 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import MerchantsCard from "../../core/components/merchantsCard";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
-import { Configure, Hits, InstantSearch } from "react-instantsearch";
+import {
+  Configure,
+  Hits,
+  InstantSearch,
+  useInstantSearch,
+} from "react-instantsearch";
 import { NoResultsBoundary } from "@/search/component/noResultBondaries";
 import { NoResults } from "@/search/component/noResult";
 import { Hit } from "@/search/component/hit";
 import algoliasearch from "algoliasearch";
+import Loader from "@/core/components/loader/loader";
+import SecondaryLoader from "@/core/components/loader/secondaryLoader";
+
+function LoadingIndicator() {
+  const { status } = useInstantSearch();
+
+  if (status === "stalled") {
+    return <Loader />;
+  }
+  return null;
+}
 
 const NearMerchants = () => {
   const { latLng } = useGeoLocation();
+
   const searchClient = algoliasearch(
     process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string,
     process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
   );
+
   return (
     <div className="w-full ">
       <div className="flex justify-between">
@@ -29,9 +47,11 @@ const NearMerchants = () => {
             filters="merchantAvailable:true"
             getRankingInfo
           />
+
           <div className=" grid gap-4 max-h-[70vh] w-full lg:w-[50%] overflow-auto sm:p-10 no-scrollbar">
             <div>
               <NoResultsBoundary fallback={<NoResults />}>
+                <LoadingIndicator />
                 <Hits hitComponent={Hit} classNames={{ list: "grid gap-2" }} />
               </NoResultsBoundary>
             </div>

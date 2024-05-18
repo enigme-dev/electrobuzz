@@ -1,5 +1,6 @@
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
+import Loader from "@/core/components/loader/loader";
 import { Button } from "@/core/components/ui/button";
 import { Card, CardContent } from "@/core/components/ui/card";
 import { DialogContent } from "@/core/components/ui/dialog";
@@ -58,6 +59,10 @@ const AddressCard = ({
       },
     });
 
+  if (deleteAddressLoading) {
+    return <Loader />;
+  }
+
   return (
     <div className="flex items-center gap-2">
       <Card className="p-5 w-full grid items-center gap-4 sm:gap-10 min-w-[280px]">
@@ -91,9 +96,9 @@ const AddressCard = ({
               }
             />
             <AlertDialogComponent
-              alertDialogSubmitTitle="Submit"
+              alertDialogSubmitTitle="Delete"
               submitAction={() => deleteAddress()}
-              className="bg-yellow-400 text-black hover:bg-yellow-300"
+              ActionButtonClassName=" bg-red-500 hover:bg-red-300 text-white dark:text-white transition duration-500 flex gap-4 items-center"
               dialogDescription={"Apakah kamu yakin akan menghapus alamat ini?"}
               dialogTitle="Delete Address"
               dialogTrigger={

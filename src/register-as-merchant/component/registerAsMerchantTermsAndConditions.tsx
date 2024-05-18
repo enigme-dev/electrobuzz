@@ -44,47 +44,49 @@ export function RegisterAsMerchantTermsAndConditions({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <TermsAndConditions />
-        </div>
-        <FormField
-          control={form.control}
-          name="agreement"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow w-fit">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  Saya setuju dengan Syarat dan Ketentuan diatas
-                </FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
-        <div className="flex justify-between pt-5">
-          <Button
-            variant={"default"}
-            className="bg-yellow-400 hover:bg-yellow-300 text-black dark:text-white"
-            onClick={() => onPrevious()}
-          >
-            Kembali
-          </Button>
-          <Button
-            variant={"default"}
-            className="bg-yellow-400 hover:bg-yellow-300 text-black dark:text-white"
-            type="submit"
-          >
-            Lanjut
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <div className="px-4 sm:px-0">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div>
+            <TermsAndConditions />
+          </div>
+          <FormField
+            control={form.control}
+            name="agreement"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow w-fit">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    Saya setuju dengan Syarat dan Ketentuan diatas
+                  </FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+          <div className="flex justify-between pt-5">
+            <Button
+              variant={"default"}
+              className="bg-yellow-400 hover:bg-yellow-300 text-black dark:text-white"
+              onClick={() => onPrevious()}
+            >
+              Kembali
+            </Button>
+            <Button
+              variant={"default"}
+              className="bg-yellow-400 hover:bg-yellow-300 text-black dark:text-white"
+              type="submit"
+            >
+              Lanjut
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

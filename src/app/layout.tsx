@@ -10,8 +10,8 @@ import Footer from "@/core/components/footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Axara",
-  description: "Simple blog site",
+  title: "Electrobuzz",
+  description: "Electronic service app",
 };
 
 export default function RootLayout({
