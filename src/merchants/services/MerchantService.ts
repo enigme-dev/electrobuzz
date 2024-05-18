@@ -1,9 +1,14 @@
-import { IdentityStatuses, TRegisterMerchantSchema } from "@/merchants/types";
+import {
+  IdentityStatuses,
+  TRegisterMerchantSchema,
+  TUpdateMerchantSchema,
+} from "@/merchants/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { encrypt } from "@/core/lib/security";
 import { MerchantRepository } from "@/merchants/repositories/MerchantRepository";
 import { SearchParams } from "@/core/lib/utils";
 import { getPrivateProfile } from "@/users/services/UserService";
+import { ErrorCode } from "@/core/lib/errors";
 
 export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
@@ -66,6 +71,25 @@ export async function registerMerchant(
 
     throw e;
   }
+}
+
+export async function updateMerchantProfile(
+  merchantId: string,
+  input: TUpdateMerchantSchema
+) {
+  const merchant = await getMerchant(merchantId);
+  if (!merchant.merchantVerified) {
+    throw new Error(ErrorCode.ErrMerchantUnverified);
+  }
+
+  if (input.merchantPhotoUrl?.startsWith("data:image")) {
+    input.merchantPhotoUrl = await uploadImg(input.merchantPhotoUrl);
+    await deleteImg(merchant.merchantPhotoUrl);
+  }
+
+  const updated = await MerchantRepository.update(merchantId, input);
+
+  await addMerchantIndex(updated);
 }
 
 export async function updateMerchantVerified(
