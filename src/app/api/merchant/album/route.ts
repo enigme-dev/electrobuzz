@@ -28,14 +28,14 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await addMerchantAlbums("casdgljkwqheroiu23", data.data);
+    await addMerchantAlbums(userId.data, data.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
         return buildErr(
           "ErrForbidden",
           403,
-          "user is not registered as merchant"
+          "user is not registered as merchant",
         );
       }
     }
