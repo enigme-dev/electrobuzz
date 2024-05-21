@@ -1,3 +1,4 @@
+import { MerchantModel } from "@/merchants/types";
 import { AddressSchema, UserModel } from "@/users/types";
 import { z } from "zod";
 
@@ -73,7 +74,7 @@ export const GetMerchantBookingRejected = BookingModel.omit({
   userId: true,
   addressId: true,
   merchantId: true,
-});
+}).extend({ user: z.object({ name: z.string() }) });
 
 export type TGetMerchantBookingRejected = z.infer<
   typeof GetMerchantBookingRejected
@@ -108,13 +109,38 @@ export const AcceptBookingSchema = z.object({
 
 export type TAcceptBookingSchema = z.infer<typeof AcceptBookingSchema>;
 
-export const RejectBookingSchema = z.object({
+export const BookingReasonSchema = z.object({
   bookingReason: z
     .string({
-      required_error: "reason for rejecting can not be empty",
+      required_error: "reason can not be empty",
     })
-    .min(8, "reason for rejecting can be between 8 and 256 characters")
-    .max(256, "reason for rejecting can be between 8 and 256 characters"),
+    .min(8, "reason can be between 8 and 256 characters")
+    .max(256, "reason can be between 8 and 256 characters"),
 });
 
-export type TRejectBookingSchema = z.infer<typeof RejectBookingSchema>;
+export type TBookingReasonSchema = z.infer<typeof BookingReasonSchema>;
+
+export const GetUserBooking = BookingModel.omit({
+  bookingReason: true,
+  addressId: true,
+  merchantId: true,
+}).extend({
+  bookingPrice: z.number().nullable().optional(),
+  address: AddressSchema,
+  merchant: MerchantModel.pick({
+    merchantName: true,
+    merchantPhotoUrl: true,
+  }).extend({ user: z.object({ phone: z.string() }) }),
+});
+
+export type TGetUserBooking = z.infer<typeof GetUserBooking>;
+
+export const GetUserBookingReason = GetUserBooking.extend({
+  bookingReason: z.string(),
+});
+
+export type TGetUserBookingReason = z.infer<typeof GetUserBookingReason>;
+
+export const GetUserBookingDone = GetUserBooking.extend({ review: z.any() });
+
+export type TGetUserBookingDone = z.infer<typeof GetUserBookingDone>;

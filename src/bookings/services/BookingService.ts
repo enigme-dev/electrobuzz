@@ -7,10 +7,13 @@ import {
   GetMerchantBookingPending,
   GetMerchantBookingRejected,
   GetMerchantBookings,
+  GetUserBooking,
+  GetUserBookingDone,
+  GetUserBookingReason,
   TAcceptBookingSchema,
   TBookingModel,
   TGetMerchantBookings,
-  TRejectBookingSchema,
+  TBookingReasonSchema,
 } from "@/bookings/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { BookingRepository } from "@/bookings/repositories/BookingRepository";
@@ -19,6 +22,7 @@ import { SearchParams } from "@/core/lib/utils";
 import { ErrorCode } from "@/core/lib/errors";
 import { getMerchant } from "@/merchants/services/MerchantService";
 import { Prisma } from "@prisma/client";
+import dayjs from "dayjs";
 
 export async function addBooking(data: TBookingModel) {
   let result;
@@ -52,7 +56,10 @@ export async function getMerchantBooking(
   merchantId: string,
   bookingId: string
 ) {
-  const booking = await BookingRepository.findOnePrivate(bookingId);
+  const booking = await BookingRepository.findOne(bookingId, {
+    address: true,
+    user: true,
+  });
   if (booking.merchantId !== merchantId) throw new Error(ErrorCode.ErrNotFound);
 
   switch (booking.bookingStatus) {
@@ -86,6 +93,37 @@ export async function getMerchantBookings(
   return [result, bookingsCt];
 }
 
+export async function getUserBooking(userId: string, bookingId: string) {
+  const booking = await BookingRepository.findOne(bookingId, {
+    merchant: {
+      select: {
+        merchantName: true,
+        merchantPhotoUrl: true,
+        user: { select: { phone: true } },
+      },
+    },
+    address: true,
+  });
+
+  if (booking.userId !== userId) {
+    throw new Error(ErrorCode.ErrNotFound);
+  }
+
+  const status = BookStatusEnum.parse(booking.bookingStatus);
+  if (status === BookStatusEnum.Enum.done) {
+    return GetUserBookingDone.parse(booking);
+  }
+
+  if (
+    status === BookStatusEnum.Enum.canceled ||
+    status === BookStatusEnum.Enum.rejected
+  ) {
+    return GetUserBookingReason.parse(booking);
+  }
+
+  return GetUserBooking.parse(booking);
+}
+
 export async function getUserBookings(userId: string, options?: SearchParams) {
   return await BookingRepository.findByUserId(userId, options);
 }
@@ -100,10 +138,51 @@ export async function setStatusAccepted(
     bookingPrice: input.bookingPrice,
   };
 
-  await BookingRepository.updateBookingStatus(
+  await BookingRepository.updateMerchantBookingStatus(
     merchantId,
     bookingId,
-    BookStatusEnum.Enum.pending,
+    [BookStatusEnum.Enum.pending],
+    data
+  );
+}
+
+export async function setStatusCanceled(
+  userId: string,
+  bookingId: string,
+  input: TBookingReasonSchema
+) {
+  const booking = await getUserBooking(userId, bookingId);
+  if (dayjs().isSame(booking.bookingSchedule, "date")) {
+    throw new Error(ErrorCode.ErrBookCancelation);
+  }
+
+  const data: Prisma.BookingUpdateInput = {
+    bookingStatus: BookStatusEnum.Enum.canceled,
+    bookingReason: input.bookingReason,
+  };
+
+  await BookingRepository.updateUserBookingStatus(
+    userId,
+    bookingId,
+    [BookStatusEnum.Enum.pending, BookStatusEnum.Enum.accepted],
+    data
+  );
+}
+
+export async function setStatusDone(userId: string, bookingId: string) {
+  const booking = await getUserBooking(userId, bookingId);
+  if (dayjs().isBefore(booking.bookingSchedule, "date")) {
+    throw new Error(ErrorCode.ErrBookDoneTooEarly);
+  }
+
+  const data: Prisma.BookingUpdateInput = {
+    bookingStatus: BookStatusEnum.Enum.done,
+  };
+
+  await BookingRepository.updateUserBookingStatus(
+    userId,
+    bookingId,
+    [BookStatusEnum.Enum.in_progress],
     data
   );
 }
@@ -113,8 +192,7 @@ export async function setStatusInProgress(
   bookingId: string
 ) {
   const booking = await getMerchantBooking(merchantId, bookingId);
-  const now = new Date().toLocaleDateString();
-  if (now !== booking.bookingSchedule.toLocaleDateString()) {
+  if (!dayjs().isSame(booking.bookingSchedule, "date")) {
     throw new Error(ErrorCode.ErrBookWrongSchedule);
   }
 
@@ -122,10 +200,10 @@ export async function setStatusInProgress(
     bookingStatus: BookStatusEnum.Enum.in_progress,
   };
 
-  await BookingRepository.updateBookingStatus(
+  await BookingRepository.updateMerchantBookingStatus(
     merchantId,
     bookingId,
-    BookStatusEnum.Enum.accepted,
+    [BookStatusEnum.Enum.accepted],
     data
   );
 }
@@ -133,17 +211,17 @@ export async function setStatusInProgress(
 export async function setStatusRejected(
   merchantId: string,
   bookingId: string,
-  input: TRejectBookingSchema
+  input: TBookingReasonSchema
 ) {
   const data: Prisma.BookingUpdateInput = {
     bookingStatus: BookStatusEnum.Enum.rejected,
     bookingReason: input.bookingReason,
   };
 
-  await BookingRepository.updateBookingStatus(
+  await BookingRepository.updateMerchantBookingStatus(
     merchantId,
     bookingId,
-    BookStatusEnum.Enum.pending,
+    [BookStatusEnum.Enum.pending],
     data
   );
 }

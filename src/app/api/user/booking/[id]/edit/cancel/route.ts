@@ -1,6 +1,6 @@
-import { setStatusRejected } from "@/bookings/services/BookingService";
+import { setStatusCanceled } from "@/bookings/services/BookingService";
 import { BookingReasonSchema } from "@/bookings/types";
-import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   }
 
   try {
-    await setStatusRejected(userId.data, bookingId.data, input.data);
+    await setStatusCanceled(userId.data, bookingId.data, input.data);
   } catch (e) {
     if (e instanceof Error) {
       switch (e.message) {
@@ -40,10 +40,12 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr(
             "ErrConflict",
             409,
-            "can only reject a pending booking"
+            "can only cancel a pending or accepted booking"
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
+        case ErrorCode.ErrBookCancelation:
+          return buildErr("ErrBookCancelation", 400, e.message);
       }
     }
 
