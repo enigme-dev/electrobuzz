@@ -171,7 +171,7 @@ export async function setStatusCanceled(
 
 export async function setStatusDone(userId: string, bookingId: string) {
   const booking = await getUserBooking(userId, bookingId);
-  if (dayjs().isAfter(booking.bookingSchedule, "date")) {
+  if (dayjs().isBefore(booking.bookingSchedule, "date")) {
     throw new Error(ErrorCode.ErrBookDoneTooEarly);
   }
 
