@@ -1,5 +1,6 @@
 "use client";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
+import { Toaster } from "@/core/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -23,7 +24,12 @@ const MerchantLayout = ({ children }: any) => {
   //   router.push("/merchant/register");
   // }
 
-  return <div>{children}</div>;
+  return (
+    <div>
+      {children}
+      <Toaster />
+    </div>
+  );
 };
 
 export default MerchantLayout;

@@ -22,7 +22,7 @@ const merchantDashboardNavList = [
 const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
   return (
-    <div className="flex h-screen w-[30vh]">
+    <div className="sm:flex h-[120vh] w-[30vh] hidden ">
       <div className="w-[30vh] grid-rows-2 place-items-start p-10 ">
         <div className="grid place-items-center row-span-1 pb-16">
           <h1 className="text-2xl italic text-yellow-400 font-extrabold ">
@@ -52,7 +52,7 @@ const MerchantDashboardSideBar = () => {
           ))}
         </div>
       </div>
-      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838] h-full"></div>
+      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838] h-"></div>
     </div>
   );
 };

@@ -90,9 +90,9 @@ export function AuthBar() {
                     <li className="pt-5 text-center">
                       <Button
                         variant="outline"
-                        className="bg-yellow-400 hover:bg-yellow-300"
+                        className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"
                       >
-                        <Link href="/merchant/dashboard/profile">
+                        <Link href="/merchant/dashboard-start">
                           Merchant Dashboard
                         </Link>
                       </Button>

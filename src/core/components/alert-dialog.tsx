@@ -17,7 +17,7 @@ interface AlertDialogProps {
   dialogTitle: string;
   alertDialogSubmitTitle: string;
   submitAction: Function;
-  className?: string;
+  ActionButtonClassName?: string;
 }
 
 export function AlertDialogComponent({
@@ -26,7 +26,7 @@ export function AlertDialogComponent({
   dialogTitle,
   alertDialogSubmitTitle,
   submitAction,
-  className,
+  ActionButtonClassName,
 }: AlertDialogProps) {
   return (
     <AlertDialog>
@@ -39,7 +39,7 @@ export function AlertDialogComponent({
         <AlertDialogFooter>
           <AlertDialogCancel>Kembali</AlertDialogCancel>
           <AlertDialogAction
-            className={className}
+            className={ActionButtonClassName}
             onClick={() => submitAction()}
           >
             {alertDialogSubmitTitle}

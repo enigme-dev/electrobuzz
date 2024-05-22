@@ -31,7 +31,7 @@ export default function Page() {
         );
         break;
       case 2:
-        setView(<RegisterAsMerchantForm onNext={() => handleNext()} />);
+        setView(<RegisterAsMerchantForm />);
         break;
     }
   }, [step]);

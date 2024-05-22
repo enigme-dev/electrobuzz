@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/core/components/ui/form";
-import { Button } from "@/core/components/ui/button";
 import { Input } from "@/core/components/ui/input";
 import { useToast } from "@/core/components/ui/use-toast";
 
@@ -33,10 +32,7 @@ import {
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
 import { useSession } from "next-auth/react";
-
-interface RegisterAsMerchantFormProps {
-  onNext: Function;
-}
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
 
 const OPTIONS: Option[] = [
   { label: "AC", value: "AC" },
@@ -52,7 +48,7 @@ interface latLng {
   lat: number | null;
   lng: number | null;
 }
-const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
+const RegisterAsMerchantForm = () => {
   const { update } = useSession();
   const { toast } = useToast();
   const [selectedLocation, setSelectedLocation] = useState<latLng>({
@@ -129,19 +125,34 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
     resolver: zodResolver(RegisterMerchantSchema),
   });
 
-  const { mutate: addMerchantData, isPending: updateLoading } = useMutation({
-    mutationFn: (values: TRegisterMerchantSchema) =>
-      axios.post(`/api/merchant`, values),
-    onSuccess: () => {
-      toast({
-        title: "Formulir anda telah terkirim!",
-        description: "mohon menunggu konfirmasi admin",
-      });
-      update({
-        isMerchant: true,
-      });
-    },
-  });
+  const { mutate: addMerchantData, isPending: addMerchantLoading } =
+    useMutation({
+      mutationFn: (values: TRegisterMerchantSchema) =>
+        axios.post(`/api/merchant`, values),
+      onSuccess: () => {
+        toast({
+          title: "Formulir anda telah terkirim!",
+          description: "mohon menunggu konfirmasi admin",
+        });
+        update({
+          isMerchant: true,
+        });
+      },
+      onError: (error) => {
+        handleError(error);
+      },
+    });
+
+  function handleError(error: any) {
+    switch (error.response.data.status) {
+      case "ErrForbidden":
+        toast({
+          title: "Mohon verifikasi nomor handphone!",
+          variant: "destructive",
+        });
+        break;
+    }
+  }
 
   function onSubmit(data: TRegisterMerchantSchema) {
     addMerchantData(data);
@@ -217,7 +228,7 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
   }
 
   return (
-    <div className="wrapper pt-10 sm:pt-0 px-4">
+    <div className="wrapper px-4 pt-10 sm:pt-0">
       <h1 className="font-bold text-xl pb-10">Daftar Sebagai Mitra</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -472,13 +483,16 @@ const RegisterAsMerchantForm = ({ onNext }: RegisterAsMerchantFormProps) => {
               </FormItem>
             )}
           />
-          <div className="text-right">
-            <Button
+          <div className="flex justify-end w-full">
+            <ButtonWithLoader
+              buttonText="Submit"
+              isLoading={addMerchantLoading}
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-300 text-black dark:text-white"
-            >
-              Submit
-            </Button>
+              variant="secondary"
+              className={
+                " bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+              }
+            />
           </div>
         </form>
       </Form>

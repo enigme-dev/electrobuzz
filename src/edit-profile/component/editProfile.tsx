@@ -13,7 +13,7 @@ import useEditProfile from "../hooks/useEditProfiles";
 import AddressForm from "@/users/components/addressForm";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Loader from "@/core/components/loader";
+import Loader from "@/core/components/loader/loader";
 import AddressCard from "./addressCard";
 
 interface AddressData {
@@ -125,12 +125,8 @@ const EditProfile = () => {
     setView(newView);
   }, [step, isEditing, isEditPhone, isEditName, onOpenDialog]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center">
-        <Loader />
-      </div>
-    );
+  if (isLoading || addressLoading) {
+    return <Loader />;
   }
 
   return (
@@ -221,20 +217,20 @@ const EditProfile = () => {
               onOpenChange={handleOpenChange}
               dialogTrigger={
                 <Card
-                  className="rounded-full w-fit block"
-                  onClick={() => cancelEditing()}
+                  className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
+                  onClick={() => {
+                    setOnOpenDialog(true);
+                    cancelEditing();
+                    setIsEditName(false);
+                    setIsEditPhone(false);
+                    setStep(2);
+                  }}
                 >
                   <PlusIcon
-                    className="p-1 hover:bg-gray-100 rounded-full hover:cursor-pointer"
-                    size={30}
-                    onClick={() => {
-                      setOnOpenDialog(true);
-                      cancelEditing();
-                      setIsEditName(false);
-                      setIsEditPhone(false);
-                      setStep(2);
-                    }}
+                    className="p-1 rounded-full hover:cursor-pointer"
+                    size={20}
                   />
+                  <p className="text-xs sm:text-sm ">Tambah alamat</p>
                 </Card>
               }
             />

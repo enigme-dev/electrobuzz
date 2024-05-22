@@ -70,17 +70,9 @@ export function buildRes(data: string | ResponseSchema) {
 }
 
 export function fileInputToDataURL(
-  fileInput: HTMLInputElement
+  input: HTMLInputElement | File
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    // Ensure files are selected
-    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-      reject(new Error("No files selected."));
-      return;
-    }
-
-    const file = fileInput.files[0];
-
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -95,6 +87,16 @@ export function fileInputToDataURL(
       reject(new Error("Failed to read file."));
     };
 
-    reader.readAsDataURL(file);
+    if (input instanceof HTMLInputElement) {
+      if (!input.files || input.files.length === 0) {
+        reject(new Error("No files selected."));
+        return;
+      }
+      reader.readAsDataURL(input.files[0]);
+    } else if (input instanceof File) {
+      reader.readAsDataURL(input);
+    } else {
+      reject(new Error("Invalid input type."));
+    }
   });
 }

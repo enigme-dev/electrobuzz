@@ -1,6 +1,6 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
 import { PER_PAGE, SearchParams } from "@/core/lib/utils";
-import { TRegisterMerchantSchema } from "@/merchants/types";
+import { TCreateIndexSchema, TRegisterMerchantSchema } from "@/merchants/types";
 import { AlgoliaClient } from "@/core/adapters/algolia";
 import { Prisma } from "@prisma/client";
 
@@ -37,7 +37,7 @@ export class MerchantRepository extends BaseRepository {
     });
   }
 
-  static createIndex(data: any) {
+  static createIndex(data: TCreateIndexSchema) {
     return this.index.saveObject({
       objectID: data.merchantId,
       merchantName: data.merchantName,
