@@ -24,7 +24,7 @@ const Layout = ({ children }: any) => {
     return <Loader />;
   }
 
-  if (merchantData?.merchantAlbums) {
+  if ((merchantData?.merchantAlbums.length ?? 0) > 0) {
     return router.push("/merchant/dashboard/profile");
   }
 

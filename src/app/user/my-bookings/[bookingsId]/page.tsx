@@ -1,28 +1,28 @@
 "use client";
 
+import { BookStatusEnum } from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const BookingDetail = () => {
-  const [status, setStatus] = useState(
-    "pending" || "cancelled" || "accepted" || "done"
+  const [status, setStatus] = useState<BookStatusEnum>(
+    BookStatusEnum.Enum.accepted
   );
-  const pathname = usePathname();
+
   const radioOptionsForCancelReason = [
-    { option: "Budjet tidak cukup" },
+    { option: "Budget tidak cukup" },
     { option: "Mau cari teknisi lain" },
     { option: "Mau ubah jadwal" },
     { option: "Other" },
   ];
 
   useEffect(() => {
-    setStatus("accepted");
+    setStatus(BookStatusEnum.Enum.canceled);
   }, [status]);
 
   return (
@@ -47,7 +47,7 @@ const BookingDetail = () => {
           </div>
         </>
       )}
-      {status == "cancelled" && (
+      {status == "canceled" && (
         <>
           <div className="flex items-center justify-center">
             <Image
