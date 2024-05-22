@@ -52,7 +52,7 @@ const MerchantDashboardSideBar = () => {
           ))}
         </div>
       </div>
-      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838] h-full"></div>
+      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838] h-"></div>
     </div>
   );
 };

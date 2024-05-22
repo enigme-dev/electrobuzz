@@ -10,11 +10,7 @@ import {
 } from "./ui/carousel";
 import { Card, CardContent } from "./ui/card";
 
-interface carouselProps {
-  carouselContent: any;
-}
-
-export function CarouselImage({ carouselContent }: carouselProps) {
+export function CarouselImage({ children }: any) {
   const [api, setApi] = React.useState<CarouselApi>();
 
   const [current, setCurrent] = React.useState(0);
@@ -46,21 +42,7 @@ export function CarouselImage({ carouselContent }: carouselProps) {
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.reset}
       >
-        <CarouselContent>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <CarouselItem key={index}>
-              <div className="p-1">
-                <div>
-                  <div className=" aspect-auto items-center justify-center ">
-                    <span className="text-4xl font-semibold">
-                      {carouselContent}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+        <CarouselContent>{children}</CarouselContent>
       </Carousel>
       <div className="py-2 text-center text-sm text-muted-foreground">
         Slide {current} of {count}

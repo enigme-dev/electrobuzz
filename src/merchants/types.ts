@@ -72,8 +72,8 @@ export type TMerchantAlbumSchema = z.infer<typeof MerchantAlbumSchema>;
 
 export const AlbumsSchema = z.object({
   albums: MerchantAlbumSchema.array()
-    .min(1, "album must between 1 to 4 photos")
-    .max(4, "album must between 1 to 4 photos"),
+    .min(1, "album harus antara 1 sampai 4 foto")
+    .max(4, "album harus antara 1 sampai 4 foto"),
 });
 
 export type TAlbumsSchema = z.infer<typeof AlbumsSchema>;
