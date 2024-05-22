@@ -3,6 +3,7 @@ import { CarouselImage } from "@/core/components/carousel-image";
 import Loader from "@/core/components/loader/loader";
 import { Button } from "@/core/components/ui/button";
 import { Card } from "@/core/components/ui/card";
+import { CarouselItem } from "@/core/components/ui/carousel";
 import { useToast } from "@/core/components/ui/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -56,6 +57,8 @@ const MerchantDetailPage = () => {
     enabled: !!merchantId,
   });
 
+  console.log(merchantDetails?.merchantAlbums);
+
   if (getMerchantDetailsloading) {
     return <Loader />;
   }
@@ -85,8 +88,8 @@ const MerchantDetailPage = () => {
               ))}
             </h2>
             <h2 className="text-lg sm:text-2xl text-white flex  items-center gap-2">
-              <span>
-                <MapPinIcon className="text-red-500" />
+              <span className="bg-red-500 rounded-lg py-1 px-2">
+                <MapPinIcon className="text-white w-4" />
               </span>
               {merchantDetails?.merchantCity}
             </h2>
@@ -94,24 +97,26 @@ const MerchantDetailPage = () => {
           {/* <StatusMerchant status={"online"} /> */}
         </div>
       </div>
-      <div className="px-4 grid sm:grid-cols-2 sm:flex-row gap-8 pt-10 w-full">
-        <div className="w-full">
+      <div className="px-4 grid sm:grid-cols-2 sm:flex-row gap-8 pt-10 w-full ">
+        <div className="w-full ">
           {merchantDetails?.merchantAlbums &&
           merchantDetails.merchantAlbums.length > 0 ? (
-            merchantDetails.merchantAlbums.map((value, index) => (
-              <CarouselImage
-                key={index}
-                carouselContent={
+            <CarouselImage>
+              {merchantDetails.merchantAlbums.map((value: any, index) => (
+                <CarouselItem key={index}>
                   <Image
-                    src={merchantDetails?.merchantAlbums ? value : ""}
+                    key={index}
+                    src={
+                      merchantDetails?.merchantAlbums ? value.albumPhotoUrl : ""
+                    }
                     width={300}
                     height={300}
                     alt="biaya-service-ac"
-                    className="object-contain w-full"
+                    className="object-contain w-full h-[320px]"
                   />
-                }
-              />
-            ))
+                </CarouselItem>
+              ))}
+            </CarouselImage>
           ) : (
             <div className="flex justify-center items-center w-full h-[200px] sm:h-[300px] bg-gray-100 dark:bg-slate-900 rounded-xl">
               <p>No Picture Available</p>
@@ -122,13 +127,13 @@ const MerchantDetailPage = () => {
           <div>
             <h1 className="text-bold text-2xl flex items-center gap-4">
               Deskripsi{" "}
-              <span className="bg-yellow-400 py-1 px-2 rounded-full">
-                <Newspaper className="text-black" />
+              <span className="bg-yellow-400 py-1 px-2 rounded-lg">
+                <Newspaper className="text-black w-4" />
               </span>
             </h1>
             <p className="mt-10 flex items-center gap-4 max-w-[350px] sm:max-w-[500px] break-words">
-              <span className="bg-green-500 py-1 px-2 rounded-full">
-                <PenBoxIcon className="text-white" />
+              <span className="bg-green-500 py-1 px-2 rounded-lg">
+                <PenBoxIcon className="text-white w-4" />
               </span>
               {merchantDetails?.merchantDesc}
             </p>

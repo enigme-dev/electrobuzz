@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/core/components/ui/form";
-import { Button } from "@/core/components/ui/button";
 import { Input } from "@/core/components/ui/input";
 import { useToast } from "@/core/components/ui/use-toast";
 

@@ -221,8 +221,8 @@ const EditProfile = () => {
                   onClick={() => {
                     setOnOpenDialog(true);
                     cancelEditing();
-                    setIsEditName(undefined);
-                    setIsEditPhone(undefined);
+                    setIsEditName(false);
+                    setIsEditPhone(false);
                     setStep(2);
                   }}
                 >
