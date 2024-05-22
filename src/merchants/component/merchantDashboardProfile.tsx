@@ -17,39 +17,24 @@ import { fileInputToDataURL } from "@/core/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Autocomplete,
-  LoadScript,
   LoadScriptProps,
   MarkerF,
   useJsApiLoader,
 } from "@react-google-maps/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import {
-  MapPinIcon,
-  PlusIcon,
-  Settings,
-  UploadIcon,
-  XIcon,
-} from "lucide-react";
+import { PlusIcon, Settings, Upload, UploadIcon, XIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  RegisterMerchantSchema,
-  TAlbumsSchema,
-  TMerchantAlbumSchema,
-  TRegisterMerchantSchema,
-  TUpdateMerchantSchema,
-  UpdateMerchantSchema,
-} from "../types";
+import { TUpdateMerchantSchema, UpdateMerchantSchema } from "../types";
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
 import MyMapComponent from "@/core/components/google-maps";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { DialogGeneral } from "@/core/components/general-dialog";
-import { Button } from "@/core/components/ui/button";
 
 interface MyMerchantDetails {
   merchantPhotoUrl: string;
@@ -95,22 +80,20 @@ interface FileObject {
 
 const MerchantDashboardProfile = () => {
   const { data: session } = useSession();
-  const { update } = useSession();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const {
-    isLoading: getMerchantDetailsloading,
-    error: getMerchantDetailsError,
-    data: myMerchantDetails,
-  } = useQuery({
-    queryKey: ["getMerchantDetails", session?.user?.id],
-    queryFn: async () =>
-      await axios.get(`/api/merchant/${session?.user?.id}`).then((response) => {
-        return response.data.data as MyMerchantDetails;
-      }),
-    enabled: !!session?.user?.id,
-  });
+  const { isLoading: getMerchantDetailsloading, data: myMerchantDetails } =
+    useQuery({
+      queryKey: ["getMerchantDetails", session?.user?.id],
+      queryFn: async () =>
+        await axios
+          .get(`/api/merchant/${session?.user?.id}`)
+          .then((response) => {
+            return response.data.data as MyMerchantDetails;
+          }),
+      enabled: !!session?.user?.id,
+    });
 
   const [selectedLocation, setSelectedLocation] = useState<latLng>({
     lat: myMerchantDetails?.merchantLat || null,
@@ -231,8 +214,10 @@ const MerchantDashboardProfile = () => {
         title: "Update Profile Merchant Berhasil!",
       });
     },
-    onError: (error) => {
-      handleError(error);
+    onError: () => {
+      toast({
+        title: "Update Merchant Data Gagal!",
+      });
     },
   });
   const { mutate: deleteMerchantAlbum, isPending: deleteMerchantAlbumLoading } =
@@ -247,8 +232,10 @@ const MerchantDashboardProfile = () => {
           title: "Delete Album Merchant Berhasil!",
         });
       },
-      onError: (error) => {
-        handleError(error);
+      onError: () => {
+        toast({
+          title: "Delete Album Merchant Gagal!",
+        });
       },
     });
 
@@ -266,17 +253,6 @@ const MerchantDashboardProfile = () => {
         toast({ title: "Tambah foto album gagal!", variant: "destructive" });
       },
     });
-
-  function handleError(error: any) {
-    switch (error.response.data.status) {
-      case "ErrForbidden":
-        toast({
-          title: "Mohon verifikasi nomor handphone!",
-          variant: "destructive",
-        });
-        break;
-    }
-  }
 
   function onSubmit(data: TUpdateMerchantSchema) {
     updateMerchantProfile(data);
@@ -299,13 +275,6 @@ const MerchantDashboardProfile = () => {
       setOnOpenDialog(false);
     }
   }
-
-  // const defaultValue: Option[] = myMerchantDetails
-  //   ? myMerchantDetails?.merchantCategory.map((category: string) => ({
-  //       value: category,
-  //       label: category,
-  //     }))
-  //   : [];
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -346,19 +315,16 @@ const MerchantDashboardProfile = () => {
     AddAlbumPhotoLoading
   ) {
     return (
-      <div className="w-[80vw] h-screen">
+      <div className="md:w-[80vw] w-screen h-full">
         <Loader />
       </div>
     );
   }
 
-  console.log(myMerchantDetails?.merchantAlbums);
-  console.log(myMerchantDetails?.merchantPhotoUrl);
-
   return (
-    <div className="w-[80vw] box-border h-screen overflow-hidden  flex flex-col">
-      <div className="px-8 h-full flex-grow overflow-auto no-scrollbar">
-        <div className="grid gap-2 w-full">
+    <div className="w-screen sm:w-[80vw]">
+      <div className="px-8 ">
+        <div className="grid gap-2 w-full h-full md:h-[120vh] overflow-scroll no-scrollbar pb-10">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <DialogGeneral
@@ -424,8 +390,8 @@ const MerchantDashboardProfile = () => {
                       height={300}
                       className="object-cover w-full h-[40vh] brightness-50 object-center hover:cursor-pointer"
                     />
-                    <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center opacity-0 hover:opacity-100 transition-opacity">
-                      <Settings className="text-white" />
+                    <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
+                      <Upload className="text-white" />
                     </div>
                   </div>
                 }
@@ -435,7 +401,7 @@ const MerchantDashboardProfile = () => {
                   Album{" "}
                   <span className="text-gray-300 italic text-xs">(maks 4)</span>
                 </FormLabel>
-                <div className="grid grid-cols-4 mt-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-4 mt-4 gap-4">
                   <FormLabel
                     htmlFor="images2"
                     className="border border-dashed flex justify-center items-center h-32 cursor-pointer"
