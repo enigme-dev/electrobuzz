@@ -18,7 +18,7 @@ export default function Header() {
   };
 
   return (
-    <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838] flex items-center">
+    <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838] flex items-center sm:block">
       {pathname === "/merchant/dashboard/profile" && (
         <div className="sm:hidden">
           <AlignJustify />
