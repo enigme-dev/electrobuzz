@@ -13,7 +13,6 @@ import { NoResults } from "@/search/component/noResult";
 import { Hit } from "@/search/component/hit";
 import algoliasearch from "algoliasearch";
 import Loader from "@/core/components/loader/loader";
-import SecondaryLoader from "@/core/components/loader/secondaryLoader";
 
 function LoadingIndicator() {
   const { status } = useInstantSearch();

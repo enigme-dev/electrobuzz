@@ -25,7 +25,7 @@ const MerchantDashboard = () => {
   }, [pathname]);
 
   return (
-    <div className="w-full h-full flex">
+    <div className="w-full flex ">
       <MerchantDashboardSideBar />
       <div>{view}</div>
     </div>

@@ -2,22 +2,28 @@
 
 import { Input } from "@/core/components/ui/input";
 import { Button } from "@/core/components/ui/button";
-import { SunMoon } from "lucide-react";
+import { AlignJustify, HamIcon, SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toggleTheme } from "@/core/lib/shadcn";
 import Link from "next/link";
 import { AuthBar } from "./auth-bar";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
-
+  const pathname = usePathname();
   const handleToggleTheme = () => {
     const selectedTheme = toggleTheme(theme);
     setTheme(selectedTheme);
   };
 
   return (
-    <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838]">
+    <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838] flex items-center">
+      {pathname === "/merchant/dashboard/profile" && (
+        <div className="sm:hidden">
+          <AlignJustify />
+        </div>
+      )}
       <div className="wrapper flex justify-center sm:justify-between">
         <div className="flex gap-6 items-center">
           <Link href="/" className="select-none">
