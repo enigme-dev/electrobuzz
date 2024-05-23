@@ -14,6 +14,7 @@ import {
   TBookingModel,
   TGetMerchantBookings,
   TBookingReasonSchema,
+  TCreateBookingSchema,
 } from "@/bookings/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { BookingRepository } from "@/bookings/repositories/BookingRepository";
@@ -24,28 +25,40 @@ import { getMerchant } from "@/merchants/services/MerchantService";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 
-export async function addBooking(data: TBookingModel) {
-  let result;
-  if (!data.userId || !data.merchantId) {
-    throw new Error("userId and merchantId are required");
-  }
+export async function addBooking(
+  userId: string,
+  merchantId: string,
+  input: TCreateBookingSchema
+) {
+  let result, image;
 
-  if (data.userId === data.merchantId) {
+  if (userId === merchantId) {
     throw new Error("user can not book their own merchant");
   }
 
-  const merchant = await getMerchant(data.merchantId);
+  const merchant = await getMerchant(merchantId);
   if (!merchant.merchantAvailable || !merchant.merchantVerified)
     throw new Error(ErrorCode.ErrNotFound);
 
-  await getAddress(data.userId, data.addressId);
+  await getAddress(userId, input.addressId);
 
   try {
-    data.bookingPhotoUrl = await uploadImg(data.bookingPhotoUrl);
-    data.bookingStatus = BookStatusEnum.Enum.pending;
+    image = await uploadImg(input.bookingPhotoUrl);
+    const data: TBookingModel = {
+      ...input,
+      userId,
+      merchantId,
+      bookingSchedule: new Date(input.bookingSchedule),
+      bookingStatus: BookStatusEnum.Enum.pending,
+      bookingPhotoUrl: image,
+    };
+
     result = await BookingRepository.create(data);
   } catch (e) {
-    await deleteImg(data.bookingPhotoUrl);
+    if (image) {
+      await deleteImg(image);
+    }
+
     throw e;
   }
 

@@ -3,6 +3,7 @@ import { AddressSchema, UserModel } from "@/users/types";
 import { z } from "zod";
 
 export const BookStatusEnum = z.enum([
+  "expired", // booking expired
   "pending", // waiting for merchant
   "accepted", // merchant accepted
   "rejected", // merchant rejected
@@ -144,3 +145,16 @@ export type TGetUserBookingReason = z.infer<typeof GetUserBookingReason>;
 export const GetUserBookingDone = GetUserBooking.extend({ review: z.any() });
 
 export type TGetUserBookingDone = z.infer<typeof GetUserBookingDone>;
+
+export const CreateBookingSchema = z.object({
+  bookingPhotoUrl: z.string({ required_error: "photo can not be empty" }),
+  bookingComplain: z.string({ required_error: "complain can not be empty" }),
+  bookingSchedule: z
+    .string({ required_error: "schedule can not be empty" })
+    .datetime("schedule must be a datetime string"),
+  addressId: z
+    .string({ required_error: "address id can not be empty" })
+    .cuid("address id must be a cuid"),
+});
+
+export type TCreateBookingSchema = z.infer<typeof CreateBookingSchema>;
