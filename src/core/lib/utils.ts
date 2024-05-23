@@ -1,3 +1,4 @@
+import { BookStatusEnum } from "@/bookings/types";
 import { z } from "zod";
 
 export const PER_PAGE = 10;
@@ -8,6 +9,8 @@ export function parseParams(searchParams: URLSearchParams) {
   const query = searchParams.get("query") ?? "";
   const page = parseInt(searchParams.get("page") || "1");
   const skip = (page - 1) * PER_PAGE;
+
+  const status = BookStatusEnum.safeParse(searchParams.get("status"));
 
   const startDateParam = z.coerce
     .string()
@@ -27,7 +30,7 @@ export function parseParams(searchParams: URLSearchParams) {
     endDate.setHours(23, 59, 59);
   }
 
-  return { query, page, skip, startDate, endDate };
+  return { query, page, skip, startDate, endDate, status: status.data };
 }
 
 export const SearchParams = z.object({
@@ -35,6 +38,8 @@ export const SearchParams = z.object({
   page: z.number().default(1).optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
+  status: BookStatusEnum.optional(),
+  perPage: z.number().optional(),
 });
 
 export type SearchParams = z.infer<typeof SearchParams>;

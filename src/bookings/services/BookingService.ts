@@ -24,13 +24,14 @@ import { ErrorCode } from "@/core/lib/errors";
 import { getMerchant } from "@/merchants/services/MerchantService";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
 export async function addBooking(
   userId: string,
   merchantId: string,
   input: TCreateBookingSchema
 ) {
-  let result, image;
+  let result, bookingPhotoUrl;
 
   if (userId === merchantId) {
     throw new Error("user can not book their own merchant");
@@ -42,21 +43,36 @@ export async function addBooking(
 
   await getAddress(userId, input.addressId);
 
+  const [_, bookingCt] = await getUserBookings(userId, {
+    status: BookStatusEnum.Enum.pending,
+    perPage: 0,
+  });
+  console.log(bookingCt);
+  if (bookingCt >= 5) {
+    throw new Error(ErrorCode.ErrTooManyRequest);
+  }
+
+  const bookingSchedule = new Date(input.bookingSchedule);
+  dayjs.extend(isSameOrBefore);
+  if (dayjs(bookingSchedule).isSameOrBefore(dayjs())) {
+    throw new Error(ErrorCode.ErrBookInvalidSchedule);
+  }
+
   try {
-    image = await uploadImg(input.bookingPhotoUrl);
+    bookingPhotoUrl = await uploadImg(input.bookingPhotoUrl);
     const data: TBookingModel = {
       ...input,
       userId,
       merchantId,
-      bookingSchedule: new Date(input.bookingSchedule),
+      bookingSchedule,
       bookingStatus: BookStatusEnum.Enum.pending,
-      bookingPhotoUrl: image,
+      bookingPhotoUrl,
     };
 
     result = await BookingRepository.create(data);
   } catch (e) {
-    if (image) {
-      await deleteImg(image);
+    if (bookingPhotoUrl) {
+      await deleteImg(bookingPhotoUrl);
     }
 
     throw e;

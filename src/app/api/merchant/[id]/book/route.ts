@@ -53,6 +53,14 @@ export async function POST(req: NextRequest, { params }: IdParam) {
           return buildErr("ErrValidation", 400, "address does not exist");
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "merchant does not exist");
+        case ErrorCode.ErrBookInvalidSchedule:
+          return buildErr("ErrValidation", 400, e.message);
+        case ErrorCode.ErrTooManyRequest:
+          return buildErr(
+            "ErrTooManyRequest",
+            429,
+            "can not have more than 5 pending booking"
+          );
       }
     }
 
