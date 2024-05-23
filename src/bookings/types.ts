@@ -122,13 +122,15 @@ export const BookingReasonSchema = z.object({
 export type TBookingReasonSchema = z.infer<typeof BookingReasonSchema>;
 
 export const GetUserBooking = BookingModel.omit({
-  bookingReason: true,
-  addressId: true,
+  userId: true,
   merchantId: true,
+  addressId: true,
+  bookingReason: true,
 }).extend({
   bookingPrice: z.number().nullable().optional(),
   address: AddressSchema,
   merchant: MerchantModel.pick({
+    merchantId: true,
     merchantName: true,
     merchantPhotoUrl: true,
   }).extend({ user: z.object({ phone: z.string() }) }),

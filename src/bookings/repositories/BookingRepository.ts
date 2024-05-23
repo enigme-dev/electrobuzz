@@ -62,6 +62,14 @@ export class BookingRepository extends BaseRepository {
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
         },
+        include: {
+          merchant: {
+            select: {
+              merchantPhotoUrl: true,
+              merchantName: true,
+            },
+          },
+        },
       }),
       this.db.booking.count({
         where: {
