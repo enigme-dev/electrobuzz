@@ -35,16 +35,18 @@ export class BookingRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.booking.findMany({
         skip: options?.page,
-        take: PER_PAGE,
+        take: options?.perPage ?? PER_PAGE,
         where: {
           merchantId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
         },
       }),
       this.db.booking.count({
         where: {
           merchantId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
         },
       }),
     ]);
@@ -54,16 +56,18 @@ export class BookingRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.booking.findMany({
         skip: options?.page,
-        take: PER_PAGE,
+        take: options?.perPage ?? PER_PAGE,
         where: {
           userId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
         },
       }),
       this.db.booking.count({
         where: {
           userId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
         },
       }),
     ]);

@@ -32,9 +32,10 @@ export enum ErrorCode {
   ErrAlbumQuotaExceeded = "album cannot contain more than 4 photos",
 
   // booking
-  ErrBookWrongSchedule = "wrong service schedule",
   ErrBookCancelation = "cancelation not allowed",
   ErrBookDoneTooEarly = "can not done booking before schedule",
+  ErrBookInvalidSchedule = "can not book same day or back date",
+  ErrBookWrongSchedule = "wrong service schedule",
 
   // merchant
   ErrMerchantUnverified = "merchant has not been verified",
