@@ -28,6 +28,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
         return buildErr("ErrNotFound", 404, "booking does not exist");
       }
     }
+    console.log(e);
 
     if (e instanceof Error) {
       if (e.message === ErrorCode.ErrNotFound) {

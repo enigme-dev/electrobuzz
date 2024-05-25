@@ -1,18 +1,21 @@
 "use client";
 
+import { BookStatusEnum, TBookingModel } from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
+import Loader from "@/core/components/loader/loader";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const BookingDetail = () => {
-  const [status, setStatus] = useState(
-    "pending" || "cancelled" || "accepted" || "done"
-  );
+  const { data: session } = useSession();
   const pathname = usePathname();
   const radioOptionsForCancelReason = [
     { option: "Budjet tidak cukup" },
@@ -20,14 +23,48 @@ const BookingDetail = () => {
     { option: "Mau ubah jadwal" },
     { option: "Other" },
   ];
+  const getLastPathSegment = (pathname: string): string => {
+    const segments = pathname.split("/");
+    return segments[segments.length - 1] || segments[segments.length - 2];
+  };
 
-  useEffect(() => {
-    setStatus("accepted");
-  }, [status]);
+  const bookingId = getLastPathSegment(pathname);
 
+  const { data: bookingDetailData, isLoading } = useQuery({
+    queryKey: ["getBookingDetailData", bookingId],
+    queryFn: async () =>
+      await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
+        return response.data.data as TBookingModel;
+      }),
+    enabled: !!bookingId,
+  });
+
+  console.log(bookingDetailData);
+
+  // const { mutate: AcceptBookings, isPending: addAddressLoading } =
+  //   useMutation({
+  //     mutationFn: async (values: TCreateBookingSchema) =>
+  //       await axios.post(`/api/merchant/${}/book`, values),
+  //     onSuccess: () => {
+  //       toast({ title: "Keluhan anda telah terkirim!" });
+  //       queryClient.invalidateQueries({
+  //         queryKey: ["getBookAppointment", session?.user?.id],
+  //       });
+  //     },
+  //     onError: () => {
+  //       toast({
+  //         title: "Keluhan anda gagal terkirim!",
+  //         variant: "destructive",
+  //       });
+  //     },
+  //   });
+
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <main className="sm:wrapper pb-20 px-4">
-      {status == "pending" && (
+      {bookingDetailData?.bookingStatus == "pending" && (
         <>
           <div className="flex items-center justify-center">
             <Image
@@ -41,13 +78,34 @@ const BookingDetail = () => {
           <div className="grid place-content-center text-center gap-5">
             <h1 className="pt-10 text-2xl font-bold">Sabar...</h1>
             <p>Mohon menunggu konfirmasi Merchant</p>
-            <Link href={"/bookings"}>
-              <Button>Kembali</Button>
-            </Link>
+            <h1 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h1>
+            <p className="font-bold text-left text-sm sm:text-xl">
+              {bookingDetailData.bookingComplain}
+            </p>
+            <h1 className="pt-2 text-left text-sm sm:text-lg">Foto:</h1>
+            <Image
+              src={bookingDetailData.bookingPhotoUrl}
+              alt={bookingDetailData.bookingPhotoUrl}
+              className="font-bold text-left text-sm sm:text-xl"
+              width={200}
+              height={200}
+            />
+            <div className="flex gap-10 justify-center items-center">
+              <DialogGeneral
+                dialogTitle="Alasan Penolakan"
+                dialogContent={
+                  <RadioGroupForm options={radioOptionsForCancelReason} />
+                }
+                dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
+              />
+              <Link href={"/user/my-bookings"}>
+                <Button>Kembali</Button>
+              </Link>
+            </div>
           </div>
         </>
       )}
-      {status == "cancelled" && (
+      {bookingDetailData?.bookingStatus == "rejected" && (
         <>
           <div className="flex items-center justify-center">
             <Image
@@ -63,15 +121,15 @@ const BookingDetail = () => {
               <h1 className="pt-10 text-2xl font-bold">Maaf...</h1>
               <p className="pt-2">Permintaan anda telah ditolak oleh Mitra</p>
               <h1 className="pt-2 text-left text-md">Alasan:</h1>
-              <p className="font-bold">Tidak dapat diservis</p>
+              <p className="font-bold">{bookingDetailData.bookingReason}</p>
             </div>
-            <Link href={"/bookings"}>
+            <Link href={"/user/my-bookings"}>
               <Button>Kembali</Button>
             </Link>
           </div>
         </>
       )}
-      {status == "accepted" && (
+      {bookingDetailData?.bookingStatus == "accepted" && (
         <>
           <div className="flex items-center justify-center">
             <Image
@@ -97,13 +155,25 @@ const BookingDetail = () => {
             <p className="font-bold text-left text-sm sm:text-xl">
               Perlu ganti kapasitor sekitar 700.000
             </p>
+            <h1 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h1>
+            <p className="font-bold text-left text-sm sm:text-xl">
+              {bookingDetailData.bookingComplain}
+            </p>
+            <h1 className="pt-2 text-left text-sm sm:text-lg">Foto:</h1>
+            <Image
+              src={bookingDetailData.bookingPhotoUrl}
+              alt={bookingDetailData.bookingPhotoUrl}
+              className="font-bold text-left text-sm sm:text-xl"
+              width={200}
+              height={200}
+            />
             <div className="flex gap-10 justify-center items-center">
               <DialogGeneral
                 dialogTitle="Alasan Penolakan"
                 dialogContent={
                   <RadioGroupForm options={radioOptionsForCancelReason} />
                 }
-                dialogTrigger={<Button variant={"destructive"}>Tolak</Button>}
+                dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
               />
               <AlertDialogComponent
                 dialogTitle="Apakah kamu yakin?"

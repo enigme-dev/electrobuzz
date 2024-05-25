@@ -29,12 +29,18 @@ import Image from "next/image";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TUpdateMerchantSchema, UpdateMerchantSchema } from "../types";
+
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
 import MyMapComponent from "@/core/components/google-maps";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { DialogGeneral } from "@/core/components/general-dialog";
+import {
+  EditMerchantIdentitySchema,
+  TEditMerchantIdentitySchema,
+  TUpdateMerchantSchema,
+  UpdateMerchantSchema,
+} from "../types";
 
 interface MyMerchantDetails {
   merchantPhotoUrl: string;
@@ -324,7 +330,7 @@ const MerchantDashboardProfile = () => {
   return (
     <div className="w-screen sm:w-[80vw]">
       <div className="px-8 ">
-        <div className="grid gap-2 w-full h-full md:h-[120vh] overflow-scroll no-scrollbar pb-10">
+        <div className="grid gap-2 w-full h-full md:h-[80vh] overflow-scroll no-scrollbar pb-10">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <DialogGeneral
