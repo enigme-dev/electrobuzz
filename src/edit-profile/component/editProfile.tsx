@@ -211,7 +211,7 @@ const EditProfile = () => {
           <h2 className="text-md sm:text-xl font-bold">Alamat</h2>
           <div>
             <DialogGeneral
-              dialogTitle={"Add Address"}
+              dialogTitle={"Edit Profile"}
               dialogContent={<>{view}</>}
               onOpen={onOpenDialog}
               onOpenChange={handleOpenChange}

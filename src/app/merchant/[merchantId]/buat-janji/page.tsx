@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { date, z } from "zod";
 import {
   Form,
   FormControl,
@@ -21,61 +21,115 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Settings } from "lucide-react";
 import { Calendar } from "@/core/components/ui/calendar";
 import { cn } from "@/core/lib/shadcn";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
+import {
+  BookingModel,
+  CreateBookingSchema,
+  TBookingModel,
+  TCreateBookingSchema,
+} from "@/bookings/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { Select } from "@/core/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
+import { Card } from "@/core/components/ui/card";
+import { DialogGeneral } from "@/core/components/general-dialog";
+import AddressForm from "@/users/components/addressForm";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { fileInputToDataURL } from "@/core/lib/utils";
 
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-const FormSchema = z.object({
-  keluhan: z.string({
-    required_error: "tolong deskripsikan keluhanmu",
-  }),
-  foto: z.string().refine(
-    (value) => {
-      // Regular expression to match JPG and PNG file extensions
-      const allowedExtensions = /\.(jpg|jpeg|png|webp)$/i;
-      return allowedExtensions.test(value);
-    },
-    {
-      message: "Foto keluhanmu harus berupa file JPG atau PNG",
-      path: ["foto"],
-    }
-  ),
-  Alamat: z.string({
-    required_error: "tolong isi alamatmu",
-  }),
-  tanggal: z.date({
-    required_error: "tolong isi tanggal perjanjianmu",
-  }),
-  waktu: z.string({
-    required_error: "tolong isi waktu perjanjianmu",
-  }),
-});
+interface AddressData {
+  addressCity: string;
+  addressDetail: string;
+  addressId: string;
+  addressProvince: string;
+  addressZipCode: string;
+}
+const extractIdFromPathname = (pathname: string): string | null => {
+  const match = pathname.match(/\/merchant\/([^\/]+)\//);
+  return match ? match[1] : null;
+};
 
 const BuatJanjiPage = () => {
   const { toast } = useToast();
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const pathname = usePathname();
+
+  const merchantId = extractIdFromPathname(pathname);
+
+  const [onOpen, setOnOpenDialog] = useState(false);
+
+  const form = useForm<TCreateBookingSchema>({
+    resolver: zodResolver(CreateBookingSchema),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      setOnOpenDialog(false);
+    }
   }
+
+  const { data: addressData, isLoading: isAddressLoading } = useQuery({
+    queryKey: ["userAddressData"],
+    queryFn: async () =>
+      await axios.get(`/api/user/address`).then((response) => {
+        return response.data.data as AddressData[];
+      }),
+  });
+  const { mutate: createBookingAppointment, isPending: addAddressLoading } =
+    useMutation({
+      mutationFn: async (values: TCreateBookingSchema) =>
+        await axios.post(`/api/merchant/${merchantId}/book`, values),
+      onSuccess: () => {
+        toast({ title: "Keluhan anda telah terkirim!" });
+        queryClient.invalidateQueries({
+          queryKey: ["getBookingData", merchantId],
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Keluhan anda gagal terkirim!",
+          variant: "destructive",
+        });
+      },
+    });
+
+  const handleFileInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: any
+  ) => {
+    const fileInput = event.target;
+    const file = fileInput.files?.[0];
+    if (file) {
+      fileInputToDataURL(fileInput)
+        .then((dataURL) => {
+          field.onChange(dataURL);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  };
+
+  const handleDateChange = (date: Date | undefined, field: any) => {
+    if (date) {
+      field.onChange(date.toISOString());
+    }
+  };
+
+  function onSubmit(data: TCreateBookingSchema) {
+    createBookingAppointment(data);
+  }
+
+  console.log(merchantId);
 
   return (
     <div className="wrapper pb-20 pt-10 sm:py-10 px-4">
@@ -84,7 +138,7 @@ const BuatJanjiPage = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="keluhan"
+            name="bookingComplain"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Keluhan</FormLabel>
@@ -97,12 +151,16 @@ const BuatJanjiPage = () => {
           />
           <FormField
             control={form.control}
-            name="foto"
+            name="bookingPhotoUrl"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto</FormLabel>
                 <FormControl>
-                  <Input id="picture" type="file" {...field} />
+                  <Input
+                    onChange={(e) => handleFileInputChange(e, field)}
+                    id="picture"
+                    type="file"
+                  />
                 </FormControl>
                 <FormDescription>Foto keluhanmu </FormDescription>
                 <FormMessage />
@@ -111,12 +169,83 @@ const BuatJanjiPage = () => {
           />
           <FormField
             control={form.control}
-            name="Alamat"
+            name="addressId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
                 <FormControl>
-                  <Input placeholder="Alamat" {...field} />
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    {addressData != undefined &&
+                      (addressData?.length !== 0 ? (
+                        addressData.map(
+                          (option: AddressData, index: number) => (
+                            <FormItem
+                              key={index}
+                              className="flex items-center space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <RadioGroupItem
+                                  className="rounded-full"
+                                  value={option.addressId}
+                                />
+                              </FormControl>
+                              <Card className="p-3 w-screen flex items-center justify-between">
+                                <div className="text-xs sm:text-md ">
+                                  {option.addressDetail}, {option.addressCity}
+                                  ,&nbsp;
+                                  {option.addressProvince},{" "}
+                                  {option.addressZipCode}
+                                </div>
+                                <div className="flex items-center">
+                                  <DialogGeneral
+                                    dialogTitle="Edit Alamat"
+                                    onOpen={onOpen}
+                                    onOpenChange={handleOpenChange}
+                                    dialogContent={
+                                      <>
+                                        <AddressForm
+                                          handleOnCloseDialog={() =>
+                                            setOnOpenDialog(false)
+                                          }
+                                          initialAddressData={{
+                                            addressDetail: option.addressDetail,
+                                            addressId: option.addressId,
+                                            addressCity: option.addressCity,
+                                            addressProvince:
+                                              option.addressProvince,
+                                            addressZipCode:
+                                              option.addressZipCode,
+                                          }}
+                                          isEditing={true}
+                                        />
+                                      </>
+                                    }
+                                    dialogTrigger={
+                                      <Button
+                                        variant={"outline"}
+                                        onClick={() => setOnOpenDialog(true)}
+                                      >
+                                        Ubah
+                                      </Button>
+                                    }
+                                  />
+                                </div>
+                              </Card>
+                            </FormItem>
+                          )
+                        )
+                      ) : (
+                        <>
+                          <FormControl>
+                            <Input placeholder="Alamat" {...field} />
+                          </FormControl>
+                        </>
+                      ))}
+                  </RadioGroup>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -124,7 +253,7 @@ const BuatJanjiPage = () => {
           />
           <FormField
             control={form.control}
-            name="tanggal"
+            name="bookingSchedule"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Tanggal janji</FormLabel>
@@ -139,7 +268,7 @@ const BuatJanjiPage = () => {
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(parseISO(field.value), "PPP")
                         ) : (
                           <span>input tanggal</span>
                         )}
@@ -150,8 +279,8 @@ const BuatJanjiPage = () => {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
+                      selected={field.value ? parseISO(field.value) : undefined}
+                      onSelect={(date) => handleDateChange(date, field)}
                       disabled={(date) =>
                         date < new Date() || date < new Date("1900-01-01")
                       }
@@ -167,32 +296,13 @@ const BuatJanjiPage = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="waktu"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Waktu</FormLabel>
-                <FormControl>
-                  <input
-                    type="time"
-                    id="time"
-                    className="rounded-md border border-input w-fit text-gray-900 leading-none focus:ring-blue-500 focus:border-blue-500 block flex-1 text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    min="09:00"
-                    max="17:00"
-                    required
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Waktu perjanjian hanya dari jam 09.00 sampai 17.00 WIB
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <div className="text-right">
-            <Button type="submit">Submit</Button>
+            <ButtonWithLoader
+              className=""
+              isLoading={false}
+              buttonText="Submit"
+              type="submit"
+            />
           </div>
         </form>
       </Form>

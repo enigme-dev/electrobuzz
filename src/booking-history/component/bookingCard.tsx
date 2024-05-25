@@ -5,6 +5,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import BookingStatus from "./bookingStatus";
 import { Clock, MapPin } from "lucide-react";
+import { BookStatusEnum } from "@/bookings/types";
+import { format } from "date-fns";
+import { stat } from "fs";
 
 interface BookingCardProps {
   imgSource: string;
@@ -12,7 +15,8 @@ interface BookingCardProps {
   orderId: string;
   merchName: string;
   time: string;
-  status: "pending" | "cancelled" | "accepted" | "done";
+  isMerchant?: boolean;
+  status: BookStatusEnum;
 }
 
 const BookingCard = ({
@@ -22,19 +26,22 @@ const BookingCard = ({
   status,
   imgSource,
   imgAlt,
+  isMerchant,
 }: BookingCardProps) => {
   const router = useRouter();
-
+  console.log(status);
   return (
     <div>
       {" "}
       <Card
         onClick={() => {
-          router.push(`/user/my-bookings/${orderId}`);
+          isMerchant
+            ? router.push(`/merchant/dashboard/transaction?id=${orderId}`)
+            : router.push(`/user/my-bookings/${orderId}`);
         }}
-        className="w-full hover:shadow-lg cursor-pointer transition duration-500"
+        className="w-full cursor-pointer "
       >
-        <div className="flex justify-between items-center gap-10">
+        <div className="flex justify-between items-center">
           <div className="flex justify-start items-center gap-4">
             <div>
               <Image
@@ -45,11 +52,11 @@ const BookingCard = ({
                 height={100}
               />
             </div>
-            <div className="grid place-items-start gap-1">
+            <div className="grid place-items-start gap-1 max-w-32 sm:max-w-80 overflow-hidden ">
               <h1 className="text-xs sm:text-lg font-semibold">{merchName}</h1>
               <div className="flex gap-1 items-center text-gray-400 text-[0.6rem] sm:text-sm">
                 <Clock size={14} />
-                <p>{time}</p>
+                <p>{format(time, "PPP")}</p>
               </div>
             </div>
           </div>
