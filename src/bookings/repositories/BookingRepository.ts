@@ -41,6 +41,14 @@ export class BookingRepository extends BaseRepository {
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
         },
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true,
+            },
+          },
+        },
       }),
       this.db.booking.count({
         where: {
@@ -92,7 +100,7 @@ export class BookingRepository extends BaseRepository {
     merchantId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
-    data: Prisma.BookingUpdateInput
+    data: Prisma.BookingUpdateInput,
   ) {
     return this.db.$transaction(
       async (tx) => {
@@ -114,7 +122,7 @@ export class BookingRepository extends BaseRepository {
           data,
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
   }
 
@@ -122,7 +130,7 @@ export class BookingRepository extends BaseRepository {
     userId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
-    data: Prisma.BookingUpdateInput
+    data: Prisma.BookingUpdateInput,
   ) {
     return this.db.$transaction(
       async (tx) => {
@@ -144,7 +152,7 @@ export class BookingRepository extends BaseRepository {
           data,
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
   }
 }

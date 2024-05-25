@@ -37,7 +37,10 @@ export const GetMerchantBookings = BookingModel.pick({
   bookingPrice: true,
   bookingCreatedAt: true,
 })
-  .extend({ bookingPrice: z.number().nullable().optional() })
+  .extend({
+    bookingPrice: z.number().nullable().optional(),
+    user: z.object({ name: z.string(), image: z.string() }),
+  })
   .array();
 
 export type TGetMerchantBookings = z.infer<typeof GetMerchantBookings>;
