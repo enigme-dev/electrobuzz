@@ -8,7 +8,8 @@ export const BookStatusEnum = z.enum([
   "accepted", // merchant accepted
   "rejected", // merchant rejected
   "canceled", // user canceled
-  "in_progress", // service in progress
+  "in_progress_requested", // service in progress requested by merchant
+  "in_progress_accepted", // service in progress accepted by user
   "done", // user done
 ]);
 
@@ -21,7 +22,9 @@ export const BookingModel = z.object({
   bookingSchedule: z.date(),
   bookingStatus: BookStatusEnum.optional(),
   bookingReason: z.string().optional(),
-  bookingPrice: z.number().optional(),
+  bookingPriceMin: z.number().optional(),
+  bookingPriceMax: z.number().optional(),
+  bookingDesc: z.string().optional(),
   bookingCreatedAt: z.date().optional(),
   addressId: z.string().cuid(),
   userId: z.string().cuid().optional(),
@@ -34,11 +37,13 @@ export const GetMerchantBookings = BookingModel.pick({
   bookingId: true,
   bookingSchedule: true,
   bookingStatus: true,
-  bookingPrice: true,
+  bookingPriceMin: true,
+  bookingPriceMax: true,
   bookingCreatedAt: true,
 })
   .extend({
-    bookingPrice: z.number().nullable().optional(),
+    bookingPriceMin: z.number().nullable().optional(),
+    bookingPriceMax: z.number().nullable().optional(),
     user: z.object({ name: z.string(), image: z.string() }),
   })
   .array();
@@ -46,7 +51,8 @@ export const GetMerchantBookings = BookingModel.pick({
 export type TGetMerchantBookings = z.infer<typeof GetMerchantBookings>;
 
 export const GetMerchantBookingPending = BookingModel.omit({
-  bookingPrice: true,
+  bookingPriceMin: true,
+  bookingPriceMax: true,
   bookingReason: true,
   userId: true,
   addressId: true,
@@ -66,7 +72,9 @@ export type TGetMerchantBookingPending = z.infer<
 >;
 
 export const GetMerchantBookingAccepted = GetMerchantBookingPending.extend({
-  bookingPrice: z.number(),
+  bookingPriceMin: z.number(),
+  bookingPriceMax: z.number(),
+  bookingDesc: z.string(),
 });
 
 export type TGetMerchantBookingAccepted = z.infer<
@@ -74,7 +82,8 @@ export type TGetMerchantBookingAccepted = z.infer<
 >;
 
 export const GetMerchantBookingRejected = BookingModel.omit({
-  bookingPrice: true,
+  bookingPriceMin: true,
+  bookingPriceMax: true,
   userId: true,
   addressId: true,
   merchantId: true,
@@ -103,12 +112,19 @@ export const GetMerchantBookingDone = GetMerchantBookingAccepted.extend({
 export type TGetMerchantBookingDone = z.infer<typeof GetMerchantBookingDone>;
 
 export const AcceptBookingSchema = z.object({
-  bookingPrice: z
+  bookingPriceMin: z
     .number({
       required_error: "estimation price can not be empty",
     })
-    .min(20000, "estimation price can be between 20000 and 100000000")
-    .max(100000000, "estimation price can be between 20000 and 100000000"),
+    .min(20000, "estimation price can be between 20000 and 10000000")
+    .max(10000000, "estimation price can be between 20000 and 10000000"),
+  bookingPriceMax: z
+    .number({
+      required_error: "estimation price can not be empty",
+    })
+    .min(20000, "estimation price can be between 20000 and 10000000")
+    .max(10000000, "estimation price can be between 20000 and 10000000"),
+  bookingDesc: z.string(),
 });
 
 export type TAcceptBookingSchema = z.infer<typeof AcceptBookingSchema>;
@@ -130,7 +146,9 @@ export const GetUserBooking = BookingModel.omit({
   addressId: true,
   bookingReason: true,
 }).extend({
-  bookingPrice: z.number().nullable().optional(),
+  bookingPriceMin: z.number().nullable().optional(),
+  bookingPriceMax: z.number().nullable().optional(),
+  bookingDesc: z.string().nullable().optional(),
   address: AddressSchema,
   merchant: MerchantModel.pick({
     merchantId: true,

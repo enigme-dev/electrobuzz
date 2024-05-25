@@ -1,5 +1,5 @@
-import { setStatusInProgressRequested } from "@/bookings/services/BookingService";
-import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { setStatusInProgressAccepted } from "@/bookings/services/BookingService";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   }
 
   try {
-    await setStatusInProgressRequested(userId.data, bookingId.data);
+    await setStatusInProgressAccepted(userId.data, bookingId.data);
   } catch (e) {
     if (e instanceof Error) {
       switch (e.message) {
@@ -27,12 +27,10 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr(
             "ErrConflict",
             409,
-            "can only set in progress an accepted booking",
+            "can not accept any requested in progress booking",
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
-        case ErrorCode.ErrBookWrongSchedule:
-          return buildErr("ErrBookWrongSchedule", 409, e.message);
       }
     }
 

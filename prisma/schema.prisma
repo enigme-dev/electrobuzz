@@ -126,7 +126,9 @@ model Booking {
   bookingSchedule  DateTime
   bookingStatus    String
   bookingReason    String?
-  bookingPrice     Int?
+  bookingPriceMin  Int?
+  bookingPriceMax  Int?
+  bookingDesc      String?
   bookingCreatedAt DateTime @default(now())
 
   userId        String
