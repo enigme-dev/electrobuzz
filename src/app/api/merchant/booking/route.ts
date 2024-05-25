@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
         return buildErr(
           "ErrForbidden",
           403,
-          "user is not registered as merchant"
+          "user is not registered as merchant",
         );
       }
     }
