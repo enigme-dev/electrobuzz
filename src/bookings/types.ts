@@ -21,10 +21,10 @@ export const BookingModel = z.object({
   bookingComplain: z.string(),
   bookingSchedule: z.date(),
   bookingStatus: BookStatusEnum.optional(),
-  bookingReason: z.string().optional(),
-  bookingPriceMin: z.number().optional(),
-  bookingPriceMax: z.number().optional(),
-  bookingDesc: z.string().optional(),
+  bookingReason: z.string().nullish(),
+  bookingPriceMin: z.number().nullish(),
+  bookingPriceMax: z.number().nullish(),
+  bookingDesc: z.string().nullish(),
   bookingCreatedAt: z.date().optional(),
   addressId: z.string().cuid(),
   userId: z.string().cuid().optional(),
@@ -42,8 +42,8 @@ export const GetMerchantBookings = BookingModel.pick({
   bookingCreatedAt: true,
 })
   .extend({
-    bookingPriceMin: z.number().nullable().optional(),
-    bookingPriceMax: z.number().nullable().optional(),
+    bookingPriceMin: z.number().nullish(),
+    bookingPriceMax: z.number().nullish(),
     user: z.object({ name: z.string(), image: z.string() }),
   })
   .array();
@@ -146,9 +146,9 @@ export const GetUserBooking = BookingModel.omit({
   addressId: true,
   bookingReason: true,
 }).extend({
-  bookingPriceMin: z.number().nullable().optional(),
-  bookingPriceMax: z.number().nullable().optional(),
-  bookingDesc: z.string().nullable().optional(),
+  bookingPriceMin: z.number().nullish(),
+  bookingPriceMax: z.number().nullish(),
+  bookingDesc: z.string().nullish(),
   address: AddressSchema,
   merchant: MerchantModel.pick({
     merchantId: true,
