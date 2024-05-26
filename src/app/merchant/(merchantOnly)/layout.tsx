@@ -4,7 +4,7 @@ import { Toaster } from "@/core/components/ui/toaster";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import React from "react";
 
 const MerchantLayout = ({ children }: any) => {
@@ -23,6 +23,9 @@ const MerchantLayout = ({ children }: any) => {
   // if (isError) {
   //   router.push("/merchant/register");
   // }
+  if (session?.user?.id === undefined) {
+    redirect("/login");
+  }
 
   return (
     <div>
