@@ -91,13 +91,13 @@ const BookingDetail = () => {
               height={200}
             />
             <div className="flex gap-10 justify-center items-center">
-              <DialogGeneral
+              {/* <DialogGeneral
                 dialogTitle="Alasan Penolakan"
                 dialogContent={
                   <RadioGroupForm options={radioOptionsForCancelReason} />
                 }
                 dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
-              />
+              /> */}
               <Link href={"/user/my-bookings"}>
                 <Button>Kembali</Button>
               </Link>
@@ -149,11 +149,12 @@ const BookingDetail = () => {
               estimasi harga servismu:
             </p>
             <p className="font-bold text-sm sm:text-xl ">
-              Rp.700.000 - Rp.1000.000
+              Rp {bookingDetailData.bookingPriceMin} - Rp{" "}
+              {bookingDetailData.bookingPriceMax}
             </p>
             <h1 className="pt-2 text-left text-sm sm:text-lg">Alasan:</h1>
             <p className="font-bold text-left text-sm sm:text-xl">
-              Perlu ganti kapasitor sekitar 700.000
+              {bookingDetailData.bookingDesc}
             </p>
             <h1 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h1>
             <p className="font-bold text-left text-sm sm:text-xl">
@@ -168,13 +169,13 @@ const BookingDetail = () => {
               height={200}
             />
             <div className="flex gap-10 justify-center items-center">
-              <DialogGeneral
+              {/* <DialogGeneral
                 dialogTitle="Alasan Penolakan"
                 dialogContent={
-                  <RadioGroupForm options={radioOptionsForCancelReason} />
+                  <RadioGroupForm defaultValue="" options={radioOptionsForCancelReason} />
                 }
                 dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
-              />
+              /> */}
               <AlertDialogComponent
                 dialogTitle="Apakah kamu yakin?"
                 alertDialogSubmitTitle="submit"

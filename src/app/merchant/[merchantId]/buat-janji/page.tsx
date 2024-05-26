@@ -84,23 +84,25 @@ const BuatJanjiPage = () => {
         return response.data.data as AddressData[];
       }),
   });
-  const { mutate: createBookingAppointment, isPending: addAddressLoading } =
-    useMutation({
-      mutationFn: async (values: TCreateBookingSchema) =>
-        await axios.post(`/api/merchant/${merchantId}/book`, values),
-      onSuccess: () => {
-        toast({ title: "Keluhan anda telah terkirim!" });
-        queryClient.invalidateQueries({
-          queryKey: ["getBookingData", merchantId],
-        });
-      },
-      onError: () => {
-        toast({
-          title: "Keluhan anda gagal terkirim!",
-          variant: "destructive",
-        });
-      },
-    });
+  const {
+    mutate: createBookingAppointment,
+    isPending: createBookingAppointmentLoading,
+  } = useMutation({
+    mutationFn: async (values: TCreateBookingSchema) =>
+      await axios.post(`/api/merchant/${merchantId}/book`, values),
+    onSuccess: () => {
+      toast({ title: "Keluhan anda telah terkirim!" });
+      queryClient.invalidateQueries({
+        queryKey: ["getBookingData", merchantId],
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Keluhan anda gagal terkirim!",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleFileInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -296,10 +298,10 @@ const BuatJanjiPage = () => {
               </FormItem>
             )}
           />
-          <div className="text-right">
+          <div className="flex justify-end">
             <ButtonWithLoader
-              className=""
-              isLoading={false}
+              className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+              isLoading={createBookingAppointmentLoading}
               buttonText="Submit"
               type="submit"
             />

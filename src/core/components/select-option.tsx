@@ -13,7 +13,7 @@ import {
 interface SelectProps {
   selectLabel?: string;
   selectList: { item: string; value: string; id?: string }[];
-  defaultValue: string | undefined;
+  defaultValue?: string;
   onValueChange: (value: any) => void;
   placeholder: React.ReactNode;
 }
@@ -27,7 +27,7 @@ export function SelectOption({
 }: SelectProps) {
   return (
     <Select defaultValue={defaultValue} onValueChange={onValueChange}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full z-10">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

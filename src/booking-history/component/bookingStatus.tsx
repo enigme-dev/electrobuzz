@@ -3,7 +3,7 @@ import { Card } from "../../core/components/ui/card";
 import { BookStatusEnum } from "@/bookings/types";
 
 interface Props {
-  status: BookStatusEnum;
+  status?: BookStatusEnum;
 }
 
 const BookingStatus = ({ status }: Props) => {
