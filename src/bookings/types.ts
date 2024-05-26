@@ -40,6 +40,8 @@ export const GetMerchantBookings = BookingModel.pick({
   bookingPriceMin: true,
   bookingPriceMax: true,
   bookingCreatedAt: true,
+  bookingComplain: true,
+  bookingPhotoUrl: true,
 })
   .extend({
     bookingPriceMin: z.number().nullish(),
