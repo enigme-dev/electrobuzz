@@ -1,8 +1,12 @@
-import { TGetMerchantBookingAccepted } from "@/bookings/types";
+import { TBookingModel, TGetMerchantBookingAccepted } from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
+import { useToast } from "@/core/components/ui/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { format } from "date-fns";
 import Image from "next/image";
 import React from "react";
@@ -14,6 +18,31 @@ interface MerchantBookingAcceptedProps {
 const MerchantBookingAccepted = ({
   bookingDetailData,
 }: MerchantBookingAcceptedProps) => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const {
+    mutate: updateRequestInProgressBooking,
+    isPending: updateRequestInProgressBookingLoading,
+  } = useMutation({
+    mutationFn: () =>
+      axios.patch(
+        `/api/merchant/${bookingDetailData.bookingId}/edit/in_progress`
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getBookingDetailData", bookingDetailData.bookingId],
+      });
+      toast({
+        title: "Berhasil request mulai mengerjakan!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Gagal request mulai mengerjakan!",
+        variant: "destructive",
+      });
+    },
+  });
   return (
     <div>
       {" "}
@@ -30,6 +59,19 @@ const MerchantBookingAccepted = ({
         <h1 className="sm:pt-10 text-lg sm:text-2xl font-bold text-center">
           Kamu sudah menerima orderan ini...
         </h1>
+        <div className=" flex justify-center">
+          <ButtonWithLoader
+            buttonText="Mulai Mengerjakan"
+            className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+            isLoading={false}
+            type="button"
+            onClick={() => updateRequestInProgressBooking()}
+          />
+        </div>
+        <p className="text-xs text-red-400 italic text-center">
+          *Tekan tombol &quot;Mulai Mengerjakan&quot; jika kamu sudah memulai
+          service.
+        </p>
         <p className="text-xs text-red-400 italic text-center">
           *Mohon segera melakukan pengecekan pada tanggal yang dicantumkan, Jika
           tidak maka akan ada tenggang waktu pada order ini selama 1 hari

@@ -26,10 +26,10 @@ const MerchantBookingRejected = ({
               Kamu sudah menolak orderan ini...
             </h1>{" "}
             <p className="text-lg pt-2 sm:text-md grid place-items-center">
-              <span className="font-semibold text-sm sm:text-md">
+              <span className="font-semibold text-sm sm:text-lg">
                 Dengan alasan:{" "}
               </span>
-              <p className="max-w-screen-lg text-wrap break-words text-sm sm:text-md">
+              <p className="max-w-screen-lg text-wrap break-words text-sm sm:text-lg">
                 {bookingDetailData.bookingReason}
               </p>
             </p>

@@ -132,7 +132,12 @@ const BookingPage = () => {
                 imgAlt={value.merchant.merchantName}
                 orderId={value.bookingId ? value.bookingId : ""}
                 merchName={value.merchant.merchantName}
-                time={value.bookingSchedule.toString()}
+                bookingSchedule={value.bookingSchedule.toString()}
+                bookingCreatedAt={
+                  value.bookingCreatedAt
+                    ? value.bookingCreatedAt.toString()
+                    : ""
+                }
                 status={value.bookingStatus}
               />
             </div>
