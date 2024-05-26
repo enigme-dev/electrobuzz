@@ -130,7 +130,9 @@ const BookingPage = () => {
                 bookingComplaintDesc={value.bookingComplain}
                 imgSource={value.merchant.merchantPhotoUrl}
                 imgAlt={value.merchant.merchantName}
-                orderId={value.bookingId ? value.bookingId : ""}
+                orderId={
+                  value.bookingId ? value.bookingId : "" ? value.bookingId : ""
+                }
                 merchName={value.merchant.merchantName}
                 bookingSchedule={value.bookingSchedule.toString()}
                 bookingCreatedAt={

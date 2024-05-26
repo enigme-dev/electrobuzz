@@ -14,7 +14,7 @@ import { Button } from "@/core/components/ui/button";
 interface BookingCardProps {
   imgSource: string;
   imgAlt: string;
-  orderId: string;
+  orderId?: string;
   merchName: string;
   bookingSchedule: string;
   bookingCreatedAt: string;
