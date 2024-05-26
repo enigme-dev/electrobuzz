@@ -1,14 +1,10 @@
 "use client";
+
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import React, { ReactNode } from "react";
+import React from "react";
 
-interface RegisterAsMerchantLayoutProps {
-  children: ReactNode;
-}
-const RegisterAsMerchantLayout = ({
-  children,
-}: RegisterAsMerchantLayoutProps) => {
+const UserLayout = ({ children }: any) => {
   const { data: session } = useSession();
 
   if (session?.user?.id === undefined) {
@@ -18,4 +14,4 @@ const RegisterAsMerchantLayout = ({
   return <div>{children}</div>;
 };
 
-export default RegisterAsMerchantLayout;
+export default UserLayout;

@@ -1,5 +1,4 @@
 import { signOut, useSession } from "next-auth/react";
-import AuthDialog from "./auth-dialog";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -119,8 +118,8 @@ export function AuthBar() {
           </Popover>
         </div>
       ) : (
-        <AuthDialog>
-          <div>
+        <div>
+          <Link href={"/login"}>
             <Button
               variant={"link"}
               className="grid gap-1 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
@@ -134,8 +133,8 @@ export function AuthBar() {
             >
               <p className="text-xs">Login</p>
             </Button>
-          </div>
-        </AuthDialog>
+          </Link>
+        </div>
       )}
     </>
   );
