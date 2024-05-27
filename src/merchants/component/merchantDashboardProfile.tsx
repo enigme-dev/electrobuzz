@@ -328,279 +328,271 @@ const MerchantDashboardProfile = () => {
   }
 
   return (
-    <div className="w-screen sm:w-[80vw]">
-      <div className="px-8 ">
-        <div className="grid gap-2 w-full h-full md:h-[80vh] overflow-scroll no-scrollbar pb-10">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <DialogGeneral
-                dialogContent={
-                  <>
-                    <div className="flex items-center justify-center">
-                      <FormField
-                        control={form.control}
-                        name="merchantPhotoUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-4">
-                              <div className="border-2 border-dashed border-gray-200 rounded-lg h-[120px] w-[100px] grid place-items-center text-gray-400">
-                                <FormLabel
-                                  className="flex flex-col items-center gap-1 hover:cursor-pointer"
-                                  htmlFor="images"
-                                >
-                                  <UploadIcon className="h-6 w-6" />
-                                  <span className="underline text-xs underline-offset-2 underline-offset-white-0.5 transition-none p-1">
-                                    Click to upload
-                                  </span>
-                                  <Input
-                                    className="hidden "
-                                    id="images"
-                                    multiple
-                                    type="file"
-                                    onChange={(e) => {
-                                      onFileChange(e);
-                                      field.onChange(e);
-                                      setOnOpenDialog(false);
-                                    }}
-                                    onBlur={field.onBlur}
-                                    ref={field.ref}
-                                  />
-                                </FormLabel>
-                              </div>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </>
-                }
-                dialogTitle="Update Banner"
-                onOpen={onOpenDialog}
-                onOpenChange={handleOpenChange}
-                dialogTrigger={
-                  <div
-                    className="relative flex flex-col gap-4 items-start justify-end w-full hover:brightness-75 cursor-pointer"
-                    onClick={() => setOnOpenDialog(true)}
-                  >
-                    <Image
-                      src={
-                        myMerchantDetails
-                          ? myMerchantDetails?.merchantPhotoUrl
-                          : ""
-                      }
-                      alt={
-                        myMerchantDetails ? myMerchantDetails?.merchantName : ""
-                      }
-                      width={300}
-                      height={300}
-                      className="object-cover w-full h-[40vh] brightness-50 object-center hover:cursor-pointer"
-                    />
-                    <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
-                      <Upload className="text-white" />
-                    </div>
-                  </div>
-                }
-              />
-              <div>
-                <FormLabel>
-                  Album{" "}
-                  <span className="text-gray-300 italic text-xs">(maks 4)</span>
-                </FormLabel>
-                <div className="grid grid-cols-1 sm:grid-cols-4 mt-4 gap-4">
-                  <FormLabel
-                    htmlFor="images2"
-                    className="border border-dashed flex justify-center items-center h-32 cursor-pointer"
-                  >
-                    <PlusIcon className="text-gray-400" />
-                    <Input
-                      id="images2"
-                      type="file"
-                      className="hidden"
-                      onChange={(e) => onFileAlbumChange(e)}
-                    />
-                  </FormLabel>
-                  {myMerchantDetails?.merchantAlbums &&
-                    myMerchantDetails?.merchantAlbums.length > 0 &&
-                    myMerchantDetails?.merchantAlbums.map((photo, index) => (
-                      <div key={index} className="relative">
-                        <div className="relative h-32 w-full">
-                          <Image
-                            src={photo.albumPhotoUrl}
-                            alt={`Album photo ${index + 1}`}
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-lg"
-                          />
-                          <button
-                            type="button"
-                            className="absolute top-0 right-0 p-1 text-white bg-red-500 rounded-full"
-                            onClick={() =>
-                              handleDeleteFileAlbum(photo.merchantAlbumId)
-                            }
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="m-auto grid px-8 gap-2 sm:max-h-screen w-full overflow-scroll no-scrollbar"
+      >
+        <DialogGeneral
+          dialogContent={
+            <>
+              <div className="flex items-center justify-center">
+                <FormField
+                  control={form.control}
+                  name="merchantPhotoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-4">
+                        <div className="border-2 border-dashed border-gray-200 rounded-lg h-[120px] w-[100px] grid place-items-center text-gray-400">
+                          <FormLabel
+                            className="flex flex-col items-center gap-1 hover:cursor-pointer"
+                            htmlFor="images"
                           >
-                            <XIcon className="w-4 h-4" />
-                          </button>
+                            <UploadIcon className="h-6 w-6" />
+                            <span className="underline text-xs underline-offset-2 underline-offset-white-0.5 transition-none p-1">
+                              Click to upload
+                            </span>
+                            <Input
+                              className="hidden "
+                              id="images"
+                              multiple
+                              type="file"
+                              onChange={(e) => {
+                                onFileChange(e);
+                                field.onChange(e);
+                                setOnOpenDialog(false);
+                              }}
+                              onBlur={field.onBlur}
+                              ref={field.ref}
+                            />
+                          </FormLabel>
                         </div>
                       </div>
-                    ))}
-                </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <FormField
-                control={form.control}
-                name="merchantName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama Toko</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nama tokomu" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            </>
+          }
+          dialogTitle="Update Banner"
+          onOpen={onOpenDialog}
+          onOpenChange={handleOpenChange}
+          dialogTrigger={
+            <div
+              className="relative flex flex-col gap-4 items-start max-h-[300px] justify-end w-full hover:brightness-75 cursor-pointer"
+              onClick={() => setOnOpenDialog(true)}
+            >
+              <Image
+                src={
+                  myMerchantDetails ? myMerchantDetails?.merchantPhotoUrl : ""
+                }
+                alt={myMerchantDetails ? myMerchantDetails?.merchantName : ""}
+                width={300}
+                height={300}
+                className="object-cover w-full brightness-50 object-center hover:cursor-pointer pb-5"
               />
-
-              <FormField
-                control={form.control}
-                name="merchantCategory"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Kategori</FormLabel>
-                    <FormControl>
-                      <MultipleSelector
-                        value={
-                          field.value
-                            ? field.value.map((value: any) => ({
-                                label: value,
-                                value,
-                              }))
-                            : []
-                        }
-                        onChange={(selectedOptions) => {
-                          const selectedValues = selectedOptions.map(
-                            (option) => option.value
-                          );
-
-                          field.onChange(selectedValues);
-                        }}
-                        defaultOptions={OPTIONS}
-                        hidePlaceholderWhenSelected
-                        placeholder="Pilih kategorimu"
-                        emptyIndicator={
-                          <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                            no results found.
-                          </p>
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      isi kategori sesuai dengan keahlianmu
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
+                <Upload className="text-white" />
+              </div>
+            </div>
+          }
+        />
+        <div>
+          <FormLabel>
+            Album <span className="text-gray-300 italic text-xs">(maks 4)</span>
+          </FormLabel>
+          <div className="grid grid-cols-1 sm:grid-cols-4 mt-4 gap-4">
+            <FormLabel
+              htmlFor="images2"
+              className="border border-dashed flex justify-center items-center h-32 cursor-pointer "
+            >
+              <PlusIcon className="text-gray-400" />
+              <Input
+                id="images2"
+                type="file"
+                className="hidden"
+                onChange={(e) => onFileAlbumChange(e)}
               />
-              <FormField
-                control={form.control}
-                name="merchantDesc"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Deskripsi</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Deskripsikan tokomu" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="merchantProvince"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Provinsi</FormLabel>
-                    <FormControl>
-                      <SelectOption
-                        placeholder="Pilih Provinsi"
-                        selectLabel={"Provinsi"}
-                        selectList={provinceOptions}
-                        defaultValue={myMerchantDetails?.merchantProvince}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="merchantCity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="pb-2">Kota</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Kota" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="pt-8">
-                {isLoaded ? (
-                  <>
-                    <Autocomplete
-                      onLoad={onLoad}
-                      options={options}
-                      onPlaceChanged={handlePlaceChanged}
+            </FormLabel>
+            {myMerchantDetails?.merchantAlbums &&
+              myMerchantDetails?.merchantAlbums.length > 0 &&
+              myMerchantDetails?.merchantAlbums.map((photo, index) => (
+                <div key={index} className="relative">
+                  <div className="relative h-32 w-full">
+                    <Image
+                      src={photo.albumPhotoUrl}
+                      alt={`Album photo ${index + 1}`}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 p-1 text-white bg-red-500 rounded-full"
+                      onClick={() =>
+                        handleDeleteFileAlbum(photo.merchantAlbumId)
+                      }
                     >
-                      <Input placeholder="Enter a location" />
-                    </Autocomplete>
-                    <p className="italic text-gray-400 pt-5 text-sm">
-                      geser marker untuk mendapatkan lokasi detailmu
+                      <XIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+        <FormField
+          control={form.control}
+          name="merchantName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nama Toko</FormLabel>
+              <FormControl>
+                <Input placeholder="Nama tokomu" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="merchantCategory"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Kategori</FormLabel>
+              <FormControl>
+                <MultipleSelector
+                  value={
+                    field.value
+                      ? field.value.map((value: any) => ({
+                          label: value,
+                          value,
+                        }))
+                      : []
+                  }
+                  onChange={(selectedOptions) => {
+                    const selectedValues = selectedOptions.map(
+                      (option) => option.value
+                    );
+
+                    field.onChange(selectedValues);
+                  }}
+                  defaultOptions={OPTIONS}
+                  hidePlaceholderWhenSelected
+                  placeholder="Pilih kategorimu"
+                  emptyIndicator={
+                    <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                      no results found.
                     </p>
-                    <div>
-                      <MyMapComponent
-                        isLoaded={isLoaded}
-                        locLatLng={validLocation}
-                        marker={
-                          selectedLocation.lat !== null &&
-                          selectedLocation.lng !== null ? (
-                            <MarkerF
-                              draggable
-                              position={{
-                                lat: selectedLocation.lat,
-                                lng: selectedLocation.lng,
-                              }}
-                              onClick={markerClicked}
-                              onDragEnd={markerFinish}
-                            />
-                          ) : null
-                        }
+                  }
+                />
+              </FormControl>
+              <FormDescription>
+                isi kategori sesuai dengan keahlianmu
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="merchantDesc"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Deskripsi</FormLabel>
+              <FormControl>
+                <Input placeholder="Deskripsikan tokomu" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="merchantProvince"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Provinsi</FormLabel>
+              <FormControl>
+                <SelectOption
+                  placeholder="Pilih Provinsi"
+                  selectLabel={"Provinsi"}
+                  selectList={provinceOptions}
+                  defaultValue={myMerchantDetails?.merchantProvince}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="merchantCity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="pb-2">Kota</FormLabel>
+              <FormControl>
+                <Input placeholder="Kota" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="pt-8">
+          {isLoaded ? (
+            <>
+              <Autocomplete
+                onLoad={onLoad}
+                options={options}
+                onPlaceChanged={handlePlaceChanged}
+              >
+                <Input placeholder="Enter a location" />
+              </Autocomplete>
+              <p className="italic text-gray-400 pt-5 text-sm">
+                geser marker untuk mendapatkan lokasi detailmu
+              </p>
+              <div>
+                <MyMapComponent
+                  isLoaded={isLoaded}
+                  locLatLng={validLocation}
+                  marker={
+                    selectedLocation.lat !== null &&
+                    selectedLocation.lng !== null ? (
+                      <MarkerF
+                        draggable
+                        position={{
+                          lat: selectedLocation.lat,
+                          lng: selectedLocation.lng,
+                        }}
+                        onClick={markerClicked}
+                        onDragEnd={markerFinish}
                       />
-                    </div>
-                  </>
-                ) : (
-                  "loading..."
-                )}
-              </div>
-              <div className="flex justify-end w-full pb-10">
-                <ButtonWithLoader
-                  buttonText="Save Changes"
-                  isLoading={updateMerchantLoadingProfile}
-                  type="submit"
-                  variant="secondary"
-                  className={
-                    " bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+                    ) : null
                   }
                 />
               </div>
-            </form>
-          </Form>
+            </>
+          ) : (
+            "loading..."
+          )}
         </div>
-      </div>
-    </div>
+        <div className="flex justify-end w-full pb-20 sm:pb-0 pt-5">
+          <ButtonWithLoader
+            buttonText="Save Changes"
+            isLoading={updateMerchantLoadingProfile}
+            type="submit"
+            variant="secondary"
+            className={
+              " bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+            }
+          />
+        </div>
+      </form>
+    </Form>
   );
 };
 
