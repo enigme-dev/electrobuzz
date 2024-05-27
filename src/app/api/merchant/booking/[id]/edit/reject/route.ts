@@ -1,6 +1,7 @@
 import { setStatusRejected } from "@/bookings/services/BookingService";
 import { BookingReasonSchema } from "@/bookings/types";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -47,6 +48,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("booking", "set merchant booking reject error", e);
     return buildErr("ErrUnknown", 500);
   }
 

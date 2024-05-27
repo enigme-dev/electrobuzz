@@ -1,25 +1,30 @@
-import {NextRequest} from "next/server";
-import {buildErr, ErrorCode} from "@/core/lib/errors";
-import {getToken} from "next-auth/jwt";
-import {z} from "zod";
-import {updateProfile} from "@/users/services/UserService";
-import {getPrivateProfile, getPublicProfile} from "@/users/services/UserService";
-import {Prisma} from "@prisma/client";
-import {UpdateProfileSchema} from "@/users/types";
-import {buildRes, IdParam} from "@/core/lib/utils";
+import { NextRequest } from "next/server";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { getToken } from "next-auth/jwt";
+import { z } from "zod";
+import { updateProfile } from "@/users/services/UserService";
+import {
+  getPrivateProfile,
+  getPublicProfile,
+} from "@/users/services/UserService";
+import { Prisma } from "@prisma/client";
+import { UpdateProfileSchema } from "@/users/types";
+import { buildRes, IdParam } from "@/core/lib/utils";
+import { Logger } from "@/core/lib/logger";
 
-export async function GET(req: NextRequest, {params}: IdParam) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   let profile;
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (userId.success && userId.data === params.id) {
     try {
       profile = await getPrivateProfile(userId.data);
     } catch (e) {
+      Logger.error("profile", "get private profile error", e);
       return buildErr("ErrUnknown", 500);
     }
-    return buildRes({data: profile});
+    return buildRes({ data: profile });
   }
 
   try {
@@ -30,13 +35,14 @@ export async function GET(req: NextRequest, {params}: IdParam) {
         return buildErr("ErrNotFound", 404, "user not found");
       }
     }
+    Logger.error("profile", "get public profile error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({data: profile});
+  return buildRes({ data: profile });
 }
 
-export async function PATCH(req: NextRequest, {params}: IdParam) {
+export async function PATCH(req: NextRequest, { params }: IdParam) {
   let body;
 
   try {
@@ -45,7 +51,7 @@ export async function PATCH(req: NextRequest, {params}: IdParam) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -80,8 +86,9 @@ export async function PATCH(req: NextRequest, {params}: IdParam) {
       }
     }
 
+    Logger.error("profile", "update profile error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "updated successfully"});
+  return buildRes({ status: "updated successfully" });
 }

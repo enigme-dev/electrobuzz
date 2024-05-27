@@ -6,6 +6,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { AlbumsSchema } from "@/merchants/types";
 import { Prisma } from "@prisma/client";
+import { Logger } from "@/core/lib/logger";
 
 export async function POST(req: NextRequest) {
   let body;
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
         return buildErr(
           "ErrForbidden",
           403,
-          "user is not registered as merchant",
+          "user is not registered as merchant"
         );
       }
     }
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    Logger.error("merchant-album", "add merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 

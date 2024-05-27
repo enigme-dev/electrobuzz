@@ -4,6 +4,7 @@ import { getUserBookings } from "@/bookings/services/BookingService";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { Logger } from "@/core/lib/logger";
 
 export async function GET(req: NextRequest) {
   let bookings, bookingsCt;
@@ -24,6 +25,7 @@ export async function GET(req: NextRequest) {
       endDate,
     });
   } catch (e) {
+    Logger.error("booking", "get user booking list error", e);
     return buildErr("ErrUnknown", 500);
   }
 
