@@ -12,6 +12,10 @@ export class BookingRepository extends BaseRepository {
         bookingComplain: data.bookingComplain,
         bookingSchedule: data.bookingSchedule,
         bookingStatus: data.bookingStatus ?? "",
+        addressDetail: data.addressDetail as string,
+        addressZipCode: data.addressZipCode as string,
+        addressCity: data.addressCity as string,
+        addressProvince: data.addressProvince as string,
         user: {
           connect: {
             id: data.userId,
@@ -20,11 +24,6 @@ export class BookingRepository extends BaseRepository {
         merchant: {
           connect: {
             merchantId: data.merchantId,
-          },
-        },
-        address: {
-          connect: {
-            addressId: data.addressId,
           },
         },
       },
@@ -41,7 +40,15 @@ export class BookingRepository extends BaseRepository {
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
         },
-        include: {
+        select: {
+          bookingId: true,
+          bookingStatus: true,
+          bookingComplain: true,
+          bookingPhotoUrl: true,
+          bookingPriceMin: true,
+          bookingPriceMax: true,
+          bookingSchedule: true,
+          bookingCreatedAt: true,
           user: {
             select: {
               name: true,
@@ -70,11 +77,19 @@ export class BookingRepository extends BaseRepository {
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
         },
-        include: {
+        select: {
+          bookingId: true,
+          bookingStatus: true,
+          bookingComplain: true,
+          bookingPhotoUrl: true,
+          bookingPriceMin: true,
+          bookingPriceMax: true,
+          bookingSchedule: true,
+          bookingCreatedAt: true,
           merchant: {
             select: {
-              merchantPhotoUrl: true,
               merchantName: true,
+              merchantPhotoUrl: true,
             },
           },
         },
@@ -100,7 +115,7 @@ export class BookingRepository extends BaseRepository {
     merchantId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
-    data: Prisma.BookingUpdateInput,
+    data: Prisma.BookingUpdateInput
   ) {
     return this.db.$transaction(
       async (tx) => {
@@ -122,7 +137,7 @@ export class BookingRepository extends BaseRepository {
           data,
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
   }
 
@@ -130,7 +145,7 @@ export class BookingRepository extends BaseRepository {
     userId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
-    data: Prisma.BookingUpdateInput,
+    data: Prisma.BookingUpdateInput
   ) {
     return this.db.$transaction(
       async (tx) => {
@@ -152,7 +167,7 @@ export class BookingRepository extends BaseRepository {
           data,
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
   }
 }
