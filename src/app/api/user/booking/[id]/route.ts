@@ -1,5 +1,6 @@
 import { getUserBooking } from "@/bookings/services/BookingService";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -35,6 +36,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("booking", "get user booking error", e);
     return buildErr("ErrUnknown", 500);
   }
 

@@ -1,4 +1,5 @@
 import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { buildRes, IdParam } from "@/core/lib/utils";
 import {
   getMerchant,
@@ -25,6 +26,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
         return buildErr("ErrNotFound", 404, "merchant not found");
       }
     }
+    Logger.error("merchant", "get merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 }
@@ -77,7 +79,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
       }
     }
 
-    console.error(e);
+    Logger.error("merchant", "update merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 

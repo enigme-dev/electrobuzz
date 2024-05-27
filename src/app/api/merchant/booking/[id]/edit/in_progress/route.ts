@@ -1,5 +1,6 @@
 import { setStatusInProgressRequested } from "@/bookings/services/BookingService";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -27,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr(
             "ErrConflict",
             409,
-            "can only set in progress an accepted booking",
+            "can only set in progress an accepted booking"
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
@@ -36,6 +37,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("booking", "set merchant booking in progress error", e);
     return buildErr("ErrUnknown", 500);
   }
 
