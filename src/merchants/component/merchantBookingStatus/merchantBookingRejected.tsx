@@ -34,49 +34,37 @@ const MerchantBookingRejected = ({
               </p>
             </p>
           </div>
-          <div className="bg-gray-100 p-5 rounded-lg space-y-5">
+          <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
             <h1 className="font-semibold text-md sm:text-xl text-center">
               Keluhan User
             </h1>
             <div>
-              <h2 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h2>
-              <p className=" text-left text-sm sm:text-md font-semibold">
+              <h2 className="pt-2 text-sm sm:text-xl text-center">
+                Foto Keluhan:
+              </h2>
+              <div className="flex justify-center">
+                <Image
+                  src={bookingDetailData.bookingPhotoUrl}
+                  alt={bookingDetailData.bookingPhotoUrl}
+                  className="pt-5"
+                  width={500}
+                  height={500}
+                />
+              </div>
+            </div>
+            <div>
+              <h2 className="pt-2 text-left text-sm sm:text-xl">Keluhan:</h2>
+              <p className=" text-left text-sm sm:text-lg font-semibold">
                 {bookingDetailData.bookingComplain}
               </p>
             </div>
+
             <div>
-              <h2 className="pt-2 text-left text-sm sm:text-lg">Foto:</h2>
-              <Image
-                src={bookingDetailData.bookingPhotoUrl}
-                alt={bookingDetailData.bookingPhotoUrl}
-                className=" text-left text-sm sm:text-md font-semibold"
-                width={200}
-                height={200}
-              />
-            </div>
-            <div>
-              <h2 className="pt-2 text-left text-sm sm:text-lg">
+              <h2 className="pt-2 text-left text-sm sm:text-xl">
                 Tanggal Janji:
               </h2>
-              <p className=" text-left text-sm sm:text-md font-semibold">
+              <p className=" text-left text-sm sm:text-lg font-semibold">
                 {format(bookingDetailData.bookingSchedule.toString(), "PPP")}
-              </p>
-            </div>
-          </div>
-          <div className="bg-gray-100 p-5 rounded-lg space-y-5">
-            <h2 className="font-semibold text-md sm:text-xl  text-center">
-              Respon Merchant
-            </h2>
-            <div>
-              <p className="text-sm sm:text-lg text-left">Estimasi Harga:</p>
-              <p className=" text-sm sm:text-md font-semibold text-left">
-                Rp.700.000 - Rp.1000.000
-              </p>
-            </div>
-            <div>
-              <h1 className="text-left text-sm sm:text-lg">Deskripsi:</h1>
-              <p className=" text-left text-sm sm:text-md font-semibold">
-                Perlu ganti kapasitor sekitar 700.000
               </p>
             </div>
           </div>

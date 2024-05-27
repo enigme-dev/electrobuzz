@@ -43,6 +43,7 @@ import AddressForm from "@/users/components/addressForm";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { fileInputToDataURL } from "@/core/lib/utils";
+import Loader from "@/core/components/loader/loader";
 
 interface AddressData {
   addressCity: string;
@@ -131,7 +132,9 @@ const BuatJanjiPage = () => {
     createBookingAppointment(data);
   }
 
-  console.log(merchantId);
+  if (isAddressLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="wrapper pb-20 pt-10 sm:py-10 px-4">

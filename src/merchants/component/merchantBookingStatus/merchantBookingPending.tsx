@@ -107,7 +107,7 @@ const MerchantBookingPending = ({
       </div>
       <div className="grid gap-5 pt-10">
         <div className="flex justify-center">
-          <h1 className=" text-lg sm:text-2xl font-bold text-center bg-green-400 rounded-lg p-3 text-white w-fit">
+          <h1 className=" text-lg sm:text-2xl font-bold text-center bg-green-500 rounded-lg p-3 text-white w-fit">
             Kamu menerima orderan baru!
           </h1>
         </div>
@@ -214,19 +214,19 @@ const MerchantBookingPending = ({
           *Mohon segera melakukan aksi tolak atau terima, Jika tidak maka akan
           ada tenggang waktu pada order ini.
         </p>
-        <div className="bg-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
             Data User
           </h2>
           <div>
-            <p className="text-sm sm:text-lg text-left">Nama:</p>
-            <p className=" text-sm sm:text-md font-semibold text-left">
+            <p className="text-sm sm:text-xl text-left">Nama:</p>
+            <p className=" text-sm sm:text-lg font-semibold text-left">
               {bookingDetailData.user.name}
             </p>
           </div>
           <div>
-            <h1 className="text-left text-sm sm:text-lg">Alamat:</h1>
-            <p className=" text-left text-sm sm:text-md font-semibold">
+            <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
+            <p className=" text-left text-sm sm:text-lg font-semibold">
               {bookingDetailData.address.addressDetail},{" "}
               {bookingDetailData.address.addressCity},{" "}
               {bookingDetailData.address.addressProvince},{" "}
@@ -234,33 +234,36 @@ const MerchantBookingPending = ({
             </p>
           </div>
         </div>
-        <div className="bg-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
             Keluhan User
           </h1>
           <div>
-            <h2 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h2>
-            <p className=" text-left text-sm sm:text-md font-semibold">
-              {bookingDetailData.bookingComplain}
-            </p>
-          </div>
-          <div>
-            <h2 className="pt-2 text-left text-sm sm:text-lg">Foto:</h2>
+            <h2 className="pt-2 text-center text-sm sm:text-xl">
+              Foto Keluhan:
+            </h2>
             <div className="flex justify-center">
               <Image
                 src={bookingDetailData.bookingPhotoUrl}
                 alt={bookingDetailData.bookingPhotoUrl}
-                className=" text-sm sm:text-md font-semibold"
+                className="pt-5"
                 width={500}
                 height={500}
               />
             </div>
           </div>
           <div>
-            <h2 className="pt-2 text-left text-sm sm:text-lg">
+            <h2 className="pt-2 text-left text-sm sm:text-xl">Keluhan:</h2>
+            <p className=" text-left text-sm sm:text-lg font-semibold">
+              {bookingDetailData.bookingComplain}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="pt-2 text-left text-sm sm:text-xl">
               Permintaan Tanggal Janji:
             </h2>
-            <p className=" text-left text-sm sm:text-md font-semibold">
+            <p className=" text-left text-sm sm:text-lg font-semibold">
               {format(bookingDetailData.bookingSchedule.toString(), "PPP")}
             </p>
           </div>

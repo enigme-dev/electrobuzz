@@ -118,14 +118,14 @@ export const AcceptBookingSchema = z.object({
     .number({
       required_error: "estimation price can not be empty",
     })
-    .min(20000, "estimation price can be between 20000 and 10000000")
-    .max(10000000, "estimation price can be between 20000 and 10000000"),
+    .min(20000, "estimasi harga harus diantara 20000 sampai 10000000")
+    .max(10000000, "estimasi harga harus diantara 20000 sampai 10000000"),
   bookingPriceMax: z
     .number({
-      required_error: "estimation price can not be empty",
+      required_error: "estimasi harga tidak boleh kosong",
     })
-    .min(20000, "estimation price can be between 20000 and 10000000")
-    .max(10000000, "estimation price can be between 20000 and 10000000"),
+    .min(20000, "estimasi harga harus diantara 20000 sampai 10000000")
+    .max(10000000, "estimasi harga harus diantara 20000 sampai 10000000"),
   bookingDesc: z.string(),
 });
 
@@ -134,10 +134,10 @@ export type TAcceptBookingSchema = z.infer<typeof AcceptBookingSchema>;
 export const BookingReasonSchema = z.object({
   bookingReason: z
     .string({
-      required_error: "reason can not be empty",
+      required_error: "alasan tidak boleh kosong",
     })
-    .min(8, "reason can be between 8 and 256 characters")
-    .max(256, "reason can be between 8 and 256 characters"),
+    .min(8, "alasan harus diantara 8 sampai 256 huruf")
+    .max(256, "alasan harus diantara 8 sampai 256 huruf"),
 });
 
 export type TBookingReasonSchema = z.infer<typeof BookingReasonSchema>;
@@ -172,10 +172,10 @@ export const GetUserBookingDone = GetUserBooking.extend({ review: z.any() });
 export type TGetUserBookingDone = z.infer<typeof GetUserBookingDone>;
 
 export const CreateBookingSchema = z.object({
-  bookingPhotoUrl: z.string({ required_error: "photo can not be empty" }),
-  bookingComplain: z.string({ required_error: "complain can not be empty" }),
+  bookingPhotoUrl: z.string({ required_error: "foto tidak boleh kosong" }),
+  bookingComplain: z.string({ required_error: "keluhan tidak boleh kosong" }),
   bookingSchedule: z
-    .string({ required_error: "schedule can not be empty" })
+    .string({ required_error: "tanggal janji tidak boleh kosong" })
     .datetime("schedule must be a datetime string"),
   addressId: z
     .string({ required_error: "address id can not be empty" })

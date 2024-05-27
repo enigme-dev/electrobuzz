@@ -1,6 +1,14 @@
 "use client";
 
-import { BookStatusEnum, TBookingModel } from "@/bookings/types";
+import UserBookingAccept from "@/bookings/component/userBookingStatus/userBookingAccept";
+import UserBookingPending from "@/bookings/component/userBookingStatus/userBookingPending";
+import UserBookingReject from "@/bookings/component/userBookingStatus/userBookingReject";
+import {
+  BookStatusEnum,
+  TBookingModel,
+  TBookingReasonSchema,
+  TGetUserBooking,
+} from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import Loader from "@/core/components/loader/loader";
@@ -17,12 +25,7 @@ import React, { useEffect, useState } from "react";
 const BookingDetail = () => {
   const { data: session } = useSession();
   const pathname = usePathname();
-  const radioOptionsForCancelReason = [
-    { option: "Budjet tidak cukup" },
-    { option: "Mau cari teknisi lain" },
-    { option: "Mau ubah jadwal" },
-    { option: "Other" },
-  ];
+
   const getLastPathSegment = (pathname: string): string => {
     const segments = pathname.split("/");
     return segments[segments.length - 1] || segments[segments.length - 2];
@@ -34,11 +37,20 @@ const BookingDetail = () => {
     queryKey: ["getBookingDetailData", bookingId],
     queryFn: async () =>
       await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
-        return response.data.data as TBookingModel;
+        return response.data.data as TGetUserBooking;
       }),
     enabled: !!bookingId,
   });
 
+  const { data: bookingDetailDataWithMerchant, isLoading: isLoadingData } =
+    useQuery({
+      queryKey: ["getBookingDetailData", bookingId],
+      queryFn: async () =>
+        await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
+          return response.data.data as TBookingReasonSchema;
+        }),
+      enabled: !!bookingId,
+    });
   console.log(bookingDetailData);
 
   // const { mutate: AcceptBookings, isPending: addAddressLoading } =
@@ -59,132 +71,30 @@ const BookingDetail = () => {
   //     },
   //   });
 
-  if (isLoading) {
+  if (isLoading || isLoadingData) {
     return <Loader />;
   }
   return (
     <main className="sm:wrapper pb-20 px-4">
       {bookingDetailData?.bookingStatus == "pending" && (
         <>
-          <div className="flex items-center justify-center">
-            <Image
-              src="/Conversation-cuate.svg"
-              alt="bookDetailBanner"
-              className=" w-96 "
-              width={900}
-              height={500}
-            />
-          </div>
-          <div className="grid place-content-center text-center gap-5">
-            <h1 className="pt-10 text-2xl font-bold">Sabar...</h1>
-            <p>Mohon menunggu konfirmasi Merchant</p>
-            <h1 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h1>
-            <p className="font-bold text-left text-sm sm:text-xl">
-              {bookingDetailData.bookingComplain}
-            </p>
-            <h1 className="pt-2 text-left text-sm sm:text-lg">Foto:</h1>
-            <Image
-              src={bookingDetailData.bookingPhotoUrl}
-              alt={bookingDetailData.bookingPhotoUrl}
-              className="font-bold text-left text-sm sm:text-xl"
-              width={200}
-              height={200}
-            />
-            <div className="flex gap-10 justify-center items-center">
-              {/* <DialogGeneral
-                dialogTitle="Alasan Penolakan"
-                dialogContent={
-                  <RadioGroupForm options={radioOptionsForCancelReason} />
-                }
-                dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
-              /> */}
-              <Link href={"/user/my-bookings"}>
-                <Button>Kembali</Button>
-              </Link>
-            </div>
-          </div>
+          <UserBookingPending bookingDetailData={bookingDetailData} />
         </>
       )}
       {bookingDetailData?.bookingStatus == "rejected" && (
         <>
-          <div className="flex items-center justify-center">
-            <Image
-              src="/Feeling sorry-cuate.svg"
-              alt="Feeling sorry-cuate"
-              className=" w-96 "
-              width={900}
-              height={500}
-            />
-          </div>
-          <div className="grid place-content-center text-center gap-5">
-            <div>
-              <h1 className="pt-10 text-2xl font-bold">Maaf...</h1>
-              <p className="pt-2">Permintaan anda telah ditolak oleh Mitra</p>
-              <h1 className="pt-2 text-left text-md">Alasan:</h1>
-              <p className="font-bold">{bookingDetailData.bookingReason}</p>
-            </div>
-            <Link href={"/user/my-bookings"}>
-              <Button>Kembali</Button>
-            </Link>
-          </div>
+          <UserBookingReject
+            bookingDetailData={{
+              bookingReason: bookingDetailDataWithMerchant?.bookingReason
+                ? bookingDetailDataWithMerchant.bookingReason
+                : "",
+            }}
+          />
         </>
       )}
       {bookingDetailData?.bookingStatus == "accepted" && (
         <>
-          <div className="flex items-center justify-center">
-            <Image
-              src="/Light bulb-cuate.svg"
-              alt="bookDetailBanner"
-              className=" w-96 "
-              width={900}
-              height={500}
-            />
-          </div>
-          <div className="grid place-content-center text-center gap-5">
-            <h1 className="sm:pt-10 text-lg sm:text-2xl font-bold">
-              Selamat...
-            </h1>
-            <p className="text-sm sm:text-lg text-left">
-              Sepertinya Mitra telah menerima permintaanmu, berikut merupakan
-              estimasi harga servismu:
-            </p>
-            <p className="font-bold text-sm sm:text-xl ">
-              Rp {bookingDetailData.bookingPriceMin} - Rp{" "}
-              {bookingDetailData.bookingPriceMax}
-            </p>
-            <h1 className="pt-2 text-left text-sm sm:text-lg">Alasan:</h1>
-            <p className="font-bold text-left text-sm sm:text-xl">
-              {bookingDetailData.bookingDesc}
-            </p>
-            <h1 className="pt-2 text-left text-sm sm:text-lg">Keluhan:</h1>
-            <p className="font-bold text-left text-sm sm:text-xl">
-              {bookingDetailData.bookingComplain}
-            </p>
-            <h1 className="pt-2 text-left text-sm sm:text-lg">Foto:</h1>
-            <Image
-              src={bookingDetailData.bookingPhotoUrl}
-              alt={bookingDetailData.bookingPhotoUrl}
-              className="font-bold text-left text-sm sm:text-xl"
-              width={200}
-              height={200}
-            />
-            <div className="flex gap-10 justify-center items-center">
-              {/* <DialogGeneral
-                dialogTitle="Alasan Penolakan"
-                dialogContent={
-                  <RadioGroupForm defaultValue="" options={radioOptionsForCancelReason} />
-                }
-                dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
-              /> */}
-              <AlertDialogComponent
-                dialogTitle="Apakah kamu yakin?"
-                alertDialogSubmitTitle="submit"
-                dialogDescription="Pastikan kamu memiliki budget yang cukup ya..."
-                submitAction={() => {}}
-                dialogTrigger={<Button variant={"outline"}>Terima</Button>}
-              />
-            </div>
-          </div>
+          <UserBookingAccept bookingDetailData={bookingDetailData} />
         </>
       )}
     </main>
