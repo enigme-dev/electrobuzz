@@ -1,59 +1,53 @@
-import { TBookingModel, TGetMerchantBookingAccepted } from "@/bookings/types";
+import {
+  TBookingModel,
+  TBookingReasonSchema,
+  TGetUserBooking,
+} from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
-import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
-import { useToast } from "@/core/components/ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "@/core/components/ui/use-toast";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
-interface MerchantBookingAcceptedProps {
-  bookingDetailData: TGetMerchantBookingAccepted;
+interface UserBookingAcceptProps {
+  bookingDetailData: TGetUserBooking;
 }
 
-const MerchantBookingAccepted = ({
-  bookingDetailData,
-}: MerchantBookingAcceptedProps) => {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const {
-    mutate: updateRequestInProgressBooking,
-    isPending: updateRequestInProgressBookingLoading,
-  } = useMutation({
-    mutationFn: () =>
-      axios.patch(
-        `/api/merchant/booking/${bookingDetailData.bookingId}/edit/in_progress`
-      ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["getBookingDetailData", bookingDetailData.bookingId],
-      });
-      toast({
-        title: "Berhasil request mulai mengerjakan!",
-      });
-    },
-    onError: (error: any) => {
-      if (error.response.data.status === "ErrBookWrongSchedule") {
+const radioOptionsForCancelReason = [
+  { option: "Budjet tidak cukup", label: "Budjet tidak cukup" },
+  { option: "Mau cari teknisi lain", label: "Mau cari teknisi lain" },
+  { option: "Mau ubah jadwal", label: "Mau ubah jadwal" },
+  { option: "", label: "Other" },
+];
+
+const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
+  const { mutate: updateCancelBooking, isPending: updateCancelBookingLoading } =
+    useMutation({
+      mutationFn: (values: TBookingReasonSchema) =>
+        axios.patch(
+          `/api/merchant/booking/${bookingDetailData.bookingId}/edit/reject`,
+          values
+        ),
+      onSuccess: () => {
         toast({
-          title:
-            "Kamu hanya bisa request 'mulai mengerjakan' disaat waktu pengerjaan!",
-          variant: "destructive",
+          title: "Kamu berhasil menolak order ini!",
         });
-      } else {
+      },
+      onError: () => {
         toast({
-          title: "Gagal request mulai mengerjakan!",
-          variant: "destructive",
+          title: "Kamu gagal menolak order ini!",
         });
-      }
-    },
-  });
+      },
+    });
+
   return (
-    <div>
-      {" "}
+    <div className="wrapper">
       <div className="flex items-center justify-center">
         <Image
           src="/Light bulb-cuate.svg"
@@ -63,42 +57,27 @@ const MerchantBookingAccepted = ({
           height={500}
         />
       </div>
-      <div className="grid gap-8">
-        <h1 className="sm:pt-10 text-lg sm:text-2xl font-bold text-center">
-          Kamu sudah menerima orderan ini...
-        </h1>
-        <div className=" flex justify-center">
-          <ButtonWithLoader
-            buttonText="Mulai Mengerjakan"
-            className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
-            isLoading={false}
-            type="button"
-            onClick={() => updateRequestInProgressBooking()}
-          />
+      <div className="grid gap-5">
+        <div className="pb-5 flex justify-center">
+          <h1 className="w-fit text-lg sm:text-xl font-bold text-center bg-green-500 text-white rounded-lg p-3">
+            Selamat merchant telah menerima keluhanmu!
+          </h1>
         </div>
-        <p className="text-xs text-red-400 italic text-center">
-          *Tekan tombol &quot;Mulai Mengerjakan&quot; jika kamu sudah memulai
-          service.
-        </p>
-        <p className="text-xs text-red-400 italic text-center">
-          *Mohon segera melakukan pengecekan pada tanggal yang dicantumkan, Jika
-          tidak maka akan ada tenggang waktu pada order ini selama 1 hari
-          setelah hari perjanjian.
-        </p>
+
         <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
-            Data User
+            Data Merchant
           </h2>
           <div>
             <p className="text-sm sm:text-xl text-left">Nama:</p>
-            <p className=" text-sm sm:text-lg font-semibold text-left break-words overflow-auto">
-              {bookingDetailData.user.name}
+            <p className=" text-sm sm:text-lg font-semibold text-left">
+              {bookingDetailData.merchant.merchantName}
             </p>
           </div>
           <div>
             <h1 className="text-left text-sm sm:text-xl">Nomor Telpon:</h1>
             <p className=" text-left text-sm sm:text-lg font-semibold">
-              {bookingDetailData.user.phone}
+              {bookingDetailData.merchant.user.phone}
             </p>
           </div>
           <div>
@@ -111,19 +90,19 @@ const MerchantBookingAccepted = ({
             </p>
           </div>
         </div>
-        <div className="shadow-xl border border-gray-100 p-5 rounded-lg space-y-5">
-          <h1 className="font-semibold text-lg sm:text-xl text-center">
+        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+          <h1 className="font-semibold text-md sm:text-xl text-center">
             Keluhan User
           </h1>
           <div>
-            <h2 className="pt-2 text-sm sm:text-xl text-center">
+            <h2 className="pt-2 text-center text-sm sm:text-xl">
               Foto Keluhan:
             </h2>
             <div className="flex justify-center">
               <Image
                 src={bookingDetailData.bookingPhotoUrl}
                 alt={bookingDetailData.bookingPhotoUrl}
-                className="p-3"
+                className="pt-5"
                 width={500}
                 height={500}
               />
@@ -131,11 +110,10 @@ const MerchantBookingAccepted = ({
           </div>
           <div>
             <h2 className="pt-2 text-left text-sm sm:text-xl">Keluhan:</h2>
-            <p className=" text-left text-sm sm:text-lg font-semibold break-words overflow-auto">
+            <p className=" text-left text-sm sm:text-lg font-semibold">
               {bookingDetailData.bookingComplain}
             </p>
           </div>
-
           <div>
             <h2 className="pt-2 text-left text-sm sm:text-xl">
               Tanggal Janji:
@@ -152,20 +130,37 @@ const MerchantBookingAccepted = ({
           <div>
             <p className="text-sm sm:text-xl text-left">Estimasi Harga:</p>
             <p className=" text-sm sm:text-lg font-semibold text-left">
-              Rp{bookingDetailData.bookingPriceMin} - Rp
+              Rp.{bookingDetailData.bookingPriceMin} - Rp.
               {bookingDetailData.bookingPriceMax}
             </p>
           </div>
           <div>
             <h1 className="text-left text-sm sm:text-xl">Deskripsi:</h1>
-            <p className=" text-left text-sm sm:text-lg font-semibold break-words overflow-auto">
+            <p className=" text-left text-sm sm:text-lg font-semibold">
               {bookingDetailData.bookingDesc}
             </p>
           </div>
+        </div>
+        <div className="flex gap-10 justify-center items-center pt-5">
+          <Link href={"/user/my-bookings"}>
+            <Button variant={"outline"}>Kembali</Button>
+          </Link>
+          <DialogGeneral
+            dialogTitle="Alasan Penolakan"
+            dialogContent={
+              <RadioGroupForm
+                options={radioOptionsForCancelReason}
+                onSubmitRadio={(value) => updateCancelBooking(value)}
+                defaultValue={radioOptionsForCancelReason[0].option ?? ""}
+                onSubmitLoading={updateCancelBookingLoading}
+              />
+            }
+            dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default MerchantBookingAccepted;
+export default UserBookingAccept;

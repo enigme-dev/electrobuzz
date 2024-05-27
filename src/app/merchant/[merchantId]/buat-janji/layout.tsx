@@ -8,9 +8,9 @@ import React from "react";
 const BuatJanjiLayout = ({ children }: any) => {
   const { data: session } = useSession();
 
-  if (session?.user?.id === undefined) {
-    redirect("/login");
-  }
+  // if (session?.user?.id === undefined) {
+  //   redirect("/login");
+  // }
 
   return (
     <div>

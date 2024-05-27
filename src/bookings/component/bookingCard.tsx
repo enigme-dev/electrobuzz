@@ -90,7 +90,7 @@ const BookingCard = ({
             <p className="truncate text-xs sm:text-lg">
               {bookingComplaintDesc}
             </p>
-            <p className="text-gray-400 text-xs sm:text-md">
+            <p className="text-gray-400 text-[0.6rem] sm:text-sm">
               Permintaan Tanggal Janji: {format(bookingSchedule, "PPP")}
             </p>
           </div>
@@ -106,12 +106,16 @@ const BookingCard = ({
             </p>
           </div>
           <div>
-            <div>
+            <div className="z-10">
               {isMerchant ? (
                 <></>
               ) : (
-                <Link href="">
-                  <Button variant={"outline"} className="text-xs px-3 py-1">
+                <Link href={`/merchant/${orderId}/buat-janji`}>
+                  <Button
+                    variant={"outline"}
+                    className="text-xs px-3 py-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     Booking lagi
                   </Button>
                 </Link>

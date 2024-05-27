@@ -1,6 +1,6 @@
 "use client";
 
-import BookingCard from "@/booking-history/component/bookingCard";
+import BookingCard from "@/bookings/component/bookingCard";
 import { BookStatusEnum, TGetUserBooking } from "@/bookings/types";
 import { CalendarPicker } from "@/core/components/calendarPicker";
 import Loader from "@/core/components/loader/loader";
