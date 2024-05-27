@@ -15,7 +15,8 @@ import {
   TGetMerchantBookings,
   TBookingReasonSchema,
   TCreateBookingSchema,
-  TGetUserBooking,
+  GetUserBookingPending,
+  GetUserBookingRejected,
 } from "@/bookings/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { BookingRepository } from "@/bookings/repositories/BookingRepository";
@@ -30,7 +31,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 export async function addBooking(
   userId: string,
   merchantId: string,
-  input: TCreateBookingSchema,
+  input: TCreateBookingSchema
 ) {
   let result, bookingPhotoUrl;
 
@@ -42,13 +43,13 @@ export async function addBooking(
   if (!merchant.merchantAvailable || !merchant.merchantVerified)
     throw new Error(ErrorCode.ErrNotFound);
 
-  await getAddress(userId, input.addressId);
+  const address = await getAddress(userId, input.addressId);
 
   const [_, bookingCt] = await getUserBookings(userId, {
     status: BookStatusEnum.Enum.pending,
     perPage: 0,
   });
-  console.log(bookingCt);
+
   if (bookingCt >= 5) {
     throw new Error(ErrorCode.ErrTooManyRequest);
   }
@@ -68,6 +69,10 @@ export async function addBooking(
       bookingSchedule,
       bookingStatus: BookStatusEnum.Enum.pending,
       bookingPhotoUrl,
+      addressDetail: address.addressDetail,
+      addressZipCode: address.addressZipCode,
+      addressCity: address.addressCity,
+      addressProvince: address.addressProvince,
     };
 
     result = await BookingRepository.create(data);
@@ -84,12 +89,9 @@ export async function addBooking(
 
 export async function getMerchantBooking(
   merchantId: string,
-  bookingId: string,
+  bookingId: string
 ) {
-  const booking = await BookingRepository.findOne(bookingId, {
-    address: true,
-    user: true,
-  });
+  const booking = await BookingRepository.findOne(bookingId, { user: true });
   if (booking.merchantId !== merchantId) throw new Error(ErrorCode.ErrNotFound);
 
   switch (booking.bookingStatus) {
@@ -113,11 +115,11 @@ export async function getMerchantBooking(
 
 export async function getMerchantBookings(
   merchantId: string,
-  options?: SearchParams,
+  options?: SearchParams
 ): Promise<[TGetMerchantBookings, number]> {
   const [bookings, bookingsCt] = await BookingRepository.findByMerchantId(
     merchantId,
-    options,
+    options
   );
   const result = GetMerchantBookings.parse(bookings);
 
@@ -133,7 +135,6 @@ export async function getUserBooking(userId: string, bookingId: string) {
         user: { select: { phone: true } },
       },
     },
-    address: true,
   });
 
   if (booking.userId !== userId) {
@@ -141,18 +142,18 @@ export async function getUserBooking(userId: string, bookingId: string) {
   }
 
   const status = BookStatusEnum.parse(booking.bookingStatus);
-  if (status === BookStatusEnum.Enum.done) {
-    return GetUserBookingDone.parse(booking);
+  switch (status) {
+    case BookStatusEnum.Enum.pending:
+      return GetUserBookingPending.parse(booking);
+    case BookStatusEnum.Enum.rejected:
+      return GetUserBookingRejected.parse(booking);
+    case BookStatusEnum.Enum.canceled:
+      return GetUserBookingReason.parse(booking);
+    case BookStatusEnum.Enum.done:
+      return GetUserBookingDone.parse(booking);
+    default:
+      return GetUserBooking.parse(booking);
   }
-
-  if (
-    status === BookStatusEnum.Enum.canceled ||
-    status === BookStatusEnum.Enum.rejected
-  ) {
-    return GetUserBookingReason.parse(booking);
-  }
-
-  return GetUserBooking.parse(booking);
 }
 
 export async function getUserBookings(userId: string, options?: SearchParams) {
@@ -162,7 +163,7 @@ export async function getUserBookings(userId: string, options?: SearchParams) {
 export async function setStatusAccepted(
   merchantId: string,
   bookingId: string,
-  input: TAcceptBookingSchema,
+  input: TAcceptBookingSchema
 ) {
   const data: Prisma.BookingUpdateInput = {
     bookingStatus: BookStatusEnum.Enum.accepted,
@@ -175,14 +176,14 @@ export async function setStatusAccepted(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.pending],
-    data,
+    data
   );
 }
 
 export async function setStatusCanceled(
   userId: string,
   bookingId: string,
-  input: TBookingReasonSchema,
+  input: TBookingReasonSchema
 ) {
   const booking = await getUserBooking(userId, bookingId);
   if (dayjs().isSame(booking.bookingSchedule, "date")) {
@@ -198,7 +199,7 @@ export async function setStatusCanceled(
     userId,
     bookingId,
     [BookStatusEnum.Enum.pending, BookStatusEnum.Enum.accepted],
-    data,
+    data
   );
 }
 
@@ -216,13 +217,13 @@ export async function setStatusDone(userId: string, bookingId: string) {
     userId,
     bookingId,
     [BookStatusEnum.Enum.in_progress_accepted],
-    data,
+    data
   );
 }
 
 export async function setStatusInProgressRequested(
   merchantId: string,
-  bookingId: string,
+  bookingId: string
 ) {
   const booking = await getMerchantBooking(merchantId, bookingId);
   if (!dayjs().isSame(booking.bookingSchedule, "date")) {
@@ -237,13 +238,13 @@ export async function setStatusInProgressRequested(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.accepted],
-    data,
+    data
   );
 }
 
 export async function setStatusInProgressAccepted(
   merchantId: string,
-  bookingId: string,
+  bookingId: string
 ) {
   const booking = await getMerchantBooking(merchantId, bookingId);
   if (!dayjs().isSame(booking.bookingSchedule, "date")) {
@@ -258,14 +259,14 @@ export async function setStatusInProgressAccepted(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.in_progress_requested],
-    data,
+    data
   );
 }
 
 export async function setStatusRejected(
   merchantId: string,
   bookingId: string,
-  input: TBookingReasonSchema,
+  input: TBookingReasonSchema
 ) {
   const data: Prisma.BookingUpdateInput = {
     bookingStatus: BookStatusEnum.Enum.rejected,
@@ -276,6 +277,6 @@ export async function setStatusRejected(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.pending],
-    data,
+    data
   );
 }
