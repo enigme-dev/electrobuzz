@@ -6,6 +6,7 @@ import { z } from "zod";
 import { addAddress, getAddresses } from "@/users/services/AddressService";
 import { buildRes } from "@/core/lib/utils";
 import { AddressSchema } from "@/users/types";
+import { Logger } from "@/core/lib/logger";
 
 export async function GET(req: NextRequest) {
   let addresses;
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
   try {
     [addresses] = await getAddresses(userId.data);
   } catch (e) {
+    Logger.error("address", "add address error", e);
     return buildErr("ErrUnknown", 500);
   }
 
@@ -61,6 +63,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    Logger.error("address", "add address error", e);
     return buildErr("ErrUnknown", 500);
   }
 

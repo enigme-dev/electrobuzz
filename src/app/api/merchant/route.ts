@@ -6,6 +6,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { buildRes } from "@/core/lib/utils";
+import { Logger } from "@/core/lib/logger";
 
 export async function POST(req: NextRequest) {
   let body;
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    Logger.error("merchant", "register as merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 

@@ -1,13 +1,14 @@
-import {buildErr, ErrorCode} from "@/core/lib/errors";
-import {buildRes, IdParam} from "@/core/lib/utils";
-import {deleteMerchantAlbum} from "@/merchants/services/MerchantAlbumService";
-import {Prisma} from "@prisma/client";
-import {getToken} from "next-auth/jwt";
-import {NextRequest} from "next/server";
-import {z} from "zod";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
+import { buildRes, IdParam } from "@/core/lib/utils";
+import { deleteMerchantAlbum } from "@/merchants/services/MerchantAlbumService";
+import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
-export async function DELETE(req: NextRequest, {params}: IdParam) {
-  const token = await getToken({req});
+export async function DELETE(req: NextRequest, { params }: IdParam) {
+  const token = await getToken({ req });
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
     return buildErr("ErrUnauthorized", 401);
@@ -33,8 +34,9 @@ export async function DELETE(req: NextRequest, {params}: IdParam) {
       }
     }
 
+    Logger.error("merchant-album", "delete merchant album error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "album photo deleted successfully"});
+  return buildRes({ status: "album photo deleted successfully" });
 }

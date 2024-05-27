@@ -1,5 +1,6 @@
 import { setStatusInProgressAccepted } from "@/bookings/services/BookingService";
 import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -27,13 +28,14 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr(
             "ErrConflict",
             409,
-            "can not accept any requested in progress booking",
+            "can not accept any requested in progress booking"
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
       }
     }
 
+    Logger.error("booking", "set user booking in progress error", e);
     return buildErr("ErrUnknown", 500);
   }
 
