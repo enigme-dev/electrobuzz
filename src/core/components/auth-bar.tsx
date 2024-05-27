@@ -87,22 +87,20 @@ export function AuthBar() {
                 <ul className="flex justify-between gap-5">
                   {session.user.isMerchant ? (
                     <li className="pt-5 text-center">
-                      <Button
-                        variant="outline"
-                        className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"
-                      >
-                        <Link href="/merchant/dashboard-start">
+                      <Link href="/merchant/dashboard-start">
+                        <Button
+                          variant="outline"
+                          className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"
+                        >
                           Merchant Dashboard
-                        </Link>
-                      </Button>
+                        </Button>
+                      </Link>
                     </li>
                   ) : (
                     <li className="pt-5 text-center">
-                      <Button variant="outline">
-                        <Link href="/merchant/register">
-                          Register as merchant
-                        </Link>
-                      </Button>
+                      <Link href="/merchant/register">
+                        <Button variant="outline">Register as merchant</Button>
+                      </Link>
                     </li>
                   )}
                   <li className="pt-5 text-center">

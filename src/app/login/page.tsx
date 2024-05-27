@@ -6,7 +6,7 @@ import React from "react";
 
 const loginPage = () => {
   return (
-    <div className="wrapper px-8 pt-10">
+    <div className="wrapper px-8 pt-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 justify-around items-center">
         <div className="grid-cols-1  place-items-center">
           <Image
