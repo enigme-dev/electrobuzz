@@ -104,10 +104,9 @@ const MerchantBookingAccepted = ({
           <div>
             <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
             <p className=" text-left text-sm sm:text-lg font-semibold">
-              {bookingDetailData.address.addressDetail},{" "}
-              {bookingDetailData.address.addressCity},{" "}
-              {bookingDetailData.address.addressProvince},{" "}
-              {bookingDetailData.address.addressZipCode}
+              {bookingDetailData.addressDetail}, {bookingDetailData.addressCity}
+              , {bookingDetailData.addressProvince},{" "}
+              {bookingDetailData.addressZipCode}
             </p>
           </div>
         </div>
