@@ -23,14 +23,14 @@ const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
   return (
     <div className="sm:flex h-screen w-[30vh] hidden ">
-      <div className="w-[30vh] p-10 ">
-        <div className="flex flex-col items-center row-span-1 pb-16">
+      <div className="w-[30vh] grid-rows-2 place-items-start p-10 ">
+        <div className="grid place-items-center row-span-1 pb-16">
           <h1 className="text-2xl italic text-yellow-400 font-extrabold ">
             Merchant⚡
           </h1>
           <p className="text-lg font-semibold">Dashboard</p>
         </div>
-        <div className="flex flex-col gap-5 w-full">
+        <div className="grid place-items-center gap-5 max-w-40">
           {merchantDashboardNavList.map((value, index) => (
             <ul key={index}>
               <li className="w-44">

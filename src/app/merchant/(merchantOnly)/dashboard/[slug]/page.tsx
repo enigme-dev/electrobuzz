@@ -26,9 +26,9 @@ const MerchantDashboard = () => {
   }, [pathname, bookingId]);
 
   return (
-    <div className="flex w-full">
+    <div className="w-screen flex items-center h-screen ">
       <MerchantDashboardSideBar />
-      <div className="max-h-screen w-screen">{view}</div>
+      <div className="w-screen h-screen">{view}</div>
     </div>
   );
 };

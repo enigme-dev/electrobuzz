@@ -23,9 +23,9 @@ const MerchantLayout = ({ children }: any) => {
   // if (isError) {
   //   router.push("/merchant/register");
   // }
-  // if (session?.user?.id === undefined) {
-  //   redirect("/login");
-  // }
+  if (session?.user?.id === undefined) {
+    redirect("/login");
+  }
 
   return (
     <div>

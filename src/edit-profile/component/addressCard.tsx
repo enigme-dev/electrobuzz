@@ -51,22 +51,16 @@ const AddressCard = ({
       onSuccess: () => {
         toast({ title: "Delete alamat berhasil!" });
         queryClient.invalidateQueries({
-          queryKey: ["userAddressData", session?.user?.id],
+          queryKey: ["userAddressData", initialAddressData.addressId],
         });
       },
-      onError: (error: any) => {
-        console.log(error);
-        if (error.data.response.status)
-          toast({ title: "Delete alamat gagal!", variant: "destructive" });
+      onError: () => {
+        toast({ title: "Delete alamat gagal!", variant: "destructive" });
       },
     });
 
   if (deleteAddressLoading) {
-    return (
-      <div className="w-20 h-20">
-        <Loader />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
