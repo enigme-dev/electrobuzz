@@ -1,6 +1,7 @@
 import { addBooking } from "@/bookings/services/BookingService";
 import { CreateBookingSchema } from "@/bookings/types";
 import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { buildRes, IdParam } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("merchant", "book merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 

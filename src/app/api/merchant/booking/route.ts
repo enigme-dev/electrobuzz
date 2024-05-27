@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { Logger } from "@/core/lib/logger";
 
 export async function GET(req: NextRequest) {
   let bookings, bookingsCt;
@@ -30,11 +31,12 @@ export async function GET(req: NextRequest) {
         return buildErr(
           "ErrForbidden",
           403,
-          "user is not registered as merchant",
+          "user is not registered as merchant"
         );
       }
     }
 
+    Logger.error("booking", "get merchant booking list error", e);
     return buildErr("ErrUnknown", 500);
   }
 

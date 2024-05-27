@@ -1,4 +1,5 @@
 import { buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { buildRes, parseParams } from "@/core/lib/utils";
 import { getMerchants } from "@/merchants/services/MerchantService";
 import { NextRequest } from "next/server";
@@ -12,6 +13,7 @@ export async function GET(req: NextRequest) {
   try {
     [merchants, merchantsCt] = await getMerchants({ query, page: skip });
   } catch (e) {
+    Logger.error("admin", "get merchant list error", e);
     return buildErr("ErrUnknown", 500);
   }
 

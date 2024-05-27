@@ -8,6 +8,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { buildRes } from "@/core/lib/utils";
+import { Logger } from "@/core/lib/logger";
 
 export async function GET(req: NextRequest) {
   let result;
@@ -39,6 +40,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    Logger.error("user", "request otp error", e);
     return buildErr("ErrUnknown", 500);
   }
 
@@ -82,6 +84,7 @@ export async function POST(req: NextRequest) {
         return buildErr("ErrOTPUnknown", 500);
     }
   } catch (e) {
+    Logger.error("user", "check otp error", e);
     return buildErr("ErrUnknown", 500);
   }
 

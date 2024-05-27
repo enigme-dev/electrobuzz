@@ -1,32 +1,34 @@
-import {createId} from "@paralleldrive/cuid2";
-import {MinioClient} from "../adapters/minio";
-import {Stream} from "stream";
-import {ErrorCode} from "@/core/lib/errors";
+import { createId } from "@paralleldrive/cuid2";
+import { MinioClient } from "../adapters/minio";
+import { Stream } from "stream";
+import { ErrorCode } from "@/core/lib/errors";
+import { Logger } from "./logger";
 
 interface UploadOptions {
   filename?: string;
   bucket?: string;
 }
 
-export const AllowedDataType = [
-  "png",
-  "webp",
-  "jpg",
-  "jpeg",
-];
+export const AllowedDataType = ["png", "webp", "jpg", "jpeg"];
 
 export async function uploadImg(image: string, options?: UploadOptions) {
-  let dataType, imageData, filename, imageBuff = Buffer.from(image);
+  let dataType,
+    imageData,
+    filename,
+    imageBuff = Buffer.from(image);
 
   if (options?.bucket != "vault") {
     try {
-      dataType = image.substring("data:image/".length, image.indexOf(";base64"))
-      imageData = image.replace(/^data:image\/\w+;base64,/, "")
+      dataType = image.substring(
+        "data:image/".length,
+        image.indexOf(";base64")
+      );
+      imageData = image.replace(/^data:image\/\w+;base64,/, "");
     } catch (e) {
       throw new Error(ErrorCode.ErrImgInvalidDataURL);
     }
 
-    imageBuff = Buffer.from(imageData, "base64")
+    imageBuff = Buffer.from(imageData, "base64");
 
     if (!AllowedDataType.includes(dataType)) {
       throw new Error(ErrorCode.ErrImgInvalidImageType);
@@ -34,7 +36,7 @@ export async function uploadImg(image: string, options?: UploadOptions) {
   }
 
   const bucket = options?.bucket ?? "assets";
-  filename = (options?.filename ?? createId());
+  filename = options?.filename ?? createId();
   if (dataType) filename += "." + dataType;
 
   try {
@@ -46,6 +48,7 @@ export async function uploadImg(image: string, options?: UploadOptions) {
 
     return filename;
   } catch (e) {
+    Logger.error("lib", "upload image error", e);
     throw new Error(ErrorCode.ErrImgFailedUpload);
   }
 }
@@ -59,7 +62,7 @@ export async function deleteImg(imageUrl: string, bucket = "assets") {
   try {
     await MinioClient.removeObject(bucket, filename);
   } catch (e) {
-    console.error(e);
+    Logger.error("lib", "delete image error", e);
     throw new Error("Failed to delete image");
   }
 }
@@ -72,6 +75,7 @@ export async function getImg(
     const chunks: Uint8Array[] = [];
     MinioClient.getObject(bucket, imageUrl, (err: Error, stream: Stream) => {
       if (err) {
+        Logger.error("lib", "get image error", err);
         reject(err);
       }
       stream.on("data", (chunk) => chunks.push(chunk));

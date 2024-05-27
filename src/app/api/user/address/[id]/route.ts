@@ -1,15 +1,20 @@
-import {NextRequest} from "next/server";
-import {getToken} from "next-auth/jwt";
-import {z} from "zod";
-import {buildErr} from "@/core/lib/errors";
-import {Prisma} from "@prisma/client";
-import {buildRes, IdParam} from "@/core/lib/utils";
-import {getAddress, editAddress, deleteAddress} from "@/users/services/AddressService";
-import {AddressSchema} from "@/users/types";
+import { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { z } from "zod";
+import { buildErr } from "@/core/lib/errors";
+import { Prisma } from "@prisma/client";
+import { buildRes, IdParam } from "@/core/lib/utils";
+import {
+  getAddress,
+  editAddress,
+  deleteAddress,
+} from "@/users/services/AddressService";
+import { AddressSchema } from "@/users/types";
+import { Logger } from "@/core/lib/logger";
 
-export async function GET(req: NextRequest, {params}: IdParam) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   let address;
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -36,13 +41,14 @@ export async function GET(req: NextRequest, {params}: IdParam) {
       }
     }
 
+    Logger.error("address", "get address error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({data: address});
+  return buildRes({ data: address });
 }
 
-export async function PATCH(req: NextRequest, {params}: IdParam) {
+export async function PATCH(req: NextRequest, { params }: IdParam) {
   let body;
 
   try {
@@ -51,7 +57,7 @@ export async function PATCH(req: NextRequest, {params}: IdParam) {
     return buildErr("ErrValidation", 400);
   }
 
-  const token = await getToken({req});
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -83,14 +89,15 @@ export async function PATCH(req: NextRequest, {params}: IdParam) {
       }
     }
 
+    Logger.error("address", "update address error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "address updated successfully"});
+  return buildRes({ status: "address updated successfully" });
 }
 
-export async function DELETE(req: NextRequest, {params}: IdParam) {
-  const token = await getToken({req});
+export async function DELETE(req: NextRequest, { params }: IdParam) {
+  const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -117,8 +124,9 @@ export async function DELETE(req: NextRequest, {params}: IdParam) {
       }
     }
 
+    Logger.error("address", "delete address error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "address deleted successfully"});
+  return buildRes({ status: "address deleted successfully" });
 }
