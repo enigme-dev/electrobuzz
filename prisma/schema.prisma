@@ -71,8 +71,6 @@ model Address {
 
   userId          String
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  bookings        Booking[]
 }
 
 model Merchant {
@@ -130,15 +128,17 @@ model Booking {
   bookingPriceMax  Int?
   bookingDesc      String?
   bookingCreatedAt DateTime @default(now())
+  addressDetail    String   /// @encrypted
+  addressZipCode   String   /// @encrypted
+  addressCity      String
+  addressProvince  String
 
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  merchantId    String
-  merchant      Merchant @relation(fields: [merchantId], references: [merchantId])
-  addressId     String
-  address       Address  @relation(fields: [addressId], references: [addressId])
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  merchantId       String
+  merchant         Merchant @relation(fields: [merchantId], references: [merchantId])
 
-  review Review?
+  review           Review?
 }
 
 model Review {
