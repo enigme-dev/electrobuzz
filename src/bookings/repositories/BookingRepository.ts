@@ -33,11 +33,16 @@ export class BookingRepository extends BaseRepository {
   static findByMerchantId(merchantId: string, options?: SearchParams) {
     return this.db.$transaction([
       this.db.booking.findMany({
+        orderBy: [
+          {
+            bookingCreatedAt: "desc",
+          },
+        ],
         skip: options?.page,
         take: options?.perPage ?? PER_PAGE,
         where: {
           merchantId,
-          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
         },
         select: {
@@ -71,11 +76,16 @@ export class BookingRepository extends BaseRepository {
   static findByUserId(userId: string, options?: SearchParams) {
     return this.db.$transaction([
       this.db.booking.findMany({
+        orderBy: [
+          {
+            bookingCreatedAt: "desc",
+          },
+        ],
         skip: options?.page,
         take: options?.perPage ?? PER_PAGE,
         where: {
           userId,
-          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
         },
         select: {
