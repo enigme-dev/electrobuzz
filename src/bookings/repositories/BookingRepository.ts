@@ -123,6 +123,16 @@ export class BookingRepository extends BaseRepository {
     });
   }
 
+  static updateManyStatus(
+    status: BookStatusEnum,
+    where: Prisma.BookingWhereInput
+  ) {
+    return this.db.booking.updateMany({
+      data: { bookingStatus: status },
+      where,
+    });
+  }
+
   static updateMerchantBookingStatus(
     merchantId: string,
     bookingId: string,
