@@ -13,7 +13,8 @@ import { ReactNode } from "react";
 
 interface AlertDialogProps {
   dialogDescription: ReactNode;
-  dialogTrigger: ReactNode;
+  dialogTrigger?: ReactNode;
+  defaultOpen?: boolean;
   dialogTitle: string;
   alertDialogSubmitTitle: string;
   submitAction: Function;
@@ -27,9 +28,10 @@ export function AlertDialogComponent({
   alertDialogSubmitTitle,
   submitAction,
   ActionButtonClassName,
+  defaultOpen,
 }: AlertDialogProps) {
   return (
-    <AlertDialog>
+    <AlertDialog defaultOpen={defaultOpen}>
       <AlertDialogTrigger asChild>{dialogTrigger}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

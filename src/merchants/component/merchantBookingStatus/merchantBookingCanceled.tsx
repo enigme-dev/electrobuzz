@@ -1,9 +1,16 @@
+import { TGetMerchantBookingCanceled } from "@/bookings/types";
 import { Button } from "@/core/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const MerchantBookingCanceled = () => {
+interface MerchantBookingCanceledProps {
+  bookingDetailData: TGetMerchantBookingCanceled;
+}
+
+const MerchantBookingCanceled = ({
+  bookingDetailData,
+}: MerchantBookingCanceledProps) => {
   return (
     <div>
       {" "}
@@ -16,14 +23,23 @@ const MerchantBookingCanceled = () => {
           height={500}
         />
       </div>
-      <div className="grid place-content-center text-center gap-5">
-        <div>
-          <h1 className="pt-10 text-2xl font-bold">Maaf...</h1>
-          <p className="pt-2">Permintaan anda telah ditolak oleh Mitra</p>
-          <h1 className="pt-2 text-left text-md">Alasan:</h1>
-          {/* <p className="font-bold">{bookingDetailData}</p> */}
+      <div className="grid place-items-center gap-5 w-fit wrapper">
+        <h1 className=" text-2xl font-bold text-center">Maaf...</h1>
+        <p className="pt-2 text-center text-lg">
+          Permintaan anda telah ditolak oleh User
+        </p>
+        <div className="shadow-lg border-gray-100 border rounded-lg p-5 grid place-items-center">
+          <div className="space-y-2">
+            <p className="text-sm sm:text-xl text-center">Alasan Penolakan:</p>
+            <p className=" text-sm sm:text-lg font-semibold text-center w-[60vw] break-words overflow-auto">
+              {bookingDetailData.bookingReason}{" "}
+            </p>
+          </div>
         </div>
-        <Link href={"/user/my-bookings"}>
+        <Link
+          className="flex justify-center"
+          href={"/merchant/dashboard/transaction"}
+        >
           <Button>Kembali</Button>
         </Link>
       </div>

@@ -80,7 +80,7 @@ const BookingPage = () => {
   // } = useInfiniteQuery(
   //   ["projects"],
   //   async ({ pageParam = 0 }) => {
-  //     const res = await axios.get("/api/projects?cursor=" + pageParam);
+  //     const res = await axios.get(`/api/user/booking`);
   //     return res.data;
   //   },
   //   {
@@ -141,6 +141,7 @@ const BookingPage = () => {
                     : ""
                 }
                 status={value.bookingStatus}
+                merchantId={value.merchant.merchantId}
               />
             </div>
           ))}

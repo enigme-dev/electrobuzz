@@ -24,6 +24,7 @@ interface BookingCardProps {
   bookImgAlt?: string;
   bookingComplaintDesc?: string;
   estimatePrice?: { estimatePriceMin: string; estimatePriceMax: string };
+  merchantId?: string;
 }
 
 const BookingCard = ({
@@ -39,9 +40,15 @@ const BookingCard = ({
   isMerchant,
   bookingComplaintDesc,
   estimatePrice,
+  merchantId,
 }: BookingCardProps) => {
   const router = useRouter();
-  console.log(status);
+  const isEligibleForBookingAgain =
+    status === BookStatusEnum.Enum.done ||
+    status === BookStatusEnum.Enum.expired ||
+    status === BookStatusEnum.Enum.rejected ||
+    status === BookStatusEnum.Enum.canceled;
+  console.log(merchantId);
   return (
     <div>
       {" "}
@@ -57,7 +64,7 @@ const BookingCard = ({
           <div className="flex justify-start items-center gap-4 ">
             <div>
               <Image
-                className="aspect-square w-[40px] h-[40px] sm:w-[70px] sm:h-[70px] rounded-full flex justify-center items-center"
+                className="object-cover w-[40px] h-[40px] sm:w-[70px] sm:h-[70px] rounded-full flex justify-center items-center"
                 src={imgSource}
                 alt={imgAlt}
                 width={100}
@@ -81,7 +88,7 @@ const BookingCard = ({
             <Image
               src={bookingComplaintImg ? bookingComplaintImg : ""}
               alt={bookImgAlt ? bookImgAlt : ""}
-              className="w-[40px] h-[40px] sm:w-[70px] sm:h-[70px] rounded-lg"
+              className="object-cover w-[40px] h-[40px] sm:w-[70px] sm:h-[70px] rounded-lg"
               width={100}
               height={100}
             />
@@ -109,8 +116,8 @@ const BookingCard = ({
             <div className="z-10">
               {isMerchant ? (
                 <></>
-              ) : (
-                <Link href={`/merchant/${orderId}/buat-janji`}>
+              ) : isEligibleForBookingAgain ? (
+                <Link href={`/merchant/${merchantId}/buat-janji`}>
                   <Button
                     variant={"outline"}
                     className="text-xs px-3 py-1"
@@ -119,6 +126,8 @@ const BookingCard = ({
                     Booking lagi
                   </Button>
                 </Link>
+              ) : (
+                <></>
               )}
             </div>
           </div>

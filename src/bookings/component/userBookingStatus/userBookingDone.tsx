@@ -1,40 +1,39 @@
-import { TGetMerchantBookingRejected } from "@/bookings/types";
+import {
+  TBookingReasonSchema,
+  TGetMerchantBookingInProgress,
+  TGetUserBooking,
+  TGetUserBookingRejected,
+} from "@/bookings/types";
+import { Button } from "@/core/components/ui/button";
 import { format } from "date-fns";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
-interface MerchantBookingRejectedProps {
-  bookingDetailData: TGetMerchantBookingRejected;
+
+interface UserBookingDoneProps {
+  bookingDetailData: TGetUserBooking;
 }
-const MerchantBookingRejected = ({
-  bookingDetailData,
-}: MerchantBookingRejectedProps) => {
+
+const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
   return (
     <div>
       <div>
         {" "}
-        <div className="flex items-center justify-center ">
+        <div className="flex items-center justify-center pt-10">
           <Image
-            src={"/Discarded idea-cuate.svg"}
-            width={500}
-            height={500}
-            alt={"Discarded idea-cuate"}
+            src={"/done-icon.svg"}
+            width={100}
+            height={100}
+            alt={"done-icon"}
           />
         </div>
-        <div className="grid gap-5 pt-10">
-          <div className="grid place-items-center">
-            <h1 className=" text-md text-white sm:text-2xl font-bold rounded-lg bg-red-500 p-3 w-fit ">
-              Kamu sudah menolak orderan ini...
+        <div className="grid gap-5 pt-10 wrapper">
+          <div className="grid place-items-center ">
+            <h1 className=" text-md  sm:text-2xl font-bold p-3  ">
+              Booking ini telah selesai...
             </h1>{" "}
-            <p className="text-lg pt-2 sm:text-md grid place-items-center">
-              <span className="font-semibold text-sm sm:text-lg">
-                Dengan alasan:{" "}
-              </span>
-              <p className="max-w-screen-lg text-wrap break-words text-sm sm:text-lg">
-                {bookingDetailData.bookingReason}
-              </p>
-            </p>
           </div>
-          <div className="shadow-lg border  p-5 rounded-lg space-y-5">
+          <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
             <h1 className="font-semibold text-md sm:text-xl text-center">
               Keluhan User
             </h1>
@@ -67,11 +66,23 @@ const MerchantBookingRejected = ({
                 {format(bookingDetailData.bookingSchedule.toString(), "PPP")}
               </p>
             </div>
+            <div>
+              <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
+              <p className=" text-left text-sm sm:text-lg font-semibold">
+                {bookingDetailData.addressDetail},{" "}
+                {bookingDetailData.addressCity},{" "}
+                {bookingDetailData.addressProvince},{" "}
+                {bookingDetailData.addressZipCode}
+              </p>
+            </div>
           </div>
+          <Link className="flex justify-center" href={"/user/my-bookings"}>
+            <Button variant={"outline"}>Kembali</Button>
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default MerchantBookingRejected;
+export default UserBookingDone;

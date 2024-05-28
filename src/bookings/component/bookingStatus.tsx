@@ -18,7 +18,7 @@ const BookingStatus = ({ status }: Props) => {
           </div>
         )}
         {status === "canceled" && (
-          <div className=" rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-red-500">
+          <div className=" rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-red-700/90">
             {" "}
             <p className="text-xs sm:text-md text-white">Canceled</p>
           </div>
@@ -35,8 +35,14 @@ const BookingStatus = ({ status }: Props) => {
             <p className="text-xs sm:text-md text-white">Requested</p>
           </div>
         )}
+        {status === "in_progress_accepted" && (
+          <div className="rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-blue-400">
+            {" "}
+            <p className="text-xs sm:text-md text-white ">In Progress</p>
+          </div>
+        )}
         {status === "expired" && (
-          <div className=" rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-yellow-500">
+          <div className=" rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-gray-300">
             {" "}
             <p className="text-xs sm:text-md text-white">Expired</p>
           </div>

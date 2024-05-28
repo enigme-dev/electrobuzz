@@ -73,7 +73,7 @@ const MerchantDetailPage = () => {
             alt={merchantDetails ? merchantDetails?.merchantName : ""}
             width={300}
             height={300}
-            className="object-cover w-full h-[40vh] brightness-50 "
+            className="object-cover w-full h-[40vh] brightness-50 object-center"
           />
           <div className="absolute grid gap-3 p-5">
             <h1 className="text-xl font-bold sm:text-3xl text-white">

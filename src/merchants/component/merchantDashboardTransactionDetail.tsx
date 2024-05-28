@@ -8,6 +8,7 @@ import {
   TBookingModel,
   TBookingReasonSchema,
   TGetMerchantBookingPending,
+  TGetMerchantBookings,
 } from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
@@ -55,7 +56,7 @@ const MerchantDashboardTransactionDetail = () => {
     queryKey: ["getBookingDetailData", bookingId],
     queryFn: async () =>
       await axios.get(`/api/merchant/booking/${bookingId}`).then((response) => {
-        return response.data.data;
+        return response.data.data as any;
       }),
     enabled: !!bookingId,
   });
@@ -70,15 +71,16 @@ const MerchantDashboardTransactionDetail = () => {
       {bookingDetailData?.bookingStatus == "pending" && (
         <MerchantBookingPending bookingDetailData={bookingDetailData} />
       )}
-      {/* {bookingDetailData?.bookingStatus == "canceled" && (
+      {bookingDetailData?.bookingStatus == "canceled" && (
         <MerchantBookingCanceled bookingDetailData={bookingDetailData} />
-      )} */}
+      )}
       {bookingDetailData?.bookingStatus == "rejected" && (
         <MerchantBookingRejected bookingDetailData={bookingDetailData} />
       )}
-      {bookingDetailData?.bookingStatus == "accepted" && (
-        <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
-      )}
+      {bookingDetailData?.bookingStatus == "accepted" ||
+        (bookingDetailData?.bookingStatus == "in_progress_requested" && (
+          <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
+        ))}
       {/* {bookingDetailData?.bookingStatus == "in_progress_requested" && (
         <MerchantBookingInProgressRequest
           bookingInProgressRequestData={bookingDetailData}

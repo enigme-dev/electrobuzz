@@ -30,7 +30,7 @@ const UserBookingPending = ({ bookingDetailData }: UserBookingPendingProps) => {
     useMutation({
       mutationFn: (values: TBookingReasonSchema) =>
         axios.patch(
-          `/api/merchant/booking/${bookingDetailData.bookingId}/edit/reject`,
+          `/api/user/booking/${bookingDetailData.bookingId}/edit/cancel`,
           values
         ),
       onSuccess: () => {
@@ -83,6 +83,14 @@ const UserBookingPending = ({ bookingDetailData }: UserBookingPendingProps) => {
           <h1 className="text-left text-sm sm:text-xl">Tanggal Janji:</h1>
           <p className=" text-sm sm:text-lg font-semibold text-left">
             {format(bookingDetailData.bookingSchedule, "PPP")}
+          </p>
+        </div>
+        <div>
+          <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
+          <p className=" text-left text-sm sm:text-lg font-semibold">
+            {bookingDetailData.addressDetail}, {bookingDetailData.addressCity},{" "}
+            {bookingDetailData.addressProvince},{" "}
+            {bookingDetailData.addressZipCode}
           </p>
         </div>
       </div>

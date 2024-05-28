@@ -18,9 +18,9 @@ export default function Home() {
       <section className="wrapper pt-10 sm:pt-20">
         <Category />
       </section>
-      <section className="wrapper pt-10 sm:pt-20">
+      {/* <section className="wrapper pt-10 sm:pt-20">
         <NearestMerchants />
-      </section>
+      </section> */}
     </main>
   );
 }
