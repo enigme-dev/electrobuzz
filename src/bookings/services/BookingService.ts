@@ -243,10 +243,10 @@ export async function setStatusInProgressRequested(
 }
 
 export async function setStatusInProgressAccepted(
-  merchantId: string,
+  userId: string,
   bookingId: string
 ) {
-  const booking = await getMerchantBooking(merchantId, bookingId);
+  const booking = await getUserBooking(userId, bookingId);
   if (!dayjs().isSame(booking.bookingSchedule, "date")) {
     throw new Error(ErrorCode.ErrBookWrongSchedule);
   }
@@ -255,8 +255,8 @@ export async function setStatusInProgressAccepted(
     bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
   };
 
-  await BookingRepository.updateMerchantBookingStatus(
-    merchantId,
+  await BookingRepository.updateUserBookingStatus(
+    userId,
     bookingId,
     [BookStatusEnum.Enum.in_progress_requested],
     data
