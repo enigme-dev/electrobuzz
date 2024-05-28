@@ -41,8 +41,9 @@ import MerchantBookingCanceled from "./merchantBookingStatus/merchantBookingCanc
 import MerchantBookingAccepted from "./merchantBookingStatus/merchantBookingAccepted";
 import MerchantBookingDone from "./merchantBookingStatus/merchantBookingDone";
 import MerchantBookingExpired from "./merchantBookingStatus/merchantBookingExpired";
-import MerchantBookingInProgressAccepted from "./merchantBookingStatus/merchantBookingInProgressAccepted";
+import MerchantBookingInProgressAccepted from "./merchantBookingStatus/merchantBookingInProgress";
 import MerchantBookingRejected from "./merchantBookingStatus/merchantBookingRejected";
+import MerchantBookingInProgress from "./merchantBookingStatus/merchantBookingInProgress";
 
 const MerchantDashboardTransactionDetail = () => {
   const { data: session } = useSession();
@@ -76,12 +77,12 @@ const MerchantDashboardTransactionDetail = () => {
       {bookingDetailData?.bookingStatus == "rejected" && (
         <MerchantBookingRejected bookingDetailData={bookingDetailData} />
       )}
-      {bookingDetailData?.bookingStatus == "accepted" ||
-        (bookingDetailData?.bookingStatus == "in_progress_requested" && (
-          <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
-        ))}
-      {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
+      {(bookingDetailData?.bookingStatus == "accepted" ||
+        bookingDetailData?.bookingStatus == "in_progress_requested") && (
         <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
+      )}
+      {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
+        <MerchantBookingInProgress bookingDetailData={bookingDetailData} />
       )}
       {bookingDetailData?.bookingStatus == "done" && (
         <MerchantBookingDone bookingDetailData={bookingDetailData} />

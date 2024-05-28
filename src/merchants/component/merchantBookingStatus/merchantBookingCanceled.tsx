@@ -27,7 +27,7 @@ const MerchantBookingCanceled = ({
       <div className="grid  gap-5 w-fit wrapper">
         <h1 className=" text-2xl font-bold text-center">Maaf...</h1>
         <p className="pt-2 text-center text-lg">
-          Permintaan anda telah ditolak oleh User
+          Permintaan anda telah dibatalkan oleh pengguna
         </p>
 
         <div className="space-y-2">
@@ -39,7 +39,7 @@ const MerchantBookingCanceled = ({
 
         <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
-            Keluhan User
+            Keluhan Pengguna
           </h1>
           <div>
             <h2 className="pt-2 text-sm sm:text-xl text-center">

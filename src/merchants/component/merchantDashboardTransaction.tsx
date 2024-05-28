@@ -67,7 +67,7 @@ const MerchantDashboardTransaction = () => {
   }
   return (
     <main className="px-4 pt-10 w-full">
-      <h1 className="text-xl sm:text-2xl font-bold pb-10">Transactions</h1>
+      <h1 className="text-xl sm:text-2xl font-bold pb-5">Transaksi</h1>
       <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[25vw]">
         <CalendarPicker calendarTitle="Pilih Tanggal" />
         <SelectOption
@@ -76,7 +76,7 @@ const MerchantDashboardTransaction = () => {
           placeholder="Pilih Status"
         />
       </div>
-      <div className=" grid gap-5 max-h-[70vh] overflow-auto no-scrollbar pb-20 sm:pb-5">
+      <div className=" grid gap-5 max-h-[60vh] sm:max-h-[76vh] overflow-auto no-scrollbar pb-20 sm:pb-5">
         {bookingDataAsMerchant !== undefined &&
           bookingDataAsMerchant.map((value, index) => (
             <div key={index}>

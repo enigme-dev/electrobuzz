@@ -79,7 +79,7 @@ const BookingCard = ({
               </div>
             </div>
           </div>
-          <div className="pr-4">
+          <div>
             <BookingStatus status={status ? status : undefined} />
           </div>
         </div>

@@ -21,7 +21,7 @@ interface UserBookingAcceptProps {
   bookingDetailData: TGetMerchantBookingInProgress;
 }
 
-const MerchantBookingInProgressAccepted = ({
+const MerchantBookingInProgress = ({
   bookingDetailData,
 }: UserBookingAcceptProps) => {
   return (
@@ -48,7 +48,7 @@ const MerchantBookingInProgressAccepted = ({
 
         <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
-            Data Merchant
+            Data User
           </h2>
           <div>
             <p className="text-sm sm:text-xl text-left">Nama:</p>
@@ -65,7 +65,7 @@ const MerchantBookingInProgressAccepted = ({
         </div>
         <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
-            Keluhan User
+            Keluhan Pengguna
           </h1>
           <div>
             <h2 className="pt-2 text-center text-sm sm:text-xl">
@@ -104,7 +104,7 @@ const MerchantBookingInProgressAccepted = ({
             </p>
           </div>
         </div>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl  text-center">
             Respon Merchant
           </h2>
@@ -127,4 +127,4 @@ const MerchantBookingInProgressAccepted = ({
   );
 };
 
-export default MerchantBookingInProgressAccepted;
+export default MerchantBookingInProgress;
