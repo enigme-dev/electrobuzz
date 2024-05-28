@@ -17,6 +17,7 @@ import {
   TCreateBookingSchema,
   GetUserBookingPending,
   GetUserBookingRejected,
+  GetMerchantBookingExpired,
 } from "@/bookings/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { BookingRepository } from "@/bookings/repositories/BookingRepository";
@@ -87,6 +88,36 @@ export async function addBooking(
   return result;
 }
 
+export async function flagDoneInProgressBooking() {
+  const yesterday = dayjs().subtract(1, "day").toDate();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.done, {
+    AND: {
+      bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
+      bookingSchedule: { lte: yesterday },
+    },
+  });
+}
+
+export async function flagExpiredAcceptedBooking() {
+  const today = new Date();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
+    AND: {
+      bookingStatus: BookStatusEnum.Enum.accepted,
+      bookingSchedule: { lte: today },
+    },
+  });
+}
+
+export async function flagExpiredPendingBooking() {
+  const twoDaysAgo = dayjs().subtract(2, "days").toDate();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
+    AND: {
+      bookingStatus: BookStatusEnum.Enum.pending,
+      bookingCreatedAt: { lte: twoDaysAgo },
+    },
+  });
+}
+
 export async function getMerchantBooking(
   merchantId: string,
   bookingId: string
@@ -103,11 +134,14 @@ export async function getMerchantBooking(
       return GetMerchantBookingRejected.parse(booking);
     case BookStatusEnum.Enum.canceled:
       return GetMerchantBookingCanceled.parse(booking);
-    case BookStatusEnum.Enum.in_progress_requested ||
-      BookStatusEnum.Enum.in_progress_accepted:
+    case BookStatusEnum.Enum.in_progress_requested:
+      return GetMerchantBookingInProgress.parse(booking);
+    case BookStatusEnum.Enum.in_progress_accepted:
       return GetMerchantBookingInProgress.parse(booking);
     case BookStatusEnum.Enum.done:
       return GetMerchantBookingDone.parse(booking);
+    case BookStatusEnum.Enum.expired:
+      return GetMerchantBookingExpired.parse(booking);
     default:
       throw new Error(ErrorCode.ErrNotFound);
   }
