@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const token = await getToken({ req });
 
   const searchParams = req.nextUrl.searchParams;
-  const { page, skip, startDate, endDate } = parseParams(searchParams);
+  const { page, skip, startDate, endDate, status } = parseParams(searchParams);
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       page: skip,
       startDate,
       endDate,
+      status,
     });
   } catch (e) {
     Logger.error("booking", "get user booking list error", e);
