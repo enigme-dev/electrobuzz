@@ -51,6 +51,7 @@ export class BookingRepository extends BaseRepository {
           bookingCreatedAt: true,
           user: {
             select: {
+              id: true,
               name: true,
               image: true,
             },
@@ -88,6 +89,7 @@ export class BookingRepository extends BaseRepository {
           bookingCreatedAt: true,
           merchant: {
             select: {
+              merchantId: true,
               merchantName: true,
               merchantPhotoUrl: true,
             },

@@ -56,7 +56,11 @@ export const GetMerchantBookings = z
     bookingPriceMax: z.number().nullish(),
     bookingSchedule: z.date(),
     bookingCreatedAt: z.date(),
-    user: z.object({ name: z.string(), image: z.string() }),
+    user: z.object({
+      id: z.string().cuid(),
+      name: z.string(),
+      image: z.string(),
+    }),
   })
   .array();
 
