@@ -33,7 +33,7 @@ const UserBookingExpired = ({ bookingDetailData }: UserBookingExpiredProps) => {
               Booking ini telah expired...
             </h1>{" "}
           </div>
-          <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+          <div className="shadow-lg border p-5 rounded-lg space-y-5">
             <h1 className="font-semibold text-md sm:text-xl text-center">
               Keluhan User
             </h1>

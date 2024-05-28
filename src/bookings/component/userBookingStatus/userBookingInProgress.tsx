@@ -100,7 +100,7 @@ const UserBookingInProgress = ({
           konfirmasi lebih lanjut melalui nomor dibawah ini.
         </p>
 
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
             Data Merchant
           </h2>
@@ -117,7 +117,7 @@ const UserBookingInProgress = ({
             </p>
           </div>
         </div>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
             Keluhan User
           </h1>

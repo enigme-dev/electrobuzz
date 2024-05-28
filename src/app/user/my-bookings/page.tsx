@@ -102,7 +102,7 @@ const BookingPage = () => {
   }
 
   return (
-    <main className="wrapper px-4 pt-10 pb-20">
+    <main className="wrapper px-4 pt-10">
       <h1 className="text-xl sm:text-2xl font-bold mb-5">Booking History</h1>
       <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[25vw]">
         <CalendarPicker calendarTitle="Semua Tanggal" />
@@ -112,7 +112,7 @@ const BookingPage = () => {
           placeholder="Pilih Status"
         />
       </div>
-      <div className="relative grid gap-5 max-h-[70vh] overflow-auto no-scrollbar z-0">
+      <div className="relative grid gap-5 max-h-[60vh] sm:max-h-[70vh] overflow-auto no-scrollbar pb-24">
         {bookingData !== undefined &&
           bookingData.map((value, index) => (
             <div key={index}>

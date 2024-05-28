@@ -39,7 +39,6 @@ import { useForm } from "react-hook-form";
 import MerchantBookingPending from "./merchantBookingStatus/merchantBookingPending";
 import MerchantBookingCanceled from "./merchantBookingStatus/merchantBookingCanceled";
 import MerchantBookingAccepted from "./merchantBookingStatus/merchantBookingAccepted";
-import MerchantBookingInProgressRequest from "./merchantBookingStatus/merchantBookingInProgressRequest";
 import MerchantBookingDone from "./merchantBookingStatus/merchantBookingDone";
 import MerchantBookingExpired from "./merchantBookingStatus/merchantBookingExpired";
 import MerchantBookingInProgressAccepted from "./merchantBookingStatus/merchantBookingInProgressAccepted";
@@ -81,22 +80,15 @@ const MerchantDashboardTransactionDetail = () => {
         (bookingDetailData?.bookingStatus == "in_progress_requested" && (
           <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
         ))}
-      {/* {bookingDetailData?.bookingStatus == "in_progress_requested" && (
-        <MerchantBookingInProgressRequest
-          bookingInProgressRequestData={bookingDetailData}
-        />
-      )}
       {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
-        <MerchantBookingInProgressAccepted
-          bookingInProgressAcceptedData={bookingDetailData}
-        />
+        <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
       )}
       {bookingDetailData?.bookingStatus == "done" && (
-        <MerchantBookingDone bookingDoneData={bookingDetailData} />
+        <MerchantBookingDone bookingDetailData={bookingDetailData} />
       )}
       {bookingDetailData?.bookingStatus == "expired" && (
-        <MerchantBookingExpired bookingExpiredData={bookingDetailData} />
-      )} */}
+        <MerchantBookingExpired bookingDetailData={bookingDetailData} />
+      )}
     </main>
   );
 };
