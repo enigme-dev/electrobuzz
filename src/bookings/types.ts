@@ -120,6 +120,14 @@ export type TGetMerchantBookingCanceled = z.infer<
   typeof GetMerchantBookingCanceled
 >;
 
+export const GetMerchantBookingExpired = GetMerchantBookingRejected.omit({
+  bookingReason: true,
+});
+
+export type TGetMerchantBookingExpired = z.infer<
+  typeof GetMerchantBookingExpired
+>;
+
 export const GetMerchantBookingInProgress = GetMerchantBookingAccepted;
 
 export type TGetMerchantBookingInProgress = z.infer<
