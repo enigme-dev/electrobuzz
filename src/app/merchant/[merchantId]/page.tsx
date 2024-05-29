@@ -57,8 +57,6 @@ const MerchantDetailPage = () => {
     enabled: !!merchantId,
   });
 
-  console.log(merchantDetails?.merchantAlbums);
-
   if (getMerchantDetailsloading) {
     return <Loader />;
   }
