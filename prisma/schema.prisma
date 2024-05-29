@@ -83,8 +83,8 @@ model Merchant {
   merchantLat       Float
   merchantLong      Float
   merchantCategory  String[]
-  merchantRating    Float?
-  merchantReviewCt  Int?
+  merchantRating    Float             @default(0)
+  merchantReviewCt  Int               @default(0)
   merchantVerified  Boolean           @default(false)
   merchantAvailable Boolean?
   merchantCreatedAt DateTime          @default(now())
