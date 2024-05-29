@@ -49,6 +49,8 @@ export class MerchantRepository extends BaseRepository {
         lat: data.merchantLat,
         lng: data.merchantLong,
       },
+      merchantRating: data.merchantRating,
+      merchantReviewCt: data.merchantReviewCt,
     });
   }
 
