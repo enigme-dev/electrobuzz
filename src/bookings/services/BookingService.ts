@@ -132,7 +132,17 @@ export async function getMerchantBooking(
   merchantId: string,
   bookingId: string
 ) {
-  const booking = await BookingRepository.findOne(bookingId, { user: true });
+  const booking = await BookingRepository.findOne(bookingId, {
+    user: true,
+    review: {
+      select: {
+        reviewId: true,
+        reviewBody: true,
+        reviewStars: true,
+        reviewCreatedAt: true,
+      },
+    },
+  });
   if (booking.merchantId !== merchantId) throw new Error(ErrorCode.ErrNotFound);
 
   switch (booking.bookingStatus) {
@@ -174,9 +184,18 @@ export async function getUserBooking(userId: string, bookingId: string) {
   const booking = await BookingRepository.findOne(bookingId, {
     merchant: {
       select: {
+        merchantId: true,
         merchantName: true,
         merchantPhotoUrl: true,
         user: { select: { phone: true } },
+      },
+    },
+    review: {
+      select: {
+        reviewId: true,
+        reviewBody: true,
+        reviewStars: true,
+        reviewCreatedAt: true,
       },
     },
   });

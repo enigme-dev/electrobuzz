@@ -142,16 +142,17 @@ model Booking {
 }
 
 model Review {
-  reviewId    String      @id @default(cuid())
-  reviewStars Float
-  reviewBody  String
+  reviewId        String   @id @default(cuid())
+  reviewStars     Float
+  reviewBody      String
+  reviewCreatedAt DateTime @default(now())
 
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
-  merchantId  String
-  merchant    Merchant    @relation(fields: [merchantId], references: [merchantId])
-  bookingId   String      @unique
-  booking     Booking     @relation(fields: [bookingId], references: [bookingId])
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  merchantId      String
+  merchant        Merchant @relation(fields: [merchantId], references: [merchantId])
+  bookingId       String   @unique
+  booking         Booking  @relation(fields: [bookingId], references: [bookingId])
 }
 
 model Verification {
