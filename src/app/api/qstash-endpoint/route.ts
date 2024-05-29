@@ -5,6 +5,7 @@ import { Logger } from "@/core/lib/logger";
 import {
   flagDoneInProgressBooking,
   flagExpiredAcceptedBooking,
+  flagExpiredInProgressRequestedBooking,
   flagExpiredPendingBooking,
 } from "@/bookings/services/BookingService";
 
@@ -13,6 +14,7 @@ async function handler(_req: NextRequest) {
     deleteExpiredOTP();
     flagDoneInProgressBooking();
     flagExpiredAcceptedBooking();
+    flagExpiredInProgressRequestedBooking();
     flagExpiredPendingBooking();
   } catch (e) {
     Logger.error("cron", "qstash cron handler error", e);
