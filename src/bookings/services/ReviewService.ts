@@ -8,6 +8,7 @@ import {
   TReviewModel,
 } from "../types";
 import { getUserBooking } from "./BookingService";
+import { addMerchantIndex } from "@/merchants/services/MerchantService";
 
 export async function createReview(
   bookingId: string,
@@ -32,7 +33,8 @@ export async function createReview(
     userId,
     merchantId,
   };
-  await ReviewRepository.create(data);
+  const merchant = await ReviewRepository.create(data);
+  await addMerchantIndex(merchant);
 }
 
 export async function getMerchantReviews(

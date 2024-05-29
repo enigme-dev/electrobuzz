@@ -4,14 +4,31 @@ import { PER_PAGE, SearchParams } from "@/core/lib/utils";
 
 export class ReviewRepository extends BaseRepository {
   static create(data: TReviewModel) {
-    return this.db.review.create({
-      data: {
-        reviewBody: data.reviewBody,
-        reviewStars: data.reviewStars,
-        booking: { connect: { bookingId: data.bookingId } },
-        merchant: { connect: { merchantId: data.merchantId } },
-        user: { connect: { id: data.userId } },
-      },
+    return this.db.$transaction(async (tx) => {
+      await tx.review.create({
+        data: {
+          reviewBody: data.reviewBody,
+          reviewStars: data.reviewStars,
+          booking: { connect: { bookingId: data.bookingId } },
+          merchant: { connect: { merchantId: data.merchantId } },
+          user: { connect: { id: data.userId } },
+        },
+      });
+
+      const starsAvg = await tx.review.aggregate({
+        where: { merchantId: data.merchantId },
+        _avg: { reviewStars: true },
+      });
+
+      const merchant = await tx.merchant.update({
+        where: { merchantId: data.merchantId },
+        data: {
+          merchantReviewCt: { increment: 1 },
+          merchantRating: starsAvg._avg.reviewStars ?? 0,
+        },
+      });
+
+      return merchant;
     });
   }
 
