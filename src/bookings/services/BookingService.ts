@@ -92,8 +92,8 @@ export async function flagDoneInProgressBooking() {
   const yesterday = dayjs().subtract(1, "day").toDate();
   await BookingRepository.updateManyStatus(BookStatusEnum.Enum.done, {
     AND: {
-      bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
       bookingSchedule: { lte: yesterday },
+      bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
     },
   });
 }
@@ -102,8 +102,18 @@ export async function flagExpiredAcceptedBooking() {
   const today = new Date();
   await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
     AND: {
-      bookingStatus: BookStatusEnum.Enum.accepted,
       bookingSchedule: { lte: today },
+      bookingStatus: BookStatusEnum.Enum.accepted,
+    },
+  });
+}
+
+export async function flagExpiredInProgressRequestedBooking() {
+  const yesterday = dayjs().subtract(1, "day").toDate();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
+    AND: {
+      bookingSchedule: { lte: yesterday },
+      bookingStatus: BookStatusEnum.Enum.in_progress_requested,
     },
   });
 }
@@ -112,8 +122,8 @@ export async function flagExpiredPendingBooking() {
   const twoDaysAgo = dayjs().subtract(2, "days").toDate();
   await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
     AND: {
-      bookingStatus: BookStatusEnum.Enum.pending,
       bookingCreatedAt: { lte: twoDaysAgo },
+      bookingStatus: BookStatusEnum.Enum.pending,
     },
   });
 }
