@@ -1,13 +1,9 @@
+import { PusherClient } from "@/core/adapters/pusher";
 import { buildErr } from "@/core/lib/errors";
+import { PusherAuthSchema } from "@/notifications/types";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
-import Pusher from "pusher";
 import { z } from "zod";
-
-const PusherAuthSchema = z.object({
-  socketId: z.string(),
-  channelName: z.string(),
-});
 
 export async function POST(req: NextRequest) {
   let body;
@@ -19,14 +15,6 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     return buildErr("ErrValidation", 400);
   }
-
-  const pusher = new Pusher({
-    appId: process.env.PUSHER_APP_ID as string,
-    key: process.env.NEXT_PUBLIC_PUSHER_KEY as string,
-    secret: process.env.PUSHER_SECRET as string,
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
-    useTLS: true,
-  });
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -46,7 +34,7 @@ export async function POST(req: NextRequest) {
     return buildErr("ErrForbidden", 403);
   }
 
-  const response = pusher.authorizeChannel(
+  const response = PusherClient.authorizeChannel(
     input.data.socketId,
     input.data.channelName
   );

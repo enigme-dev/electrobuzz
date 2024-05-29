@@ -52,6 +52,7 @@ model User {
   reviews       Review[]
   accounts      Account[]
   sessions      Session[]
+  notifications Notification[]
 }
 
 model VerificationToken {
@@ -159,4 +160,19 @@ model Verification {
   verifId   String   @id
   code      String
   createdAt DateTime @default(now())
+}
+
+model Notification {
+  notifId          String   @id @default(cuid())
+  notifService     String
+  notifTitle       String
+  notifLevel       String
+  notifMessage     String?
+  notifPhotoUrl    String?
+  notifActionTitle String?
+  notifActionUrl   String?
+  notifCreatedAt   DateTime @default(now())
+
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
