@@ -44,6 +44,13 @@ export async function getMerchantReviews(
   return await ReviewRepository.findMerchantReviews(merchantId, options);
 }
 
+export async function getMerchantReviewsDetail(
+  merchantId: string,
+  options?: SearchParams
+) {
+  return await ReviewRepository.findMerchantReviewsDetail(merchantId, options);
+}
+
 export async function getUserReviews(userId: string, options?: SearchParams) {
   return await ReviewRepository.findUserReviews(userId, options);
 }
