@@ -18,15 +18,15 @@ export async function GET(req: NextRequest) {
   const { page, skip } = parseParams(searchParams);
 
   try {
-    merchants = Cache.get(`merchants-${page}`);
-    merchantsCt = Cache.get("merchantsCt");
+    merchants = Cache.get(`merchants/${page}`);
+    merchantsCt = Cache.get<number>("merchantsCt");
 
     if (merchants && merchantsCt) {
-      return buildRes({ data: merchants, page, total: merchantsCt as number });
+      return buildRes({ data: merchants, page, total: merchantsCt });
     }
 
     [merchants, merchantsCt] = await getMerchants({ page: skip });
-    Cache.set(`merchants-${page}`, merchants);
+    Cache.set(`merchants/${page}`, merchants);
     Cache.set("merchantsCt", merchantsCt);
     return buildRes({ data: merchants, page, total: merchantsCt });
   } catch (e) {

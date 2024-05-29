@@ -1,5 +1,4 @@
 import { SearchParams } from "@/core/lib/utils";
-import { BookingRepository } from "../repositories/BookingRepository";
 import { ReviewRepository } from "../repositories/ReviewRepository";
 import {
   BookStatusEnum,
@@ -9,6 +8,7 @@ import {
 } from "../types";
 import { getUserBooking } from "./BookingService";
 import { addMerchantIndex } from "@/merchants/services/MerchantService";
+import { Cache } from "@/core/lib/cache";
 
 export async function createReview(
   bookingId: string,
@@ -35,6 +35,9 @@ export async function createReview(
   };
   const merchant = await ReviewRepository.create(data);
   await addMerchantIndex(merchant);
+
+  // delete cached merchant reviews
+  Cache.deleteWithPrefix(`merchant_reviews/${merchant.merchantId}`);
 }
 
 export async function getMerchantReviews(

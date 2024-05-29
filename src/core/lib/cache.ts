@@ -15,11 +15,18 @@ export class Cache {
     Cache.init().set(key, val, ttl);
   }
 
-  public static get(key: string) {
-    return Cache.init().get(key);
+  public static get<T>(key: string): T | undefined {
+    return Cache.init().get<T>(key);
   }
 
   public static delete(key: string) {
     Cache.init().del(key);
+  }
+
+  public static deleteWithPrefix(prefix: string) {
+    const keys = Cache.init()
+      .keys()
+      .filter((key) => key.startsWith(prefix));
+    Cache.init().del(keys);
   }
 }
