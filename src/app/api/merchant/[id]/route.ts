@@ -1,3 +1,4 @@
+import { Cache } from "@/core/lib/cache";
 import { buildErr, ErrorCode } from "@/core/lib/errors";
 import { Logger } from "@/core/lib/logger";
 import { buildRes, IdParam } from "@/core/lib/utils";
@@ -12,13 +13,20 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 export async function GET(req: NextRequest, { params }: IdParam) {
+  let merchant;
   const merchantId = z.string().cuid().safeParse(params.id);
   if (!merchantId.success) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
   }
 
   try {
-    const merchant = await getMerchant(merchantId.data);
+    merchant = Cache.get(`merchant/${merchantId.data}`);
+    if (merchant) {
+      return buildRes({ data: merchant });
+    }
+
+    merchant = await getMerchant(merchantId.data);
+    Cache.set(`merchant/${merchantId.data}`, merchant);
     return buildRes({ data: merchant });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
