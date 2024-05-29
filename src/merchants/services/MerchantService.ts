@@ -66,12 +66,7 @@ export async function registerMerchant(
       images.push(data.merchantIdentity.identityDocs);
     }
 
-    const merchant = await MerchantRepository.create(userId, data);
-
-    // delete cached merchants
-    Cache.delete(`merchant/${merchant.merchantId}`);
-    Cache.delete("merchantsCt");
-    Cache.deleteWithPrefix(`merchants/`);
+    await MerchantRepository.create(userId, data);
   } catch (e) {
     await deleteImg(data.merchantPhotoUrl);
 
