@@ -58,7 +58,10 @@ export class MerchantRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.merchant.findMany({
         skip: options?.page,
-        take: PER_PAGE,
+        take: options?.perPage ?? PER_PAGE,
+        orderBy: {
+          merchantRating: "desc",
+        },
         where: {
           merchantName: {
             contains: options?.query,
