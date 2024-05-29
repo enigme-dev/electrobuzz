@@ -1,24 +1,21 @@
 import { getMerchantReviews } from "@/bookings/services/ReviewService";
 import { buildErr } from "@/core/lib/errors";
 import { Logger } from "@/core/lib/logger";
-import { buildRes, parseParams } from "@/core/lib/utils";
-import { getToken } from "next-auth/jwt";
+import { IdParam, buildRes, parseParams } from "@/core/lib/utils";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-export async function GET(req: NextRequest) {
-  const token = await getToken({ req });
-
+export async function GET(req: NextRequest, { params }: IdParam) {
   const searchParams = req.nextUrl.searchParams;
   const { page, skip, startDate, endDate, status } = parseParams(searchParams);
 
-  const userId = z.string().cuid().safeParse(token?.sub);
-  if (!userId.success) {
-    return buildErr("ErrUnauthorized", 401);
+  const merchantId = z.string().cuid().safeParse(params.id);
+  if (!merchantId.success) {
+    return buildErr("ErrValidation", 400, "invalid merchant id");
   }
 
   try {
-    const [reviews, reviewsCt] = await getMerchantReviews(userId.data, {
+    const [reviews, reviewsCt] = await getMerchantReviews(merchantId.data, {
       page: skip,
       startDate,
       endDate,

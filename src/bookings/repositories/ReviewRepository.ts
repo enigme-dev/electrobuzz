@@ -81,6 +81,22 @@ export class ReviewRepository extends BaseRepository {
           reviewBody: true,
           reviewStars: true,
           reviewCreatedAt: true,
+          merchant: {
+            select: {
+              merchantId: true,
+              merchantName: true,
+              merchantPhotoUrl: true,
+            },
+          },
+          booking: {
+            select: {
+              bookingId: true,
+              bookingPhotoUrl: true,
+              bookingComplain: true,
+              bookingSchedule: true,
+              bookingCreatedAt: true,
+            },
+          },
         },
       }),
       this.db.review.count({
