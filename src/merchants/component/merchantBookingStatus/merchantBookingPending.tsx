@@ -214,7 +214,7 @@ const MerchantBookingPending = ({
           *Mohon segera melakukan aksi tolak atau terima, Jika tidak maka akan
           ada tenggang waktu pada order ini.
         </p>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
             Data User
           </h2>
@@ -233,9 +233,9 @@ const MerchantBookingPending = ({
             </p>
           </div>
         </div>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
-            Keluhan User
+            Keluhan Pengguna
           </h1>
           <div>
             <h2 className="pt-2 text-center text-sm sm:text-xl">

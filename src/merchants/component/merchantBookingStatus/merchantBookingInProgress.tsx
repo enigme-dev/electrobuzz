@@ -1,6 +1,7 @@
 import {
   TBookingModel,
   TBookingReasonSchema,
+  TGetMerchantBookingInProgress,
   TGetUserBooking,
 } from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
@@ -17,48 +18,14 @@ import Link from "next/link";
 import React from "react";
 
 interface UserBookingAcceptProps {
-  bookingDetailData: TGetUserBooking;
+  bookingDetailData: TGetMerchantBookingInProgress;
 }
 
-const radioOptionsForCancelReason = [
-  { option: "Budjet tidak cukup", label: "Budjet tidak cukup" },
-  { option: "Mau cari teknisi lain", label: "Mau cari teknisi lain" },
-  { option: "Mau ubah jadwal", label: "Mau ubah jadwal" },
-  { option: "", label: "Other" },
-];
-
-const UserBookingInProgress = ({
+const MerchantBookingInProgress = ({
   bookingDetailData,
 }: UserBookingAcceptProps) => {
-  const queryClient = useQueryClient();
-
-  const {
-    mutate: updateBookingToDone,
-    isPending: updateBookingToInProgressLoading,
-  } = useMutation({
-    mutationFn: () =>
-      axios.patch(`/api/user/booking/${bookingDetailData.bookingId}/edit/done`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["getBookingDetailData", bookingDetailData.bookingId],
-      });
-      toast({
-        title: "Kamu berhasil update booking ini!",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Kamu gagal update booking ini!",
-      });
-    },
-  });
-
-  if (updateBookingToInProgressLoading) {
-    return <Loader />;
-  }
-
   return (
-    <div className="wrapper">
+    <div className="">
       <div className="flex items-center justify-center">
         <Image
           src="/process-animate.svg"
@@ -81,24 +48,24 @@ const UserBookingInProgress = ({
 
         <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
-            Data Merchant
+            Data User
           </h2>
           <div>
             <p className="text-sm sm:text-xl text-left">Nama:</p>
             <p className=" text-sm sm:text-lg font-semibold text-left">
-              {bookingDetailData.merchant.merchantName}
+              {bookingDetailData.user.name}
             </p>
           </div>
           <div>
             <h1 className="text-left text-sm sm:text-xl">Nomor Telpon:</h1>
             <p className=" text-left text-sm sm:text-lg font-semibold">
-              {bookingDetailData.merchant.user.phone}
+              {bookingDetailData.user.phone}
             </p>
           </div>
         </div>
         <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
-            Keluhan User
+            Keluhan Pengguna
           </h1>
           <div>
             <h2 className="pt-2 text-center text-sm sm:text-xl">
@@ -137,7 +104,7 @@ const UserBookingInProgress = ({
             </p>
           </div>
         </div>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl  text-center">
             Respon Merchant
           </h2>
@@ -155,18 +122,9 @@ const UserBookingInProgress = ({
             </p>
           </div>
         </div>
-        <div className="flex gap-10 justify-center items-center pt-5">
-          <AlertDialogComponent
-            alertDialogSubmitTitle="Ya"
-            dialogTrigger={<Button>Service Selesai</Button>}
-            dialogDescription="Apakah benar service ini sudah selesai? (tekan kembali jika service belum selesai)"
-            dialogTitle=""
-            submitAction={() => updateBookingToDone()}
-          />
-        </div>
       </div>
     </div>
   );
 };
 
-export default UserBookingInProgress;
+export default MerchantBookingInProgress;

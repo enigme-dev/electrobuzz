@@ -8,12 +8,12 @@ import React from "react";
 
 const merchantDashboardNavList = [
   {
-    title: "Profile",
+    title: "Profil Mitra",
     link: "/merchant/dashboard/profile",
     icon: <User />,
   },
   {
-    title: "Transactions",
+    title: "Transaksi",
     link: "/merchant/dashboard/transaction",
     icon: <Folder />,
   },
@@ -22,7 +22,7 @@ const merchantDashboardNavList = [
 const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
   return (
-    <div className="sm:flex h-screen w-[30vh] hidden ">
+    <div className="lg:flex max-h-[calc(100vh-65px)] w-[30vh] hidden ">
       <div className="w-[30vh] p-10 ">
         <div className="flex flex-col items-center row-span-1 pb-16">
           <h1 className="text-2xl italic text-yellow-400 font-extrabold ">

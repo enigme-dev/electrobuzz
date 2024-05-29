@@ -32,7 +32,7 @@ export function SelectOption({
       }}
     >
       <Select defaultValue={defaultValue} onValueChange={onValueChange}>
-        <SelectTrigger className="w-full z-10">
+        <SelectTrigger className="w-full">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
