@@ -63,6 +63,26 @@ export class MerchantRepository extends BaseRepository {
           merchantRating: "desc",
         },
         where: {
+          merchantAvailable: true,
+        },
+        include: {
+          merchantIdentity: {
+            select: {
+              identityStatus: true,
+            },
+          },
+        },
+      }),
+      this.db.merchant.count(),
+    ]);
+  }
+
+  static findAllAdmin(options?: SearchParams) {
+    return this.db.$transaction([
+      this.db.merchant.findMany({
+        skip: options?.page,
+        take: options?.perPage ?? PER_PAGE,
+        where: {
           merchantName: {
             contains: options?.query,
             mode: "insensitive",
