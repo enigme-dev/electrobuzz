@@ -55,7 +55,6 @@ const AddressCard = ({
         });
       },
       onError: (error: any) => {
-        console.log(error);
         if (error.data.response.status)
           toast({ title: "Delete alamat gagal!", variant: "destructive" });
       },

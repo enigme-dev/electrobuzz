@@ -61,8 +61,6 @@ const MerchantDashboardTransactionDetail = () => {
     enabled: !!bookingId,
   });
 
-  console.log(bookingDetailData);
-
   if (isLoading) {
     return <Loader />;
   }

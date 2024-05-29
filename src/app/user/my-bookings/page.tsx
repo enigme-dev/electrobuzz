@@ -130,8 +130,6 @@ const BookingPage = () => {
     }
   }, [fetchNextPage, inView, hasNextPage]);
 
-  console.log(bookingData);
-
   function handleFilterValue(value: string) {
     router.push(
       `${pathname}?page=${currentPage}&start-date=${fromDateQueryParam}&end-date=${toDateQueryParam}&status=${value}`

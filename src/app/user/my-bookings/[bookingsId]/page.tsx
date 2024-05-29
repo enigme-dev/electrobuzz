@@ -37,8 +37,6 @@ const BookingDetail = () => {
     enabled: !!bookingId,
   });
 
-  console.log(bookingDetailData);
-
   if (isLoading) {
     return <Loader />;
   }

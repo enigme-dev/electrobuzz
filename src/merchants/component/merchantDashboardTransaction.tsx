@@ -119,8 +119,6 @@ const MerchantDashboardTransaction = () => {
     },
   });
 
-  console.log(bookingDataAsMerchant);
-
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();

@@ -48,7 +48,6 @@ const BookingCard = ({
     status === BookStatusEnum.Enum.expired ||
     status === BookStatusEnum.Enum.rejected ||
     status === BookStatusEnum.Enum.canceled;
-  console.log(merchantId);
   return (
     <div>
       {" "}
