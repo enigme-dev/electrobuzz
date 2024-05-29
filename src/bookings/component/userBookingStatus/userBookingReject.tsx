@@ -25,7 +25,7 @@ const UserBookingReject = ({ bookingDetailData }: UserBookingRejectProps) => {
           height={500}
         />
       </div>
-      <div className="grid place-items-center gap-5 w-fit wrapper">
+      <div className="grid gap-5 w-fit wrapper">
         <h1 className=" text-2xl font-bold text-center">Maaf...</h1>
         <p className="pt-2 text-center text-lg">
           Permintaan anda telah ditolak oleh Mitra

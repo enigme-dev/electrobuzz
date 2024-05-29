@@ -24,7 +24,7 @@ const MerchantBookingCanceled = ({
           height={500}
         />
       </div>
-      <div className="grid  gap-5 w-fit wrapper">
+      <div className="grid  gap-5 w-fit">
         <h1 className=" text-2xl font-bold text-center">Maaf...</h1>
         <p className="pt-2 text-center text-lg">
           Permintaan anda telah dibatalkan oleh pengguna

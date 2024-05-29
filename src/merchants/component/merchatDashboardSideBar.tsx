@@ -22,7 +22,7 @@ const merchantDashboardNavList = [
 const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
   return (
-    <div className="sm:flex max-h-[calc(100vh-65px)] w-[30vh] hidden ">
+    <div className="lg:flex max-h-[calc(100vh-65px)] w-[30vh] hidden ">
       <div className="w-[30vh] p-10 ">
         <div className="flex flex-col items-center row-span-1 pb-16">
           <h1 className="text-2xl italic text-yellow-400 font-extrabold ">

@@ -29,7 +29,7 @@ const MerchantBookingExpired = ({
             alt={"No data-cuate"}
           />
         </div>
-        <div className="grid gap-5 pt-10 wrapper">
+        <div className="grid gap-5 pt-10 ">
           <div className="grid place-items-center ">
             <h1 className=" text-md  sm:text-2xl font-bold p-3  ">
               Booking ini telah expired...

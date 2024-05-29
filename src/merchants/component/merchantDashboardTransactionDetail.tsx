@@ -67,7 +67,7 @@ const MerchantDashboardTransactionDetail = () => {
     return <Loader />;
   }
   return (
-    <main className="pb-20 px-8 max-h-screen no-scrollbar overflow-scroll max-w-screen">
+    <main className="pb-20 px-8 sm:wrapper max-h-[90vh] overflow-scroll no-scrollbar">
       {bookingDetailData?.bookingStatus == "pending" && (
         <MerchantBookingPending bookingDetailData={bookingDetailData} />
       )}

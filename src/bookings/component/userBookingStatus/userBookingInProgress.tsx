@@ -32,27 +32,6 @@ const UserBookingInProgress = ({
 }: UserBookingAcceptProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: updateCancelBooking, isPending: updateCancelBookingLoading } =
-    useMutation({
-      mutationFn: (values: TBookingReasonSchema) =>
-        axios.patch(
-          `/api/user/booking/${bookingDetailData.bookingId}/edit/cancel`,
-          values
-        ),
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["getDetailBookingData", bookingDetailData.bookingId],
-        });
-        toast({
-          title: "Kamu berhasil menolak order ini!",
-        });
-      },
-      onError: () => {
-        toast({
-          title: "Kamu gagal menolak order ini!",
-        });
-      },
-    });
   const {
     mutate: updateBookingToDone,
     isPending: updateBookingToInProgressLoading,

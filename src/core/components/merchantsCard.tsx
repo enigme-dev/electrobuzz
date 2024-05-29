@@ -41,7 +41,7 @@ const MerchantsCard: React.FC<Props> = ({
         className="flex w-full shadow-sm sm:shadow-lg cursor-pointer  transition duration-500"
       >
         <div className="flex gap-5 sm:gap-10 items-center p-2 sm:p-3">
-          <div>
+          <div className="aspect-square ">
             <Image
               className="rounded-full object-cover h-[70px] w-[70px]"
               src={imgSource}
@@ -67,7 +67,7 @@ const MerchantsCard: React.FC<Props> = ({
               </p>
             </h2>
 
-            <div className="flex gap-4 items-center ">
+            <div className="flex gap-4 items-start ">
               <h2 className="rounded-lg text-gray-400 text-[0.6rem]  sm:text-sm flex items-center gap-2">
                 <Lightbulb className="w-4" />
                 <div>

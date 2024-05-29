@@ -25,7 +25,7 @@ const MerchantBookingInProgress = ({
   bookingDetailData,
 }: UserBookingAcceptProps) => {
   return (
-    <div className="wrapper">
+    <div className="">
       <div className="flex items-center justify-center">
         <Image
           src="/process-animate.svg"

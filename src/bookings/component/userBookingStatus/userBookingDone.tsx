@@ -41,11 +41,11 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
               <h2 className="pt-2 text-sm sm:text-xl text-center">
                 Foto Keluhan:
               </h2>
-              <div className="flex justify-center">
+              <div className="flex justify-center ">
                 <Image
                   src={bookingDetailData.bookingPhotoUrl}
                   alt={bookingDetailData.bookingPhotoUrl}
-                  className="pt-5"
+                  className="pt-5 h-[500px] w-[500px] object-cover"
                   width={500}
                   height={500}
                 />
