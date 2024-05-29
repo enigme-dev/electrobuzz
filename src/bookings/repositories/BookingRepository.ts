@@ -12,6 +12,10 @@ export class BookingRepository extends BaseRepository {
         bookingComplain: data.bookingComplain,
         bookingSchedule: data.bookingSchedule,
         bookingStatus: data.bookingStatus ?? "",
+        addressDetail: data.addressDetail as string,
+        addressZipCode: data.addressZipCode as string,
+        addressCity: data.addressCity as string,
+        addressProvince: data.addressProvince as string,
         user: {
           connect: {
             id: data.userId,
@@ -22,11 +26,6 @@ export class BookingRepository extends BaseRepository {
             merchantId: data.merchantId,
           },
         },
-        address: {
-          connect: {
-            addressId: data.addressId,
-          },
-        },
       },
     });
   }
@@ -34,17 +33,41 @@ export class BookingRepository extends BaseRepository {
   static findByMerchantId(merchantId: string, options?: SearchParams) {
     return this.db.$transaction([
       this.db.booking.findMany({
+        orderBy: [
+          {
+            bookingCreatedAt: "desc",
+          },
+        ],
         skip: options?.page,
-        take: PER_PAGE,
+        take: options?.perPage ?? PER_PAGE,
         where: {
           merchantId,
-          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
+        },
+        select: {
+          bookingId: true,
+          bookingStatus: true,
+          bookingComplain: true,
+          bookingPhotoUrl: true,
+          bookingPriceMin: true,
+          bookingPriceMax: true,
+          bookingSchedule: true,
+          bookingCreatedAt: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
         },
       }),
       this.db.booking.count({
         where: {
           merchantId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
         },
       }),
     ]);
@@ -53,17 +76,41 @@ export class BookingRepository extends BaseRepository {
   static findByUserId(userId: string, options?: SearchParams) {
     return this.db.$transaction([
       this.db.booking.findMany({
+        orderBy: [
+          {
+            bookingCreatedAt: "desc",
+          },
+        ],
         skip: options?.page,
-        take: PER_PAGE,
+        take: options?.perPage ?? PER_PAGE,
         where: {
           userId,
-          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
+        },
+        select: {
+          bookingId: true,
+          bookingStatus: true,
+          bookingComplain: true,
+          bookingPhotoUrl: true,
+          bookingPriceMin: true,
+          bookingPriceMax: true,
+          bookingSchedule: true,
+          bookingCreatedAt: true,
+          merchant: {
+            select: {
+              merchantId: true,
+              merchantName: true,
+              merchantPhotoUrl: true,
+            },
+          },
         },
       }),
       this.db.booking.count({
         where: {
           userId,
           bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+          bookingStatus: options?.status,
         },
       }),
     ]);
@@ -73,6 +120,16 @@ export class BookingRepository extends BaseRepository {
     return this.db.booking.findUniqueOrThrow({
       where: { bookingId: id },
       include,
+    });
+  }
+
+  static updateManyStatus(
+    status: BookStatusEnum,
+    where: Prisma.BookingWhereInput
+  ) {
+    return this.db.booking.updateMany({
+      data: { bookingStatus: status },
+      where,
     });
   }
 

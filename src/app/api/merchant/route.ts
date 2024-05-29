@@ -1,11 +1,39 @@
 import { buildErr, ErrorCode } from "@/core/lib/errors";
-import { registerMerchant } from "@/merchants/services/MerchantService";
+import {
+  getMerchants,
+  registerMerchant,
+} from "@/merchants/services/MerchantService";
 import { RegisterMerchantSchema } from "@/merchants/types";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { buildRes } from "@/core/lib/utils";
+import { buildRes, parseParams } from "@/core/lib/utils";
+import { Logger } from "@/core/lib/logger";
+import { Cache } from "@/core/lib/cache";
+
+export async function GET(req: NextRequest) {
+  let merchants, merchantsCt;
+  const searchParams = req.nextUrl.searchParams;
+  const { page, skip } = parseParams(searchParams);
+
+  try {
+    merchants = Cache.get(`merchants/${page}`);
+    merchantsCt = Cache.get<number>("merchantsCt");
+
+    if (merchants && merchantsCt) {
+      return buildRes({ data: merchants, page, total: merchantsCt });
+    }
+
+    [merchants, merchantsCt] = await getMerchants({ page: skip });
+    Cache.set(`merchants/${page}`, merchants);
+    Cache.set("merchantsCt", merchantsCt);
+    return buildRes({ data: merchants, page, total: merchantsCt });
+  } catch (e) {
+    Logger.error("merchant", "get merchants error", e);
+    return buildErr("ErrUnknown", 500);
+  }
+}
 
 export async function POST(req: NextRequest) {
   let body;
@@ -51,6 +79,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    Logger.error("merchant", "register as merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 

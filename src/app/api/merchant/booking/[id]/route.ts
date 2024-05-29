@@ -1,5 +1,6 @@
 import { getMerchantBooking } from "@/bookings/services/BookingService";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
@@ -28,6 +29,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("booking", "get merchant booking error", e);
     return buildErr("ErrUnknown", 500);
   }
 

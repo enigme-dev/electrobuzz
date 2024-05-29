@@ -25,7 +25,10 @@ const MerchantsCard: React.FC<Props> = ({
   distance,
 }: Props) => {
   const router = useRouter();
-  const meterToKilometer = distance / 1000;
+
+  const parsedDistance =
+    distance >= 1000 ? `${(distance / 1000).toFixed(1)}km` : `${distance} m`;
+
   const renderedCategories = serviceCategory.slice(0, 5).join(", ");
   const remainingCategories = serviceCategory.slice(5);
 
@@ -38,9 +41,9 @@ const MerchantsCard: React.FC<Props> = ({
         className="flex w-full shadow-sm sm:shadow-lg cursor-pointer  transition duration-500"
       >
         <div className="flex gap-5 sm:gap-10 items-center p-2 sm:p-3">
-          <div>
+          <div className="aspect-square ">
             <Image
-              className="aspect-square  rounded-full flex justify-center items-center"
+              className="rounded-full object-cover h-[70px] w-[70px]"
               src={imgSource}
               alt={imgAlt}
               width={70}
@@ -53,7 +56,7 @@ const MerchantsCard: React.FC<Props> = ({
                 {merchName}
               </h1>
               <p className="text-[0.6rem] sm:text-xs text-gray-400">
-                {meterToKilometer} Km
+                {parsedDistance}
               </p>
             </div>
 
@@ -64,7 +67,7 @@ const MerchantsCard: React.FC<Props> = ({
               </p>
             </h2>
 
-            <div className="flex gap-4 items-center ">
+            <div className="flex gap-4 items-start ">
               <h2 className="rounded-lg text-gray-400 text-[0.6rem]  sm:text-sm flex items-center gap-2">
                 <Lightbulb className="w-4" />
                 <div>

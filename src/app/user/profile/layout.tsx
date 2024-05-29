@@ -7,8 +7,8 @@ import React from "react";
 const EditProfileLayout = ({ children }: any) => {
   return (
     <div>
-      {children}
       <Toaster />
+      {children}
     </div>
   );
 };

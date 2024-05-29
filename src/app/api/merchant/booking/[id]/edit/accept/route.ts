@@ -1,7 +1,9 @@
 import { setStatusAccepted } from "@/bookings/services/BookingService";
 import { AcceptBookingSchema } from "@/bookings/types";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
+import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -34,6 +36,12 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   try {
     await setStatusAccepted(userId.data, bookingId.data, input.data);
   } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildErr("ErrNotFound", 404, "booking does not exist");
+      }
+    }
+
     if (e instanceof Error) {
       switch (e.message) {
         case ErrorCode.ErrConflict:
@@ -47,6 +55,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("booking", "set merchant booking accept error", e);
     return buildErr("ErrUnknown", 500);
   }
 

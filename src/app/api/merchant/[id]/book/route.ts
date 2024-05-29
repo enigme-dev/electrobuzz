@@ -1,6 +1,7 @@
 import { addBooking } from "@/bookings/services/BookingService";
-import { BookingModel } from "@/bookings/types";
+import { CreateBookingSchema } from "@/bookings/types";
 import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { buildRes, IdParam } from "@/core/lib/utils";
 import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
@@ -27,15 +28,13 @@ export async function POST(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, "invalid merchant id");
   }
 
-  const input = BookingModel.safeParse(body);
+  const input = CreateBookingSchema.safeParse(body);
   if (!input.success) {
     return buildErr("ErrValidation", 400, input.error);
   }
 
   try {
-    input.data.userId = userId.data;
-    input.data.merchantId = merchantId.data;
-    result = await addBooking(input.data);
+    result = await addBooking(userId.data, merchantId.data, input.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -55,9 +54,18 @@ export async function POST(req: NextRequest, { params }: IdParam) {
           return buildErr("ErrValidation", 400, "address does not exist");
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "merchant does not exist");
+        case ErrorCode.ErrBookInvalidSchedule:
+          return buildErr("ErrValidation", 400, e.message);
+        case ErrorCode.ErrTooManyRequest:
+          return buildErr(
+            "ErrTooManyRequest",
+            429,
+            "can not have more than 5 pending booking"
+          );
       }
     }
 
+    Logger.error("merchant", "book merchant error", e);
     return buildErr("ErrUnknown", 500);
   }
 

@@ -1,5 +1,4 @@
 import { signOut, useSession } from "next-auth/react";
-import AuthDialog from "./auth-dialog";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -88,22 +87,20 @@ export function AuthBar() {
                 <ul className="flex justify-between gap-5">
                   {session.user.isMerchant ? (
                     <li className="pt-5 text-center">
-                      <Button
-                        variant="outline"
-                        className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"
-                      >
-                        <Link href="/merchant/dashboard-start">
+                      <Link href="/merchant/dashboard-start">
+                        <Button
+                          variant="outline"
+                          className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"
+                        >
                           Merchant Dashboard
-                        </Link>
-                      </Button>
+                        </Button>
+                      </Link>
                     </li>
                   ) : (
                     <li className="pt-5 text-center">
-                      <Button variant="outline">
-                        <Link href="/merchant/register">
-                          Register as merchant
-                        </Link>
-                      </Button>
+                      <Link href="/merchant/register">
+                        <Button variant="outline">Register as merchant</Button>
+                      </Link>
                     </li>
                   )}
                   <li className="pt-5 text-center">
@@ -121,8 +118,8 @@ export function AuthBar() {
           </Popover>
         </div>
       ) : (
-        <AuthDialog>
-          <div>
+        <div>
+          <Link href={"/login"}>
             <Button
               variant={"link"}
               className="grid gap-1 items-center place-items-center p-0 hover:no-underline dark:text-white sm:hidden text-black"
@@ -136,8 +133,8 @@ export function AuthBar() {
             >
               <p className="text-xs">Login</p>
             </Button>
-          </div>
-        </AuthDialog>
+          </Link>
+        </div>
       )}
     </>
   );

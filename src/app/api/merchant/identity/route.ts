@@ -1,15 +1,16 @@
-import {buildErr, ErrorCode} from "@/core/lib/errors";
-import {buildRes} from "@/core/lib/utils";
-import {Prisma} from "@prisma/client";
-import {getToken} from "next-auth/jwt";
-import {NextRequest} from "next/server";
-import {z} from "zod";
-import {MerchantIdentitiesSchema} from "@/merchants/types";
-import {addMerchantIdentity} from "@/merchants/services/MerchantIdentityService";
+import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { buildRes } from "@/core/lib/utils";
+import { Prisma } from "@prisma/client";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { MerchantIdentitiesSchema } from "@/merchants/types";
+import { addMerchantIdentity } from "@/merchants/services/MerchantIdentityService";
+import { Logger } from "@/core/lib/logger";
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({req});
-  let body, merchant;
+  const token = await getToken({ req });
+  let body;
 
   try {
     body = await req.json();
@@ -30,7 +31,6 @@ export async function POST(req: NextRequest) {
   try {
     await addMerchantIdentity(userId.data, input.data);
   } catch (e) {
-    console.error(e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
         return buildErr(
@@ -59,8 +59,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    Logger.error("merchant-identity", "add merchant identity error", e);
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({status: "identities submitted successfully"});
+  return buildRes({ status: "identities submitted successfully" });
 }

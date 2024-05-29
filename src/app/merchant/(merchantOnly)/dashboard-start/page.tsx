@@ -113,7 +113,6 @@ const MerchantDashboardStart = () => {
     form.setValue("albums", updatedFileObjects, { shouldValidate: true });
   };
 
-  console.log(form.getValues("albums"));
   return (
     <div className="wrapper flex justify-center flex-col h-[100%] pb-20 sm:pb-0 lg:flex-row items-center px-4">
       <div className="">

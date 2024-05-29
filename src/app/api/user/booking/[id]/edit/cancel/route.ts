@@ -1,7 +1,9 @@
 import { setStatusCanceled } from "@/bookings/services/BookingService";
 import { BookingReasonSchema } from "@/bookings/types";
 import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
+import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -34,6 +36,12 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   try {
     await setStatusCanceled(userId.data, bookingId.data, input.data);
   } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildErr("ErrNotFound", 404, "booking does not exist");
+      }
+    }
+
     if (e instanceof Error) {
       switch (e.message) {
         case ErrorCode.ErrConflict:
@@ -49,6 +57,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
       }
     }
 
+    Logger.error("booking", "set user booking cancel error", e);
     return buildErr("ErrUnknown", 500);
   }
 

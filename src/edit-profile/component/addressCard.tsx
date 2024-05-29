@@ -54,13 +54,18 @@ const AddressCard = ({
           queryKey: ["userAddressData", session?.user?.id],
         });
       },
-      onError: () => {
-        toast({ title: "Delete alamat gagal!", variant: "destructive" });
+      onError: (error: any) => {
+        if (error.data.response.status)
+          toast({ title: "Delete alamat gagal!", variant: "destructive" });
       },
     });
 
   if (deleteAddressLoading) {
-    return <Loader />;
+    return (
+      <div className="w-20 h-20">
+        <Loader />
+      </div>
+    );
   }
 
   return (

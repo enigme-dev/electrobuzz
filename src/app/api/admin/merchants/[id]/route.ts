@@ -7,6 +7,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { buildRes, IdParam } from "@/core/lib/utils";
 import { EditMerchantIdentitySchema } from "@/merchants/types";
+import { Logger } from "@/core/lib/logger";
 
 export async function GET(req: NextRequest, { params }: IdParam) {
   let result;
@@ -21,6 +22,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
       return buildErr("ErrNotFound", 404);
     }
   } catch (e) {
+    Logger.error("admin", "get merchant identity error", e);
     return buildErr("ErrUnknown", 500);
   }
 
@@ -48,6 +50,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   try {
     await editMerchantIdentity(merchantId.data, input.data.identityStatus);
   } catch (e) {
+    Logger.error("admin", "update merchant identity error", e);
     return buildErr("ErrUnknown", 500);
   }
 

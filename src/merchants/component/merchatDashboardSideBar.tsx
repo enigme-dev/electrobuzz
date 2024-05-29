@@ -8,12 +8,12 @@ import React from "react";
 
 const merchantDashboardNavList = [
   {
-    title: "Profile",
+    title: "Profil Mitra",
     link: "/merchant/dashboard/profile",
     icon: <User />,
   },
   {
-    title: "Transactions",
+    title: "Transaksi",
     link: "/merchant/dashboard/transaction",
     icon: <Folder />,
   },
@@ -22,15 +22,15 @@ const merchantDashboardNavList = [
 const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
   return (
-    <div className="sm:flex h-[120vh] w-[30vh] hidden ">
-      <div className="w-[30vh] grid-rows-2 place-items-start p-10 ">
-        <div className="grid place-items-center row-span-1 pb-16">
+    <div className="lg:flex max-h-[calc(100vh-65px)] w-[30vh] hidden ">
+      <div className="w-[30vh] p-10 ">
+        <div className="flex flex-col items-center row-span-1 pb-16">
           <h1 className="text-2xl italic text-yellow-400 font-extrabold ">
             Merchant⚡
           </h1>
           <p className="text-lg font-semibold">Dashboard</p>
         </div>
-        <div className="grid place-items-center gap-5 max-w-40">
+        <div className="flex flex-col gap-5 w-full">
           {merchantDashboardNavList.map((value, index) => (
             <ul key={index}>
               <li className="w-44">
@@ -52,7 +52,7 @@ const MerchantDashboardSideBar = () => {
           ))}
         </div>
       </div>
-      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838] h-"></div>
+      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838]"></div>
     </div>
   );
 };

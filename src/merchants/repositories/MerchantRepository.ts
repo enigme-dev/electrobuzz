@@ -49,6 +49,8 @@ export class MerchantRepository extends BaseRepository {
         lat: data.merchantLat,
         lng: data.merchantLong,
       },
+      merchantRating: data.merchantRating,
+      merchantReviewCt: data.merchantReviewCt,
     });
   }
 
@@ -56,7 +58,30 @@ export class MerchantRepository extends BaseRepository {
     return this.db.$transaction([
       this.db.merchant.findMany({
         skip: options?.page,
-        take: PER_PAGE,
+        take: options?.perPage ?? PER_PAGE,
+        orderBy: {
+          merchantRating: "desc",
+        },
+        where: {
+          merchantAvailable: true,
+        },
+        include: {
+          merchantIdentity: {
+            select: {
+              identityStatus: true,
+            },
+          },
+        },
+      }),
+      this.db.merchant.count(),
+    ]);
+  }
+
+  static findAllAdmin(options?: SearchParams) {
+    return this.db.$transaction([
+      this.db.merchant.findMany({
+        skip: options?.page,
+        take: options?.perPage ?? PER_PAGE,
         where: {
           merchantName: {
             contains: options?.query,
