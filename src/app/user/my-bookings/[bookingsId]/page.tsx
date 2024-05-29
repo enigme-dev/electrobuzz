@@ -1,31 +1,26 @@
 "use client";
 
 import UserBookingAccept from "@/bookings/component/userBookingStatus/userBookingAccept";
+import UserBookingCanceled from "@/bookings/component/userBookingStatus/userBookingCanceled";
+import UserBookingDone from "@/bookings/component/userBookingStatus/userBookingDone";
+import UserBookingExpired from "@/bookings/component/userBookingStatus/userBookingExpired";
+import UserBookingInProgress from "@/bookings/component/userBookingStatus/userBookingInProgress";
 import UserBookingPending from "@/bookings/component/userBookingStatus/userBookingPending";
 import UserBookingReject from "@/bookings/component/userBookingStatus/userBookingReject";
-import {
-  BookStatusEnum,
-  TBookingModel,
-  TBookingReasonSchema,
-  TGetUserBooking,
-} from "@/bookings/types";
-import { AlertDialogComponent } from "@/core/components/alert-dialog";
-import { DialogGeneral } from "@/core/components/general-dialog";
+
 import Loader from "@/core/components/loader/loader";
-import { RadioGroupForm } from "@/core/components/radio-group";
-import { Button } from "@/core/components/ui/button";
-import { useMutation, useQuery } from "@tanstack/react-query";
+
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
+
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const BookingDetail = () => {
   const { data: session } = useSession();
   const pathname = usePathname();
-
+  const status = "done";
   const getLastPathSegment = (pathname: string): string => {
     const segments = pathname.split("/");
     return segments[segments.length - 1] || segments[segments.length - 2];
@@ -37,41 +32,12 @@ const BookingDetail = () => {
     queryKey: ["getBookingDetailData", bookingId],
     queryFn: async () =>
       await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
-        return response.data.data as TGetUserBooking;
+        return response.data.data as any;
       }),
     enabled: !!bookingId,
   });
 
-  const { data: bookingDetailDataWithMerchant, isLoading: isLoadingData } =
-    useQuery({
-      queryKey: ["getBookingDetailData", bookingId],
-      queryFn: async () =>
-        await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
-          return response.data.data as TBookingReasonSchema;
-        }),
-      enabled: !!bookingId,
-    });
-  console.log(bookingDetailData);
-
-  // const { mutate: AcceptBookings, isPending: addAddressLoading } =
-  //   useMutation({
-  //     mutationFn: async (values: TCreateBookingSchema) =>
-  //       await axios.post(`/api/merchant/${}/book`, values),
-  //     onSuccess: () => {
-  //       toast({ title: "Keluhan anda telah terkirim!" });
-  //       queryClient.invalidateQueries({
-  //         queryKey: ["getBookAppointment", session?.user?.id],
-  //       });
-  //     },
-  //     onError: () => {
-  //       toast({
-  //         title: "Keluhan anda gagal terkirim!",
-  //         variant: "destructive",
-  //       });
-  //     },
-  //   });
-
-  if (isLoading || isLoadingData) {
+  if (isLoading) {
     return <Loader />;
   }
   return (
@@ -83,18 +49,38 @@ const BookingDetail = () => {
       )}
       {bookingDetailData?.bookingStatus == "rejected" && (
         <>
-          <UserBookingReject
+          <UserBookingReject bookingDetailData={bookingDetailData} />
+        </>
+      )}
+      {(bookingDetailData?.bookingStatus == "accepted" ||
+        bookingDetailData?.bookingStatus == "in_progress_requested") && (
+        <>
+          <UserBookingAccept bookingDetailData={bookingDetailData} />
+        </>
+      )}
+      {bookingDetailData?.bookingStatus == "canceled" && (
+        <>
+          <UserBookingCanceled
             bookingDetailData={{
-              bookingReason: bookingDetailDataWithMerchant?.bookingReason
-                ? bookingDetailDataWithMerchant.bookingReason
-                : "",
+              ...bookingDetailData,
+              bookingReason: bookingDetailData.bookingReason,
             }}
           />
         </>
       )}
-      {bookingDetailData?.bookingStatus == "accepted" && (
+      {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
         <>
-          <UserBookingAccept bookingDetailData={bookingDetailData} />
+          <UserBookingInProgress bookingDetailData={bookingDetailData} />
+        </>
+      )}
+      {bookingDetailData?.bookingStatus == "done" && (
+        <>
+          <UserBookingDone bookingDetailData={bookingDetailData} />
+        </>
+      )}
+      {bookingDetailData?.bookingStatus == "expired" && (
+        <>
+          <UserBookingExpired bookingDetailData={bookingDetailData} />
         </>
       )}
     </main>

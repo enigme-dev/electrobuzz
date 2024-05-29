@@ -1,14 +1,12 @@
+import { getUserReviews } from "@/bookings/services/ReviewService";
 import { buildErr } from "@/core/lib/errors";
+import { Logger } from "@/core/lib/logger";
 import { buildRes, parseParams } from "@/core/lib/utils";
-import { getMerchantBookings } from "@/bookings/services/BookingService";
-import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { Logger } from "@/core/lib/logger";
 
 export async function GET(req: NextRequest) {
-  let bookings, bookingsCt;
   const token = await getToken({ req });
 
   const searchParams = req.nextUrl.searchParams;
@@ -20,26 +18,15 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    [bookings, bookingsCt] = await getMerchantBookings(userId.data, {
+    const [reviews, reviewsCt] = await getUserReviews(userId.data, {
       page: skip,
       startDate,
       endDate,
       status,
     });
+    return buildRes({ data: reviews, page, total: reviewsCt });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr(
-          "ErrForbidden",
-          403,
-          "user is not registered as merchant"
-        );
-      }
-    }
-
-    Logger.error("booking", "get merchant booking list error", e);
+    Logger.error("review", "get user reviews error", e);
     return buildErr("ErrUnknown", 500);
   }
-
-  return buildRes({ data: bookings, page, total: bookingsCt });
 }

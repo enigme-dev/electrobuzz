@@ -85,7 +85,7 @@ const MerchantBookingAccepted = ({
           tidak maka akan ada tenggang waktu pada order ini selama 1 hari
           setelah hari perjanjian.
         </p>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
             Data User
           </h2>
@@ -110,19 +110,19 @@ const MerchantBookingAccepted = ({
             </p>
           </div>
         </div>
-        <div className="shadow-xl border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-xl border p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-lg sm:text-xl text-center">
-            Keluhan User
+            Keluhan Pengguna
           </h1>
           <div>
             <h2 className="pt-2 text-sm sm:text-xl text-center">
               Foto Keluhan:
             </h2>
-            <div className="flex justify-center">
+            <div className="flex justify-center ">
               <Image
                 src={bookingDetailData.bookingPhotoUrl}
                 alt={bookingDetailData.bookingPhotoUrl}
-                className="p-3"
+                className="p-3 "
                 width={500}
                 height={500}
               />
@@ -144,7 +144,7 @@ const MerchantBookingAccepted = ({
             </p>
           </div>
         </div>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl  text-center">
             Respon Merchant
           </h2>

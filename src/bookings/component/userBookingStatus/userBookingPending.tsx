@@ -30,7 +30,7 @@ const UserBookingPending = ({ bookingDetailData }: UserBookingPendingProps) => {
     useMutation({
       mutationFn: (values: TBookingReasonSchema) =>
         axios.patch(
-          `/api/merchant/booking/${bookingDetailData.bookingId}/edit/reject`,
+          `/api/user/booking/${bookingDetailData.bookingId}/edit/cancel`,
           values
         ),
       onSuccess: () => {
@@ -60,7 +60,7 @@ const UserBookingPending = ({ bookingDetailData }: UserBookingPendingProps) => {
       <h2 className="font-semibold text-md sm:text-xl  text-center mb-5">
         Sabar, mohon menunggu konfirmasi merchant...
       </h2>
-      <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+      <div className="shadow-lg border p-5 rounded-lg space-y-5">
         <div className="space-y-2 ">
           <h1 className="text-center text-sm sm:text-xl">Foto keluhanmu:</h1>
           <div className="flex justify-center">
@@ -83,6 +83,14 @@ const UserBookingPending = ({ bookingDetailData }: UserBookingPendingProps) => {
           <h1 className="text-left text-sm sm:text-xl">Tanggal Janji:</h1>
           <p className=" text-sm sm:text-lg font-semibold text-left">
             {format(bookingDetailData.bookingSchedule, "PPP")}
+          </p>
+        </div>
+        <div>
+          <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
+          <p className=" text-left text-sm sm:text-lg font-semibold">
+            {bookingDetailData.addressDetail}, {bookingDetailData.addressCity},{" "}
+            {bookingDetailData.addressProvince},{" "}
+            {bookingDetailData.addressZipCode}
           </p>
         </div>
       </div>

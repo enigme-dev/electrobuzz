@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/core/components/ui/button";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
+import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
 
-const loginPage = () => {
+const LoginPage = () => {
   return (
     <div className="wrapper px-8 pt-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 justify-around items-center">
@@ -51,4 +52,4 @@ const loginPage = () => {
   );
 };
 
-export default loginPage;
+export default LoginPage;

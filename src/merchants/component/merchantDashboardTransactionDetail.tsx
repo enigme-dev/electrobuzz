@@ -8,6 +8,7 @@ import {
   TBookingModel,
   TBookingReasonSchema,
   TGetMerchantBookingPending,
+  TGetMerchantBookings,
 } from "@/bookings/types";
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
@@ -38,11 +39,11 @@ import { useForm } from "react-hook-form";
 import MerchantBookingPending from "./merchantBookingStatus/merchantBookingPending";
 import MerchantBookingCanceled from "./merchantBookingStatus/merchantBookingCanceled";
 import MerchantBookingAccepted from "./merchantBookingStatus/merchantBookingAccepted";
-import MerchantBookingInProgressRequest from "./merchantBookingStatus/merchantBookingInProgressRequest";
 import MerchantBookingDone from "./merchantBookingStatus/merchantBookingDone";
 import MerchantBookingExpired from "./merchantBookingStatus/merchantBookingExpired";
-import MerchantBookingInProgressAccepted from "./merchantBookingStatus/merchantBookingInProgressAccepted";
+import MerchantBookingInProgressAccepted from "./merchantBookingStatus/merchantBookingInProgress";
 import MerchantBookingRejected from "./merchantBookingStatus/merchantBookingRejected";
+import MerchantBookingInProgress from "./merchantBookingStatus/merchantBookingInProgress";
 
 const MerchantDashboardTransactionDetail = () => {
   const { data: session } = useSession();
@@ -55,46 +56,38 @@ const MerchantDashboardTransactionDetail = () => {
     queryKey: ["getBookingDetailData", bookingId],
     queryFn: async () =>
       await axios.get(`/api/merchant/booking/${bookingId}`).then((response) => {
-        return response.data.data;
+        return response.data.data as any;
       }),
     enabled: !!bookingId,
   });
-
-  console.log(bookingDetailData);
 
   if (isLoading) {
     return <Loader />;
   }
   return (
-    <main className="pb-20 px-8 max-h-screen no-scrollbar overflow-scroll max-w-screen">
+    <main className="pb-20 px-8 sm:wrapper max-h-[90vh] overflow-scroll no-scrollbar">
       {bookingDetailData?.bookingStatus == "pending" && (
         <MerchantBookingPending bookingDetailData={bookingDetailData} />
       )}
-      {/* {bookingDetailData?.bookingStatus == "canceled" && (
+      {bookingDetailData?.bookingStatus == "canceled" && (
         <MerchantBookingCanceled bookingDetailData={bookingDetailData} />
-      )} */}
+      )}
       {bookingDetailData?.bookingStatus == "rejected" && (
         <MerchantBookingRejected bookingDetailData={bookingDetailData} />
       )}
-      {bookingDetailData?.bookingStatus == "accepted" && (
+      {(bookingDetailData?.bookingStatus == "accepted" ||
+        bookingDetailData?.bookingStatus == "in_progress_requested") && (
         <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
       )}
-      {/* {bookingDetailData?.bookingStatus == "in_progress_requested" && (
-        <MerchantBookingInProgressRequest
-          bookingInProgressRequestData={bookingDetailData}
-        />
-      )}
       {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
-        <MerchantBookingInProgressAccepted
-          bookingInProgressAcceptedData={bookingDetailData}
-        />
+        <MerchantBookingInProgress bookingDetailData={bookingDetailData} />
       )}
       {bookingDetailData?.bookingStatus == "done" && (
-        <MerchantBookingDone bookingDoneData={bookingDetailData} />
+        <MerchantBookingDone bookingDetailData={bookingDetailData} />
       )}
       {bookingDetailData?.bookingStatus == "expired" && (
-        <MerchantBookingExpired bookingExpiredData={bookingDetailData} />
-      )} */}
+        <MerchantBookingExpired bookingDetailData={bookingDetailData} />
+      )}
     </main>
   );
 };

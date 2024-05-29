@@ -28,7 +28,7 @@ const MerchantDashboard = () => {
   return (
     <div className="flex w-full">
       <MerchantDashboardSideBar />
-      <div className="max-h-screen w-screen">{view}</div>
+      <div className="h-[calc(100vh-65px)] w-full">{view}</div>
     </div>
   );
 };

@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import { CalendarIcon, Settings } from "lucide-react";
+import { CalendarIcon, PlusIcon, Settings } from "lucide-react";
 import { Calendar } from "@/core/components/ui/calendar";
 import { cn } from "@/core/lib/shadcn";
 import { format, parseISO } from "date-fns";
@@ -41,7 +41,7 @@ import { Card } from "@/core/components/ui/card";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import AddressForm from "@/users/components/addressForm";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { fileInputToDataURL } from "@/core/lib/utils";
 import Loader from "@/core/components/loader/loader";
 
@@ -60,6 +60,7 @@ const extractIdFromPathname = (pathname: string): string | null => {
 const BuatJanjiPage = () => {
   const { toast } = useToast();
   const { data: session } = useSession();
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const pathname = usePathname();
@@ -79,12 +80,13 @@ const BuatJanjiPage = () => {
   }
 
   const { data: addressData, isLoading: isAddressLoading } = useQuery({
-    queryKey: ["userAddressData"],
+    queryKey: ["userAddressData", session?.user?.id],
     queryFn: async () =>
       await axios.get(`/api/user/address`).then((response) => {
         return response.data.data as AddressData[];
       }),
   });
+
   const {
     mutate: createBookingAppointment,
     isPending: createBookingAppointmentLoading,
@@ -96,6 +98,7 @@ const BuatJanjiPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["getBookingData", merchantId],
       });
+      router.push("/user/my-bookings");
     },
     onError: () => {
       toast({
@@ -184,7 +187,7 @@ const BuatJanjiPage = () => {
                     defaultValue={field.value}
                     className="flex flex-col space-y-1"
                   >
-                    {addressData != undefined &&
+                    {addressData !== undefined &&
                       (addressData?.length !== 0 ? (
                         addressData.map(
                           (option: AddressData, index: number) => (
@@ -245,9 +248,35 @@ const BuatJanjiPage = () => {
                         )
                       ) : (
                         <>
-                          <FormControl>
-                            <Input placeholder="Alamat" {...field} />
-                          </FormControl>
+                          <DialogGeneral
+                            dialogTitle={"Edit Profile"}
+                            onOpen={onOpen}
+                            onOpenChange={handleOpenChange}
+                            dialogContent={
+                              <>
+                                <AddressForm
+                                  handleOnCloseDialog={handleOpenChange}
+                                  isEditing={false}
+                                />
+                              </>
+                            }
+                            dialogTrigger={
+                              <Card
+                                className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
+                                onClick={() => {
+                                  setOnOpenDialog(true);
+                                }}
+                              >
+                                <PlusIcon
+                                  className="p-1 rounded-full hover:cursor-pointer"
+                                  size={20}
+                                />
+                                <p className="text-xs sm:text-sm ">
+                                  Tambah alamat
+                                </p>
+                              </Card>
+                            }
+                          />
                         </>
                       ))}
                   </RadioGroup>

@@ -1,5 +1,4 @@
 import { MerchantModel } from "@/merchants/types";
-import { AddressSchema, UserModel } from "@/users/types";
 import { z } from "zod";
 
 /**
@@ -22,6 +21,25 @@ export const BookStatusEnum = z.enum([
   "in_progress_accepted",
   "done",
 ]);
+
+export const ReviewModel = z.object({
+  reviewId: z.string().optional(),
+  reviewBody: z.string(),
+  reviewStars: z.number(),
+  reviewCreatedAt: z.date().optional(),
+  userId: z.string().optional(),
+  merchantId: z.string().optional(),
+  bookingId: z.string().optional(),
+});
+
+export type TReviewModel = z.infer<typeof ReviewModel>;
+
+export const CreateReviewSchema = z.object({
+  reviewBody: z.string().min(8).max(128),
+  reviewStars: z.number().min(1).max(5),
+});
+
+export type TCreateReviewSchema = z.infer<typeof CreateReviewSchema>;
 
 export type BookStatusEnum = z.infer<typeof BookStatusEnum>;
 
@@ -120,6 +138,14 @@ export type TGetMerchantBookingCanceled = z.infer<
   typeof GetMerchantBookingCanceled
 >;
 
+export const GetMerchantBookingExpired = GetMerchantBookingRejected.omit({
+  bookingReason: true,
+});
+
+export type TGetMerchantBookingExpired = z.infer<
+  typeof GetMerchantBookingExpired
+>;
+
 export const GetMerchantBookingInProgress = GetMerchantBookingAccepted;
 
 export type TGetMerchantBookingInProgress = z.infer<
@@ -127,7 +153,7 @@ export type TGetMerchantBookingInProgress = z.infer<
 >;
 
 export const GetMerchantBookingDone = GetMerchantBookingAccepted.extend({
-  review: z.any(),
+  review: ReviewModel.nullish(),
 });
 
 export type TGetMerchantBookingDone = z.infer<typeof GetMerchantBookingDone>;
@@ -210,7 +236,9 @@ export const GetUserBookingReason = GetUserBooking.extend({
 
 export type TGetUserBookingReason = z.infer<typeof GetUserBookingReason>;
 
-export const GetUserBookingDone = GetUserBooking.extend({ review: z.any() });
+export const GetUserBookingDone = GetUserBooking.extend({
+  review: ReviewModel.nullish(),
+});
 
 export type TGetUserBookingDone = z.infer<typeof GetUserBookingDone>;
 

@@ -22,6 +22,10 @@ export async function getMerchants(options?: SearchParams) {
   return MerchantRepository.findAll(options);
 }
 
+export async function getMerchantsAdmin(options?: SearchParams) {
+  return MerchantRepository.findAllAdmin(options);
+}
+
 export async function registerMerchant(
   userId: string,
   data: TRegisterMerchantSchema

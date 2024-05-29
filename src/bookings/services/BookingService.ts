@@ -17,6 +17,7 @@ import {
   TCreateBookingSchema,
   GetUserBookingPending,
   GetUserBookingRejected,
+  GetMerchantBookingExpired,
 } from "@/bookings/types";
 import { deleteImg, uploadImg } from "@/core/lib/image";
 import { BookingRepository } from "@/bookings/repositories/BookingRepository";
@@ -87,11 +88,61 @@ export async function addBooking(
   return result;
 }
 
+export async function flagDoneInProgressBooking() {
+  const yesterday = dayjs().subtract(1, "day").toDate();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.done, {
+    AND: {
+      bookingSchedule: { lte: yesterday },
+      bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
+    },
+  });
+}
+
+export async function flagExpiredAcceptedBooking() {
+  const today = new Date();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
+    AND: {
+      bookingSchedule: { lte: today },
+      bookingStatus: BookStatusEnum.Enum.accepted,
+    },
+  });
+}
+
+export async function flagExpiredInProgressRequestedBooking() {
+  const yesterday = dayjs().subtract(1, "day").toDate();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
+    AND: {
+      bookingSchedule: { lte: yesterday },
+      bookingStatus: BookStatusEnum.Enum.in_progress_requested,
+    },
+  });
+}
+
+export async function flagExpiredPendingBooking() {
+  const twoDaysAgo = dayjs().subtract(2, "days").toDate();
+  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
+    AND: {
+      bookingCreatedAt: { lte: twoDaysAgo },
+      bookingStatus: BookStatusEnum.Enum.pending,
+    },
+  });
+}
+
 export async function getMerchantBooking(
   merchantId: string,
   bookingId: string
 ) {
-  const booking = await BookingRepository.findOne(bookingId, { user: true });
+  const booking = await BookingRepository.findOne(bookingId, {
+    user: true,
+    review: {
+      select: {
+        reviewId: true,
+        reviewBody: true,
+        reviewStars: true,
+        reviewCreatedAt: true,
+      },
+    },
+  });
   if (booking.merchantId !== merchantId) throw new Error(ErrorCode.ErrNotFound);
 
   switch (booking.bookingStatus) {
@@ -103,11 +154,14 @@ export async function getMerchantBooking(
       return GetMerchantBookingRejected.parse(booking);
     case BookStatusEnum.Enum.canceled:
       return GetMerchantBookingCanceled.parse(booking);
-    case BookStatusEnum.Enum.in_progress_requested ||
-      BookStatusEnum.Enum.in_progress_accepted:
+    case BookStatusEnum.Enum.in_progress_requested:
+      return GetMerchantBookingInProgress.parse(booking);
+    case BookStatusEnum.Enum.in_progress_accepted:
       return GetMerchantBookingInProgress.parse(booking);
     case BookStatusEnum.Enum.done:
       return GetMerchantBookingDone.parse(booking);
+    case BookStatusEnum.Enum.expired:
+      return GetMerchantBookingExpired.parse(booking);
     default:
       throw new Error(ErrorCode.ErrNotFound);
   }
@@ -130,9 +184,18 @@ export async function getUserBooking(userId: string, bookingId: string) {
   const booking = await BookingRepository.findOne(bookingId, {
     merchant: {
       select: {
+        merchantId: true,
         merchantName: true,
         merchantPhotoUrl: true,
         user: { select: { phone: true } },
+      },
+    },
+    review: {
+      select: {
+        reviewId: true,
+        reviewBody: true,
+        reviewStars: true,
+        reviewCreatedAt: true,
       },
     },
   });
@@ -243,10 +306,10 @@ export async function setStatusInProgressRequested(
 }
 
 export async function setStatusInProgressAccepted(
-  merchantId: string,
+  userId: string,
   bookingId: string
 ) {
-  const booking = await getMerchantBooking(merchantId, bookingId);
+  const booking = await getUserBooking(userId, bookingId);
   if (!dayjs().isSame(booking.bookingSchedule, "date")) {
     throw new Error(ErrorCode.ErrBookWrongSchedule);
   }
@@ -255,8 +318,8 @@ export async function setStatusInProgressAccepted(
     bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
   };
 
-  await BookingRepository.updateMerchantBookingStatus(
-    merchantId,
+  await BookingRepository.updateUserBookingStatus(
+    userId,
     bookingId,
     [BookStatusEnum.Enum.in_progress_requested],
     data

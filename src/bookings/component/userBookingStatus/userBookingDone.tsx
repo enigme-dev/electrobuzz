@@ -10,30 +10,30 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-interface UserBookingExpiredProps {
+interface UserBookingDoneProps {
   bookingDetailData: TGetUserBooking;
 }
 
-const UserBookingExpired = ({ bookingDetailData }: UserBookingExpiredProps) => {
+const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
   return (
     <div>
       <div>
         {" "}
-        <div className="flex items-center justify-center ">
+        <div className="flex items-center justify-center pt-10">
           <Image
-            src={"/No data-cuate.svg"}
-            width={500}
-            height={500}
-            alt={"No data-cuate"}
+            src={"/done-icon.svg"}
+            width={100}
+            height={100}
+            alt={"done-icon"}
           />
         </div>
         <div className="grid gap-5 pt-10 wrapper">
           <div className="grid place-items-center ">
             <h1 className=" text-md  sm:text-2xl font-bold p-3  ">
-              Booking ini telah expired...
+              Booking ini telah selesai...
             </h1>{" "}
           </div>
-          <div className="shadow-lg border p-5 rounded-lg space-y-5">
+          <div className="shadow-lg border  p-5 rounded-lg space-y-5">
             <h1 className="font-semibold text-md sm:text-xl text-center">
               Keluhan User
             </h1>
@@ -41,11 +41,11 @@ const UserBookingExpired = ({ bookingDetailData }: UserBookingExpiredProps) => {
               <h2 className="pt-2 text-sm sm:text-xl text-center">
                 Foto Keluhan:
               </h2>
-              <div className="flex justify-center">
+              <div className="flex justify-center ">
                 <Image
                   src={bookingDetailData.bookingPhotoUrl}
                   alt={bookingDetailData.bookingPhotoUrl}
-                  className="pt-5"
+                  className="pt-5 h-[500px] w-[500px] object-cover"
                   width={500}
                   height={500}
                 />
@@ -85,4 +85,4 @@ const UserBookingExpired = ({ bookingDetailData }: UserBookingExpiredProps) => {
   );
 };
 
-export default UserBookingExpired;
+export default UserBookingDone;

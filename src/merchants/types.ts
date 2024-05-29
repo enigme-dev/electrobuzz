@@ -109,6 +109,8 @@ export const CreateIndexSchema = MerchantModel.pick({
   merchantCategory: true,
   merchantLat: true,
   merchantLong: true,
+  merchantRating: true,
+  merchantReviewCt: true,
 }).required();
 
 export type TCreateIndexSchema = z.infer<typeof CreateIndexSchema>;
