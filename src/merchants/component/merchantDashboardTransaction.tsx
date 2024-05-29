@@ -178,10 +178,10 @@ const MerchantDashboardTransaction = () => {
         />
       </div>
       <div className=" grid gap-5 max-h-[60vh] sm:max-h-[70vh] overflow-auto no-scrollbar pb-20 sm:pb-5">
-        {bookingDataAsMerchant?.pages?.flat().length !== 0 ? (
-          bookingDataAsMerchant?.pages.map((page, pageIndex) => (
-            <React.Fragment key={pageIndex}>
-              {page.data.map((value: any) => (
+        {bookingDataAsMerchant?.pages.map((page, pageIndex) => (
+          <React.Fragment key={pageIndex}>
+            {page.data.length !== 0 ? (
+              page.data.map((value: any) => (
                 <div key={value.bookingId}>
                   <BookingCard
                     bookImgAlt={value.bookingId}
@@ -215,14 +215,14 @@ const MerchantDashboardTransaction = () => {
                     isMerchant={true}
                   />
                 </div>
-              ))}
-            </React.Fragment>
-          ))
-        ) : (
-          <div className="flex items-center justify-center h-[50vh]">
-            <div className="text-center">Hasil tidak ditemukan</div>
-          </div>
-        )}
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-[50vh]">
+                <div className="text-center">Hasil tidak ditemukan</div>
+              </div>
+            )}
+          </React.Fragment>
+        ))}
       </div>
     </main>
   );
