@@ -11,7 +11,6 @@ export class NotificationRepository extends BaseRepository {
         notifLevel: data.level,
         notifMessage: data.message,
         notifPhotoUrl: data.photoUrl,
-        notifActionTitle: data.actionTitle,
         notifActionUrl: data.actionUrl,
         user: {
           connect: {

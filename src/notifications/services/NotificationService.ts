@@ -13,6 +13,9 @@ export async function createNotification(
   input: TCreateNotificationSchema
 ) {
   try {
+    if (input.message && input.message.length >= 64) {
+      input.message = input.message.substring(0, 64) + "...";
+    }
     const created = await NotificationRepository.create(userId, input);
     const pushNotif: TNotificationSchema = {
       id: created.notifId,
@@ -21,8 +24,6 @@ export async function createNotification(
       level: NotificationLevel.parse(created.notifLevel),
       message: created.notifMessage ?? undefined,
       photoUrl: created.notifPhotoUrl ?? undefined,
-      actionTitle: created.notifActionTitle ?? undefined,
-      actionUrl: created.notifActionUrl ?? undefined,
       createdAt: created.notifCreatedAt.toString(),
     };
     PusherClient.trigger(`private-${userId}`, "notification", pushNotif);
@@ -45,7 +46,6 @@ export async function getNotifications(
     level: NotificationLevel.parse(notif.notifLevel),
     message: notif.notifMessage ?? undefined,
     photoUrl: notif.notifPhotoUrl ?? undefined,
-    actionTitle: notif.notifActionTitle ?? undefined,
     actionUrl: notif.notifActionUrl ?? undefined,
     createdAt: notif.notifCreatedAt.toString(),
   }));

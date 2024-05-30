@@ -18,7 +18,6 @@ export const NotificationSchema = z.object({
   level: NotificationLevel,
   message: z.string().optional(),
   photoUrl: z.string().url().optional(),
-  actionTitle: z.string().optional(),
   actionUrl: z.string().url().optional(),
   createdAt: z.string().datetime(),
 });
@@ -32,7 +31,6 @@ export const CreateNotificationSchema = z.object({
   level: NotificationLevel,
   message: z.string().optional(),
   photoUrl: z.string().url().optional(),
-  actionTitle: z.string().optional(),
   actionUrl: z.string().url().optional(),
   createdAt: z.string().datetime().optional(),
 });

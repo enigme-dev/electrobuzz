@@ -169,7 +169,6 @@ model Notification {
   notifLevel       String
   notifMessage     String?
   notifPhotoUrl    String?
-  notifActionTitle String?
   notifActionUrl   String?
   notifCreatedAt   DateTime @default(now())
 
