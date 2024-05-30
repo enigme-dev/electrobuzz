@@ -1,4 +1,7 @@
-import { getMerchantReviews } from "@/bookings/services/ReviewService";
+import {
+  getMerchantReviews,
+  getMerchantReviewsDetail,
+} from "@/bookings/services/ReviewService";
 import { Cache } from "@/core/lib/cache";
 import { buildErr } from "@/core/lib/errors";
 import { Logger } from "@/core/lib/logger";
@@ -23,7 +26,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
     reviewsCt = Cache.get<number>(`merchant_reviews/${merchantId.data}`);
 
     if (!reviews || !reviewsCt) {
-      [reviews, reviewsCt] = await getMerchantReviews(merchantId.data, {
+      [reviews, reviewsCt] = await getMerchantReviewsDetail(merchantId.data, {
         page: skip,
         startDate,
         endDate,
