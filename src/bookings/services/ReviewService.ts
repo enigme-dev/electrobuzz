@@ -1,5 +1,4 @@
 import { SearchParams } from "@/core/lib/utils";
-import { BookingRepository } from "../repositories/BookingRepository";
 import { ReviewRepository } from "../repositories/ReviewRepository";
 import {
   BookStatusEnum,
@@ -9,6 +8,7 @@ import {
 } from "../types";
 import { getUserBooking } from "./BookingService";
 import { addMerchantIndex } from "@/merchants/services/MerchantService";
+import { createNotification } from "@/notifications/services/NotificationService";
 
 export async function createReview(
   bookingId: string,
@@ -35,6 +35,16 @@ export async function createReview(
   };
   const merchant = await ReviewRepository.create(data);
   await addMerchantIndex(merchant);
+
+  // create notif to merchant
+  createNotification(merchant.merchantId, {
+    service: "booking/merchant",
+    level: "info",
+    title: "Anda mendapatkan ulasan baru",
+    photoUrl: booking.bookingPhotoUrl,
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }
 
 export async function getMerchantReviews(
