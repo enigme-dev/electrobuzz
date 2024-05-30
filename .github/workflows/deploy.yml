@@ -36,6 +36,8 @@ jobs:
            "MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY }}"
            "QSTASH_CURRENT_SIGNING_KEY=${{ secrets.QSTASH_CURRENT_SIGNING_KEY }}"
            "QSTASH_NEXT_SIGNING_KEY=${{ secrets.QSTASH_NEXT_SIGNING_KEY }}"
+           "NEXT_PUBLIC_PUSHER_KEY=${{ secrets.NEXT_PUBLIC_PUSHER_KEY }}"
+           "NEXT_PUBLIC_PUSHER_CLUSTER=${{ secrets.QSTASH_NEXT_SIGNING_KEY }}"
 
   deploy:
     needs: build
