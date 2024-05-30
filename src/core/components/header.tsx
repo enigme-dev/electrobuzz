@@ -1,13 +1,13 @@
 "use client";
 
-import { Input } from "@/core/components/ui/input";
 import { Button } from "@/core/components/ui/button";
-import { AlignJustify, HamIcon, SunMoon } from "lucide-react";
+import { AlignJustify, SunMoon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toggleTheme } from "@/core/lib/shadcn";
 import Link from "next/link";
 import { AuthBar } from "./auth-bar";
 import { usePathname } from "next/navigation";
+import NotifBar from "@/notifications/components/NotifBar";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
@@ -39,6 +39,7 @@ export default function Header() {
               Cari Teknisimu
             </Button>
           </Link>
+          <NotifBar />
           <div className="hidden sm:block">
             <AuthBar />
           </div>
