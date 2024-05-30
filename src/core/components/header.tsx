@@ -39,13 +39,13 @@ export default function Header() {
               Cari Teknisimu
             </Button>
           </Link>
+          <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
+            <SunMoon className="mx-2 h-6 w-6" />
+          </Button>
           <NotifBar />
           <div className="hidden sm:block">
             <AuthBar />
           </div>
-          <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
-            <SunMoon className="mx-2 h-6 w-6" />
-          </Button>
         </div>
       </div>
     </div>

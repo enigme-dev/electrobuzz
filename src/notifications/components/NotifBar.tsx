@@ -16,6 +16,7 @@ import NotifCard from "./NotifCard";
 
 export default function NotifBar() {
   const [notifications, setNotifications] = useState<TNotificationSchema[]>([]);
+  const [showBadge, setShowBadge] = useState(false);
 
   const { data: session, status } = useSession();
 
@@ -35,6 +36,7 @@ export default function NotifBar() {
       const channel = pusher.subscribe(privateChannel);
       channel.bind("notification", (data: TNotificationSchema) => {
         setNotifications((prev) => [data, ...prev]);
+        setShowBadge(true);
       });
 
       return () => {
@@ -45,13 +47,19 @@ export default function NotifBar() {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
+      <PopoverTrigger asChild onClick={() => setShowBadge(false)}>
+        <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-6 w-6" />
+          {showBadge && (
+            <span className="bg-red-500 w-2 h-2 rounded-full absolute top-[15%] right-[20%]"></span>
+          )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[280px] h-[320px] overflow-auto">
-        <ul>
+      <PopoverContent align="end" className="w-[360px] h-[480px] p-0">
+        <div className="p-3 border-b">
+          <span className="text-lg">Notifikasi</span>
+        </div>
+        <ul className="overflow-auto">
           {notifications.map((notif) => (
             <NotifCard key={notif.id} data={notif} />
           ))}
