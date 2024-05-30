@@ -1,9 +1,9 @@
 import { BaseRepository } from "@/core/repositories/BaseRepository";
-import { TNotificationSchema } from "../types";
+import { TCreateNotificationSchema } from "../types";
 import { PER_PAGE, SearchParams } from "@/core/lib/utils";
 
 export class NotificationRepository extends BaseRepository {
-  static create(userId: string, data: TNotificationSchema) {
+  static create(userId: string, data: TCreateNotificationSchema) {
     return this.db.notification.create({
       data: {
         notifService: data.service,
