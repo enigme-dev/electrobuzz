@@ -15,6 +15,10 @@ export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
 }
 
+export async function deleteMerchantIndex(merchantId: string) {
+  return MerchantRepository.deleteIndex(merchantId);
+}
+
 export async function getMerchant(merchantId: string) {
   return MerchantRepository.findOne(merchantId);
 }

@@ -54,6 +54,10 @@ export class MerchantRepository extends BaseRepository {
     });
   }
 
+  static deleteIndex(merchantId: string) {
+    return this.index.deleteObject(merchantId);
+  }
+
   static findAll(options?: SearchParams) {
     return this.db.$transaction([
       this.db.merchant.findMany({

@@ -2,7 +2,12 @@ import { z } from "zod";
 
 export const ALBUM_QUOTA = 4;
 
-export const IdentityStatuses = z.enum(["pending", "verified", "rejected"]);
+export const IdentityStatuses = z.enum([
+  "pending",
+  "verified",
+  "rejected",
+  "suspended",
+]);
 
 export type TIdentityStatuses = z.infer<typeof IdentityStatuses>;
 
