@@ -28,6 +28,7 @@ import { getMerchant } from "@/merchants/services/MerchantService";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { createNotification } from "@/notifications/services/NotificationService";
 
 export async function addBooking(
   userId: string,
@@ -77,6 +78,16 @@ export async function addBooking(
     };
 
     result = await BookingRepository.create(data);
+
+    // create notif to merchant
+    createNotification(merchantId, {
+      service: "booking/merchant",
+      level: "info",
+      title: "Anda memiliki permintaan servis baru",
+      photoUrl: data.bookingPhotoUrl,
+      message: data.bookingComplain,
+      actionUrl: result.bookingId,
+    });
   } catch (e) {
     if (bookingPhotoUrl) {
       await deleteImg(bookingPhotoUrl);
@@ -223,6 +234,10 @@ export async function getUserBookings(userId: string, options?: SearchParams) {
   return await BookingRepository.findByUserId(userId, options);
 }
 
+export async function getUserReviews(userId: string, options?: SearchParams) {
+  return await BookingRepository.findUserReviews(userId, options);
+}
+
 export async function setStatusAccepted(
   merchantId: string,
   bookingId: string,
@@ -235,12 +250,22 @@ export async function setStatusAccepted(
     bookingDesc: input.bookingDesc,
   };
 
-  await BookingRepository.updateMerchantBookingStatus(
+  const booking = await BookingRepository.updateMerchantBookingStatus(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.pending],
     data
   );
+
+  // create notif to user
+  createNotification(booking.userId, {
+    service: "booking/user",
+    level: "success",
+    title: "Booking Anda telah diterima oleh Mitra",
+    photoUrl: booking.bookingPhotoUrl ?? "",
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }
 
 export async function setStatusCanceled(
@@ -258,12 +283,22 @@ export async function setStatusCanceled(
     bookingReason: input.bookingReason,
   };
 
-  await BookingRepository.updateUserBookingStatus(
+  const { merchantId } = await BookingRepository.updateUserBookingStatus(
     userId,
     bookingId,
     [BookStatusEnum.Enum.pending, BookStatusEnum.Enum.accepted],
     data
   );
+
+  // create notif to merchant
+  createNotification(merchantId, {
+    service: "booking/merchant",
+    level: "error",
+    title: "Booking Anda telah dibatalkan oleh pengguna",
+    photoUrl: booking.bookingPhotoUrl,
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }
 
 export async function setStatusDone(userId: string, bookingId: string) {
@@ -276,12 +311,22 @@ export async function setStatusDone(userId: string, bookingId: string) {
     bookingStatus: BookStatusEnum.Enum.done,
   };
 
-  await BookingRepository.updateUserBookingStatus(
+  const { merchantId } = await BookingRepository.updateUserBookingStatus(
     userId,
     bookingId,
     [BookStatusEnum.Enum.in_progress_accepted],
     data
   );
+
+  // create notif to merchant
+  createNotification(merchantId, {
+    service: "booking/merchant",
+    level: "success",
+    title: "Booking Anda telah diselesaikan oleh pengguna",
+    photoUrl: booking.bookingPhotoUrl,
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }
 
 export async function setStatusInProgressRequested(
@@ -297,12 +342,22 @@ export async function setStatusInProgressRequested(
     bookingStatus: BookStatusEnum.Enum.in_progress_requested,
   };
 
-  await BookingRepository.updateMerchantBookingStatus(
+  const { userId } = await BookingRepository.updateMerchantBookingStatus(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.accepted],
     data
   );
+
+  // create notif to user
+  createNotification(userId, {
+    service: "booking/user",
+    level: "warn",
+    title: "Mitra telah mengajukan permintaan untuk mulai servis",
+    photoUrl: booking.bookingPhotoUrl,
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }
 
 export async function setStatusInProgressAccepted(
@@ -318,12 +373,22 @@ export async function setStatusInProgressAccepted(
     bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
   };
 
-  await BookingRepository.updateUserBookingStatus(
+  const { merchantId } = await BookingRepository.updateUserBookingStatus(
     userId,
     bookingId,
     [BookStatusEnum.Enum.in_progress_requested],
     data
   );
+
+  // create notif to merchant
+  createNotification(merchantId, {
+    service: "booking/merchant",
+    level: "success",
+    title: "Pengguna telah menyetujui permintaan mulai servis Anda",
+    photoUrl: booking.bookingPhotoUrl,
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }
 
 export async function setStatusRejected(
@@ -336,10 +401,20 @@ export async function setStatusRejected(
     bookingReason: input.bookingReason,
   };
 
-  await BookingRepository.updateMerchantBookingStatus(
+  const booking = await BookingRepository.updateMerchantBookingStatus(
     merchantId,
     bookingId,
     [BookStatusEnum.Enum.pending],
     data
   );
+
+  // create notif to user
+  createNotification(booking.userId, {
+    service: "booking/user",
+    level: "error",
+    title: "Booking Anda telah ditolak oleh Mitra",
+    photoUrl: booking.bookingPhotoUrl ?? "",
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
 }

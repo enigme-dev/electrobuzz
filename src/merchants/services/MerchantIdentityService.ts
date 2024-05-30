@@ -9,6 +9,7 @@ import { MerchantIdentityRepository } from "@/merchants/repositories/MerchantIde
 import { ErrorCode } from "@/core/lib/errors";
 import {
   addMerchantIndex,
+  deleteMerchantIndex,
   getMerchant,
   updateMerchantVerified,
 } from "@/merchants/services/MerchantService";
@@ -70,6 +71,9 @@ export async function editMerchantIdentity(
   await MerchantIdentityRepository.update(merchantId, status);
 
   if (status === IdentityStatuses.Enum.rejected) {
+    await updateMerchantVerified(merchantId, false);
+    await deleteMerchantIndex(merchantId);
+
     const identity = await MerchantIdentityRepository.findOne(merchantId);
     await deleteImg(identity?.identityKTP as string, "vault");
     await deleteImg(identity?.identitySKCK as string, "vault");
@@ -80,6 +84,9 @@ export async function editMerchantIdentity(
     const merchant = await getMerchant(merchantId);
     await updateMerchantVerified(merchantId, true);
     await addMerchantIndex(merchant);
+  } else if (status === IdentityStatuses.Enum.suspended) {
+    await updateMerchantVerified(merchantId, false);
+    await deleteMerchantIndex(merchantId);
   }
 }
 

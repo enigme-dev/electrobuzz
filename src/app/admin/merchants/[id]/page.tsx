@@ -63,6 +63,7 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
             <option value="verified">Verified</option>
             <option value="pending">Pending</option>
             <option value="rejected">Rejected</option>
+            <option value="suspended">Suspended</option>
           </select>
         </div>
       </div>
