@@ -4,10 +4,11 @@ import { TAlbumsSchema } from "@/merchants/types";
 import { ErrorCode } from "@/core/lib/errors";
 import { Prisma } from "@prisma/client";
 import { getMerchant } from "./MerchantService";
+import { Cache } from "@/core/lib/cache";
 
 export async function addMerchantAlbums(
   merchantId: string,
-  data: TAlbumsSchema,
+  data: TAlbumsSchema
 ) {
   let images = [];
 
@@ -27,6 +28,9 @@ export async function addMerchantAlbums(
       albumPhotoUrl: image,
     }));
     await MerchantAlbumRepository.createMany(merchantId, albums);
+
+    // delete cached merchants
+    Cache.delete(`merchant/${merchantId}`);
   } catch (e) {
     images.map((image) => deleteImg(image));
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -45,7 +49,7 @@ export async function addMerchantAlbums(
 
 export async function deleteMerchantAlbum(
   merchantId: string,
-  merchantAlbumId: string,
+  merchantAlbumId: string
 ) {
   const album = await MerchantAlbumRepository.findOne(merchantAlbumId);
   if (album.merchantId !== merchantId) {
@@ -54,6 +58,9 @@ export async function deleteMerchantAlbum(
 
   await deleteImg(album.albumPhotoUrl);
   await MerchantAlbumRepository.delete(merchantAlbumId);
+
+  // delete cached merchants
+  Cache.delete(`merchant/${merchantId}`);
 }
 
 export async function getMerchantAlbum(merchantAlbumId: string) {

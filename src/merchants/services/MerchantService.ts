@@ -9,6 +9,7 @@ import { MerchantRepository } from "@/merchants/repositories/MerchantRepository"
 import { SearchParams } from "@/core/lib/utils";
 import { getPrivateProfile } from "@/users/services/UserService";
 import { ErrorCode } from "@/core/lib/errors";
+import { Cache } from "@/core/lib/cache";
 
 export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
@@ -94,11 +95,20 @@ export async function updateMerchantProfile(
   const updated = await MerchantRepository.update(merchantId, input);
 
   await addMerchantIndex(updated);
+
+  // delete cached merchants
+  Cache.delete(`merchant/${merchantId}`);
+  Cache.delete("merchantsCt");
+  Cache.deleteWithPrefix(`merchants/`);
 }
 
 export async function updateMerchantVerified(
   merchantId: string,
   merchantVerified: boolean
 ) {
+  // delete cached merchants
+  Cache.delete(`merchant/${merchantId}`);
+  Cache.delete("merchantsCt");
+  Cache.deleteWithPrefix(`merchants/`);
   return MerchantRepository.update(merchantId, { merchantVerified });
 }

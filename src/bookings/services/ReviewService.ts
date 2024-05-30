@@ -9,6 +9,7 @@ import {
 import { getUserBooking } from "./BookingService";
 import { addMerchantIndex } from "@/merchants/services/MerchantService";
 import { createNotification } from "@/notifications/services/NotificationService";
+import { Cache } from "@/core/lib/cache";
 
 export async function createReview(
   bookingId: string,
@@ -45,6 +46,9 @@ export async function createReview(
     message: booking.bookingComplain,
     actionUrl: bookingId,
   });
+
+  // delete cached merchant reviews
+  Cache.deleteWithPrefix(`merchant_reviews/${merchant.merchantId}`);
 }
 
 export async function getMerchantReviews(
@@ -52,6 +56,13 @@ export async function getMerchantReviews(
   options?: SearchParams
 ) {
   return await ReviewRepository.findMerchantReviews(merchantId, options);
+}
+
+export async function getMerchantReviewsDetail(
+  merchantId: string,
+  options?: SearchParams
+) {
+  return await ReviewRepository.findMerchantReviewsDetail(merchantId, options);
 }
 
 export async function getUserReviews(userId: string, options?: SearchParams) {
