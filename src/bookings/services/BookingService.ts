@@ -82,7 +82,7 @@ export async function addBooking(
     // create notif to merchant
     createNotification(merchantId, {
       service: "booking/merchant",
-      level: "error",
+      level: "info",
       title: "Anda memiliki permintaan servis baru",
       photoUrl: data.bookingPhotoUrl,
       message: data.bookingComplain,
