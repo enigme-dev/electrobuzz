@@ -64,7 +64,3 @@ export async function getMerchantReviewsDetail(
 ) {
   return await ReviewRepository.findMerchantReviewsDetail(merchantId, options);
 }
-
-export async function getUserReviews(userId: string, options?: SearchParams) {
-  return await ReviewRepository.findUserReviews(userId, options);
-}
