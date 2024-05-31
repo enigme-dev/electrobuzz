@@ -1,4 +1,3 @@
-import { ErrorCode } from "@/core/lib/errors";
 import { BillingRepository } from "../repositories/BillingRepository";
 import { SearchParams } from "@/core/lib/utils";
 import { BillingStatusEnum, TCreateBillingsSchema } from "../types";
@@ -26,12 +25,7 @@ export async function getMerchantBilling(
   merchantId: string,
   billingId: string
 ) {
-  const billing = await BillingRepository.findOne(billingId);
-  if (billing.merchantId != merchantId) {
-    throw new Error(ErrorCode.ErrNotFound);
-  }
-
-  return billing;
+  return await BillingRepository.findOne(merchantId, billingId);
 }
 
 export async function getMerchantBillings(
