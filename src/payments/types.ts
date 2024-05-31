@@ -36,32 +36,9 @@ export const UpdatePaymentSchema = z
     paymentStatus: PaymentStatusEnum,
     paymentAmount: z.number(),
     paymentMethod: z.string(),
+    paymentBank: z.string(),
     paymentDate: z.date(),
   })
   .partial();
 
 export type TUpdatePaymentSchema = z.infer<typeof UpdatePaymentSchema>;
-
-export const UpdateSuccessPaymentSchema = z.object({
-  paymentStatus: PaymentStatusEnum.optional(),
-  paymentAmount: z.number(),
-  paymentMethod: z.string(),
-  paymentBank: z.string().optional(),
-  paymentDate: z.date(),
-});
-
-export type TUpdateSuccessPaymentSchema = z.infer<
-  typeof UpdateSuccessPaymentSchema
->;
-
-export const UpdateFailedPaymentSchema = z.object({
-  paymentStatus: z.string(),
-  paymentAmount: z.number().optional(),
-  paymentMethod: z.string().optional(),
-  paymentBank: z.string().optional(),
-  paymentDate: z.date(),
-});
-
-export type TUpdateFailedPaymentSchema = z.infer<
-  typeof UpdateFailedPaymentSchema
->;

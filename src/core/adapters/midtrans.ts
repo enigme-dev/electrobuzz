@@ -1,3 +1,4 @@
+import { PaymentStatusEnum, TPaymentStatusEnum } from "@/payments/types";
 import axios from "axios";
 import { createHash } from "crypto";
 import { z } from "zod";
@@ -23,15 +24,32 @@ export const MTAfterPaymentResponse = z.object({
   order_id: z.string().cuid(),
   status_code: z.string(),
   transaction_status: z.string(),
-  fraud_status: z.string().optional(),
   payment_type: z.string(),
-  bank: z.string().optional(),
   gross_amount: z.string(),
-  settlement_time: z.string().datetime(),
   signature_key: z.string(),
+  settlement_time: z.string().optional(),
+  fraud_status: z.string().optional(),
+  bank: z.string().optional(),
+  va_numbers: z
+    .object({ va_number: z.string(), bank: z.string() })
+    .array()
+    .optional(),
+  store: z.string().optional(),
+  acquirer: z.string().optional(),
 });
 
 export type TMTAfterPaymentResponse = z.infer<typeof MTAfterPaymentResponse>;
+
+export const MTVerifPaymentResult = z.object({
+  order_id: z.string().cuid(),
+  transaction_status: PaymentStatusEnum,
+  payment_type: z.string(),
+  gross_amount: z.number(),
+  settlement_time: z.date().optional(),
+  bank: z.string().optional(),
+});
+
+export type TMTVerifPaymentResult = z.infer<typeof MTVerifPaymentResult>;
 
 export class MidtransSnap {
   private static serverKey = process.env.MIDTRANS_SERVER_KEY as string;
@@ -58,7 +76,12 @@ export class MidtransSnap {
       axios
         .post<TMTCreateTransactionResponse>(
           this.getSnapEndpoint() + "/transactions",
-          { order_id: billingId, gross_amount: amount },
+          {
+            transaction_details: {
+              order_id: billingId,
+              gross_amount: amount,
+            },
+          },
           { auth: { username: this.serverKey, password: "" } }
         )
         .then((res) => {
@@ -84,7 +107,7 @@ export class MidtransSnap {
 
   static async verifyTransaction(
     response: any
-  ): Promise<TMTAfterPaymentResponse> {
+  ): Promise<TMTVerifPaymentResult> {
     return new Promise((resolve, reject) => {
       const data = MTAfterPaymentResponse.safeParse(response);
       if (!data.success || !data.data) {
@@ -98,44 +121,86 @@ export class MidtransSnap {
         data.data.status_code +
         data.data.gross_amount +
         this.serverKey;
-      const hashed = createHash("sha512").update(payload).digest("base64");
+      const hashed = createHash("sha512").update(payload).digest("hex");
 
       if (hashed != data.data.signature_key) {
         reject("signature key mismatch");
         return;
       }
 
-      // get transaction status from Midtrans API
+      // re-verify transaction status from Midtrans API
       axios
-        .get(this.getEndpoint() + data.data.order_id + "/status", {
+        .get(`${this.getEndpoint()}/${data.data.order_id}/status`, {
           auth: { username: this.serverKey, password: "" },
         })
         .then((res) => {
-          const result = MTAfterPaymentResponse.safeParse(res);
-          if (!result.success || !result.data) {
+          const verif = MTAfterPaymentResponse.safeParse(res.data);
+          if (!verif.success || !verif.data) {
             reject("error response validation");
-            return;
-          }
-
-          if (result.data.status_code != "200") {
-            reject("transaction error");
             return;
           }
 
           // verify signature key
           const payload =
-            result.data.order_id +
-            result.data.status_code +
-            result.data.gross_amount +
+            verif.data.order_id +
+            verif.data.status_code +
+            verif.data.gross_amount +
             this.serverKey;
-          const hashed = createHash("sha512").update(payload).digest("base64");
+          const hashed = createHash("sha512").update(payload).digest("hex");
 
-          if (hashed != result.data.signature_key) {
+          if (hashed != verif.data.signature_key) {
             reject("signature key mismatch");
             return;
           }
 
-          resolve(result.data);
+          // translate transaction status to payment status enum
+          let status: TPaymentStatusEnum = PaymentStatusEnum.Enum.pending,
+            bank;
+          if (
+            verif.data.transaction_status === "capture" &&
+            verif.data.fraud_status === "accept"
+          ) {
+            status = PaymentStatusEnum.Enum.success;
+          } else if (verif.data.transaction_status === "settlement") {
+            status = PaymentStatusEnum.Enum.success;
+          } else if (
+            verif.data.transaction_status == "cancel" ||
+            verif.data.transaction_status == "deny"
+          ) {
+            status = PaymentStatusEnum.Enum.failed;
+          } else if (verif.data.transaction_status == "expire") {
+            status = PaymentStatusEnum.Enum.expired;
+          }
+
+          // translate transaction handler/bank to payment bank
+          switch (verif.data.payment_type) {
+            case "credit_card":
+              bank = verif.data.bank;
+              break;
+            case "qris":
+              bank = verif.data.acquirer;
+              break;
+            case "bank_transfer":
+              if (verif.data.va_numbers && verif.data.va_numbers.length > 0) {
+                bank = verif.data.va_numbers[0].bank;
+              }
+              break;
+            case "cstore":
+              bank = verif.data.store;
+              break;
+          }
+
+          const result: TMTVerifPaymentResult = {
+            order_id: verif.data.order_id,
+            transaction_status: status,
+            payment_type: verif.data.payment_type,
+            gross_amount: parseInt(verif.data.gross_amount),
+            bank: bank,
+          };
+          if (verif.data.settlement_time)
+            result.settlement_time = new Date(verif.data.settlement_time);
+
+          resolve(result);
         })
         .catch((err) => reject(err));
     });

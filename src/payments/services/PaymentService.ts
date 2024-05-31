@@ -1,12 +1,7 @@
 import { MidtransSnap } from "@/core/adapters/midtrans";
 import { Logger } from "@/core/lib/logger";
 import { PaymentRepository } from "../repositories/PaymentRepository";
-import {
-  PaymentStatusEnum,
-  TPaymentStatusEnum,
-  TUpdateFailedPaymentSchema,
-  TUpdateSuccessPaymentSchema,
-} from "../types";
+import { PaymentStatusEnum, TUpdatePaymentSchema } from "../types";
 
 export async function createPayment(billingId: string, amount: number) {
   try {
@@ -25,66 +20,27 @@ export async function createPayment(billingId: string, amount: number) {
   }
 }
 
-export async function updateSuccessPayment(
+export async function updatePayment(
   billingId: string,
-  data: TUpdateSuccessPaymentSchema
+  data: TUpdatePaymentSchema
 ) {
-  return await PaymentRepository.updateByBillingId(billingId, {
-    ...data,
-    paymentStatus: PaymentStatusEnum.Enum.success,
-  });
-}
-
-export async function updateFailedPayment(
-  billingId: string,
-  data: TUpdateFailedPaymentSchema
-) {
-  let status: TPaymentStatusEnum =
-    data.paymentStatus === "expired"
-      ? PaymentStatusEnum.Enum.expired
-      : PaymentStatusEnum.Enum.failed;
-
-  return await PaymentRepository.updateByBillingId(billingId, {
-    ...data,
-    paymentStatus: status,
-  });
+  return await PaymentRepository.updateByBillingId(billingId, data);
 }
 
 export function verifyPayment(response: any) {
   MidtransSnap.verifyTransaction(response)
     .then((data) => {
-      if (
-        data.transaction_status === "capture" &&
-        data.fraud_status === "accept"
-      ) {
-        updateSuccessPayment(data.order_id, {
-          paymentMethod: data.payment_type,
-          paymentBank: data.bank,
-          paymentAmount: parseInt(data.gross_amount),
-          paymentDate: new Date(data.settlement_time),
-        });
-      } else if (data.transaction_status === "settlement") {
-        updateSuccessPayment(data.order_id, {
-          paymentMethod: data.payment_type,
-          paymentBank: data.bank,
-          paymentAmount: parseInt(data.gross_amount),
-          paymentDate: new Date(data.settlement_time),
-        });
-      } else if (
-        data.transaction_status == "cancel" ||
-        data.transaction_status == "deny" ||
-        data.transaction_status == "expire"
-      ) {
-        updateFailedPayment(data.order_id, {
+      if (data.transaction_status != PaymentStatusEnum.Enum.pending) {
+        updatePayment(data.order_id, {
           paymentStatus: data.transaction_status,
+          paymentAmount: data.gross_amount,
           paymentMethod: data.payment_type,
           paymentBank: data.bank,
-          paymentAmount: parseInt(data.gross_amount),
-          paymentDate: new Date(data.settlement_time),
+          paymentDate: data.settlement_time,
         });
       }
     })
-    .catch((err) => {
-      console.error(err);
-    });
+    .catch((err) =>
+      Logger.error("payment", "midtrans verification error", err)
+    );
 }
