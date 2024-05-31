@@ -1,15 +1,17 @@
-import { buildErr } from "@/core/lib/errors";
-import { Logger } from "@/core/lib/logger";
-import { buildRes } from "@/core/lib/utils";
-import { chargeMonthlyFees } from "@/merchants/services/MerchantService";
 import { NextRequest } from "next/server";
+import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
+import { Logger } from "@/core/lib/logger";
+import { chargeMonthlyFees } from "@/merchants/services/MerchantService";
 
-export async function POST(req: NextRequest) {
+async function handler(_req: NextRequest) {
   try {
     chargeMonthlyFees();
   } catch (e) {
-    Logger.error("billing", "charge monthly fees error", e);
-    return buildErr("ErrUnknown", 500);
+    Logger.error("cron", "monthly cronjob error", e);
+    return new Response("Internal Server Error", { status: 500 });
   }
-  return buildRes("ok");
+
+  return Response.json({ success: true });
 }
+
+export const POST = verifySignatureAppRouter(handler);
