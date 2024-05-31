@@ -179,6 +179,7 @@ model Notification {
 
 model Billing {
   billingId        String   @id @default(cuid())
+  billingStatus    String
   billingAmount    Int
   billingQty       Int
   billingCreatedAt DateTime @default(now())
@@ -192,9 +193,10 @@ model Billing {
 model Payment {
   paymentId        String    @id @default(cuid())
   paymentStatus    String
+  paymentAmount    Int?
   paymentMethod    String?
   paymentDate      DateTime?
-  paymentToken     String?   /// @encrypted
+  paymentToken     String    /// @encrypted
   paymentCreatedAt DateTime  @default(now())
 
   billingId        String    @unique
