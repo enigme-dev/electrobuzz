@@ -24,10 +24,26 @@ export class BillingRepository extends BaseRepository {
     return this.db.billing.createMany({ data });
   }
 
-  static findOne(billingId: string) {
+  static findOne(merchantId: string, billingId: string) {
     return this.db.billing.findUniqueOrThrow({
-      where: { billingId },
-      include: { payment: true },
+      where: { billingId, merchantId },
+      select: {
+        billingId: true,
+        billingStatus: true,
+        billingAmount: true,
+        billingQty: true,
+        billingCreatedAt: true,
+        payment: {
+          select: {
+            paymentId: true,
+            paymentStatus: true,
+            paymentAmount: true,
+            paymentMethod: true,
+            paymentBank: true,
+            paymentDate: true,
+          },
+        },
+      },
     });
   }
 
@@ -41,12 +57,19 @@ export class BillingRepository extends BaseRepository {
         },
         where: {
           merchantId,
+          billingStatus: options?.status,
           billingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
         },
-        include: { payment: true },
+        select: {
+          billingId: true,
+          billingStatus: true,
+          billingAmount: true,
+          billingQty: true,
+          billingCreatedAt: true,
+        },
       }),
       this.db.billing.count({
-        where: { merchantId },
+        where: { merchantId, billingStatus: options?.status },
       }),
     ]);
   }
