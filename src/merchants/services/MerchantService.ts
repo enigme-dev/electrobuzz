@@ -1,5 +1,7 @@
 import {
+  BillingStatusEnum,
   IdentityStatuses,
+  TCreateBillingsSchema,
   TRegisterMerchantSchema,
   TUpdateMerchantSchema,
 } from "@/merchants/types";
@@ -10,9 +12,36 @@ import { SearchParams } from "@/core/lib/utils";
 import { getPrivateProfile } from "@/users/services/UserService";
 import { ErrorCode } from "@/core/lib/errors";
 import { Cache } from "@/core/lib/cache";
+import { BookStatusEnum } from "@/bookings/types";
+import dayjs from "dayjs";
+import { MONTHLY_FEES, createBillings } from "./BillingService";
 
 export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
+}
+
+export async function chargeMonthlyFees() {
+  const firstDayOfMonth = dayjs().startOf("month").toDate();
+  const lastDayOfMonth = dayjs().endOf("month").toDate();
+  const merchants = await MerchantRepository.countBookings(
+    BookStatusEnum.Enum.done,
+    { startDate: firstDayOfMonth, endDate: lastDayOfMonth }
+  );
+
+  let billings: TCreateBillingsSchema = [];
+  merchants.forEach((merchant) => {
+    const bookingsCt = merchant._count.bookings;
+    const totalAmount = MONTHLY_FEES * bookingsCt;
+
+    billings.push({
+      merchantId: merchant.merchantId,
+      billingQty: bookingsCt,
+      billingAmount: totalAmount,
+      billingStatus: BillingStatusEnum.Enum.pending,
+    });
+  });
+
+  await createBillings(billings);
 }
 
 export async function deleteMerchantIndex(merchantId: string) {
