@@ -195,6 +195,7 @@ model Payment {
   paymentStatus    String
   paymentAmount    Int?
   paymentMethod    String?
+  paymentBank      String?
   paymentDate      DateTime?
   paymentToken     String    /// @encrypted
   paymentCreatedAt DateTime  @default(now())
