@@ -1,9 +1,5 @@
 import BookingCard from "@/bookings/component/bookingCard";
-import {
-  TBookingModel,
-  TGetMerchantBookingDone,
-  TGetMerchantBookings,
-} from "@/bookings/types";
+import { TBookingModel, TGetMerchantBookings } from "@/bookings/types";
 import { CalendarPicker } from "@/core/components/calendarPicker";
 import { DatePickerWithRange } from "@/core/components/dateRangePicker";
 import Loader from "@/core/components/loader/loader";
@@ -18,39 +14,39 @@ import { useInView } from "react-intersection-observer";
 const selectStatusFilter = [
   {
     value: "all",
-    item: "Semua",
+    item: "All",
   },
   {
     value: "pending",
-    item: "Menunggu konfirmasi",
+    item: "Pending",
   },
   {
     value: "rejected",
-    item: "Ditolak mitra",
+    item: "Rejected",
   },
   {
     value: "canceled",
-    item: "Dibatalkan pengguna",
+    item: "Canceled",
   },
   {
     value: "accepted",
-    item: "Diterima mitra",
+    item: "Accepted",
   },
   {
-    value: "in_progress_requested",
-    item: "Permohonan service",
+    value: "inProgressRequest",
+    item: "In Progress",
   },
   {
-    value: "in_progress_accepted",
-    item: "Proses service",
+    value: "inProgressAccepted",
+    item: "On Going",
   },
   {
     value: "done",
-    item: "Selesai",
+    item: "Done",
   },
   {
     value: "expired",
-    item: "Kadaluwarsa",
+    item: "Expired",
   },
 ];
 
@@ -92,6 +88,7 @@ const MerchantDashboardTransaction = () => {
   const { ref, inView } = useInView();
 
   const {
+    status,
     data: bookingDataAsMerchant,
     error,
     isLoading: bookingListLoading,
@@ -112,7 +109,6 @@ const MerchantDashboardTransaction = () => {
       );
       return response.data;
     },
-    enabled: !!session?.user?.id,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const { page, total, perpage } = lastPage;
@@ -158,36 +154,33 @@ const MerchantDashboardTransaction = () => {
       }`
     );
   };
-  console.log(bookingDataAsMerchant);
 
   if (bookingListLoading) {
     return <Loader />;
   }
 
   return (
-    <main className="px-4 w-full">
-      <div className="sticky top-0 bg-white dark:bg-slate-950 w-full py-5">
-        <h1 className="text-xl sm:text-2xl font-bold pb-5">Transaksi</h1>
-        <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[25vw]">
-          <DatePickerWithRange
-            onSelect={handleDateRangeAndFilterSelection}
-            selected={selectedRange}
-            handleReset={handleReset}
-          />
-          <SelectOption
-            onValueChange={handleFilterValue}
-            defaultValue={initialFilterValue ? initialFilterValue : ""}
-            selectList={selectStatusFilter}
-            placeholder="Pilih Status"
-          />
-        </div>
+    <main className="px-4 pt-10 w-full">
+      <h1 className="text-xl sm:text-2xl font-bold pb-5">Transaksi</h1>
+      <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[25vw]">
+        <DatePickerWithRange
+          onSelect={handleDateRangeAndFilterSelection}
+          selected={selectedRange}
+          handleReset={handleReset}
+        />
+        <SelectOption
+          onValueChange={handleFilterValue}
+          defaultValue={initialFilterValue ? initialFilterValue : ""}
+          selectList={selectStatusFilter}
+          placeholder="Pilih Status"
+        />
       </div>
-      <div className=" grid gap-5 pb-20 sm:pb-5">
+      <div className=" grid gap-5 max-h-[60vh] sm:max-h-[70vh] overflow-auto no-scrollbar pb-20 sm:pb-5">
         {bookingDataAsMerchant?.pages.map((page, pageIndex) => (
           <React.Fragment key={pageIndex}>
-            {page.total !== 0 && page.perpage === 10 ? (
+            {page.data.length !== 0 ? (
               page.data.map((value: any) => (
-                <div key={value}>
+                <div key={value.bookingId}>
                   <BookingCard
                     bookImgAlt={value.bookingId}
                     estimatePrice={{
@@ -200,8 +193,8 @@ const MerchantDashboardTransaction = () => {
                     }}
                     bookingComplaintImg={value.bookingPhotoUrl}
                     bookingComplaintDesc={value.bookingComplain}
-                    imgSource={value.user ? value.user.image : ""}
-                    imgAlt={value.user ? value.user.name : ""}
+                    imgSource={value.user.image}
+                    imgAlt={value.user.name}
                     orderId={
                       value.bookingId
                         ? value.bookingId
@@ -209,7 +202,7 @@ const MerchantDashboardTransaction = () => {
                         ? value.bookingId
                         : ""
                     }
-                    merchName={value.user.name ? value.user.name : ""}
+                    merchName={value.user.name}
                     bookingSchedule={value.bookingSchedule.toString()}
                     bookingCreatedAt={
                       value.bookingCreatedAt
@@ -228,7 +221,6 @@ const MerchantDashboardTransaction = () => {
             )}
           </React.Fragment>
         ))}
-        <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
       </div>
     </main>
   );

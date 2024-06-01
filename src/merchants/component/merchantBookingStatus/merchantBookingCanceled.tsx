@@ -24,7 +24,7 @@ const MerchantBookingCanceled = ({
           height={500}
         />
       </div>
-      <div className="grid  gap-5 w-full place-items-center">
+      <div className="grid  gap-5 w-fit">
         <h1 className=" text-2xl font-bold text-center">Maaf...</h1>
         <p className="pt-2 text-center text-lg">
           Permintaan anda telah dibatalkan oleh pengguna
@@ -37,7 +37,7 @@ const MerchantBookingCanceled = ({
           </p>
         </div>
 
-        <div className="shadow-lg border p-5 rounded-lg space-y-5 w-full">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h1 className="font-semibold text-md sm:text-xl text-center">
             Keluhan Pengguna
           </h1>

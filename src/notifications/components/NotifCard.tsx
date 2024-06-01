@@ -39,7 +39,7 @@ export default function NotifCard({ data }: { data: TNotificationSchema }) {
     if (data.service === "booking/user") {
       target = "/user/my-bookings/" + data.actionUrl;
     } else if (data.service === "booking/merchant") {
-      target = "/merchant/dashboard/transaction/" + data.actionUrl;
+      target = "/merchant/dashboard/transaction?id=" + data.actionUrl;
     }
 
     return <a href={target}>{base}</a>;

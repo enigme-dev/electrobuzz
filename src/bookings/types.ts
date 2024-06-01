@@ -35,14 +35,8 @@ export const ReviewModel = z.object({
 export type TReviewModel = z.infer<typeof ReviewModel>;
 
 export const CreateReviewSchema = z.object({
-  reviewBody: z
-    .string({ required_error: "Tolong deskripsikan hasil servicemu" })
-    .min(8)
-    .max(128),
-  reviewStars: z
-    .number({ required_error: "Tolong berikan ratingmu" })
-    .min(1)
-    .max(5),
+  reviewBody: z.string().min(8).max(128),
+  reviewStars: z.number().min(1).max(5),
 });
 
 export type TCreateReviewSchema = z.infer<typeof CreateReviewSchema>;

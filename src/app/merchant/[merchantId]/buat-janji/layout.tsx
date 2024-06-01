@@ -6,14 +6,15 @@ import { redirect, usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 const BuatJanjiLayout = ({ children }: any) => {
-  const { data: session, status } = useSession();
+  const pathname = usePathname();
+  const { data: session } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [session, router]);
+  // useEffect(() => {
+  //   if (!session?.user) {
+  //     router.push("/login");
+  //   }
+  // }, [session, router]);
 
   return (
     <div>

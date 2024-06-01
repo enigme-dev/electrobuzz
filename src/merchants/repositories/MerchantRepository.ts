@@ -3,34 +3,9 @@ import { PER_PAGE, SearchParams } from "@/core/lib/utils";
 import { TCreateIndexSchema, TRegisterMerchantSchema } from "@/merchants/types";
 import { AlgoliaClient } from "@/core/adapters/algolia";
 import { Prisma } from "@prisma/client";
-import { BookStatusEnum } from "@/bookings/types";
 
 export class MerchantRepository extends BaseRepository {
   private static readonly index = AlgoliaClient.initIndex("merchants");
-
-  static countBookings(bookingStatus: BookStatusEnum, options?: SearchParams) {
-    return this.db.merchant.findMany({
-      where: {
-        merchantVerified: true,
-      },
-      select: {
-        merchantId: true,
-        _count: {
-          select: {
-            bookings: {
-              where: {
-                bookingStatus,
-                bookingCreatedAt: {
-                  gte: options?.startDate,
-                  lte: options?.endDate,
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-  }
 
   static create(userId: string, data: TRegisterMerchantSchema) {
     return this.db.merchant.create({
@@ -93,7 +68,6 @@ export class MerchantRepository extends BaseRepository {
         },
         where: {
           merchantAvailable: true,
-          merchantVerified: true,
         },
         include: {
           merchantIdentity: {

@@ -7,8 +7,6 @@ import {
   HomeIcon,
   NotepadText,
   Settings,
-  Star,
-  User,
   UserRound,
   Users,
 } from "lucide-react";
@@ -21,29 +19,22 @@ export function AuthBar() {
   const isAdmin = session?.user?.isAdmin;
   const navList = [
     {
-      label: "Profil",
-      link: "/user/profile",
-      icon: <User size="20" />,
-      show: true,
-    },
-    {
-      label: "Riwayat Pesanan",
+      label: "My Bookings",
       link: "/user/my-bookings",
       icon: <NotepadText size="20" />,
       show: true,
     },
-
     {
-      label: "Halaman Admin",
+      label: "Edit Profile",
+      link: "/user/profile",
+      icon: <Settings size="20" />,
+      show: true,
+    },
+    {
+      label: "Admin Dashboard",
       link: "/admin",
       icon: <Users size="20" />,
       show: isAdmin,
-    },
-    {
-      label: "Ulasan",
-      link: "/user/rating",
-      icon: <Star size="20" />,
-      show: true,
     },
   ];
 
@@ -101,14 +92,14 @@ export function AuthBar() {
                           variant="outline"
                           className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"
                         >
-                          Halaman Mitra
+                          Merchant Dashboard
                         </Button>
                       </Link>
                     </li>
                   ) : (
                     <li className="pt-5 text-center">
                       <Link href="/merchant/register">
-                        <Button variant="outline">Daftar sebagai Mitra</Button>
+                        <Button variant="outline">Register as merchant</Button>
                       </Link>
                     </li>
                   )}

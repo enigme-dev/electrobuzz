@@ -35,7 +35,7 @@ const UserBookingCanceled = ({
               <span className="font-semibold text-sm sm:text-lg">
                 Dengan alasan:{" "}
               </span>
-              <p className="max-w-[300px] text-wrap break-words text-sm sm:text-lg pt-2">
+              <p className="max-w-screen-lg text-wrap break-words text-sm sm:text-lg pt-2">
                 {bookingDetailData.bookingReason}
               </p>
             </p>

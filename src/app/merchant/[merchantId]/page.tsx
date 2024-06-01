@@ -1,19 +1,25 @@
 "use client";
 import { CarouselImage } from "@/core/components/carousel-image";
 import Loader from "@/core/components/loader/loader";
-import ReviewCard from "@/core/components/reviewCard";
+import { Button } from "@/core/components/ui/button";
 import { Card } from "@/core/components/ui/card";
 import { CarouselItem } from "@/core/components/ui/carousel";
-import { getRoundedRating } from "@/core/lib/utils";
-
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useToast } from "@/core/components/ui/use-toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { MapPinIcon, PlusIcon, Star } from "lucide-react";
+import {
+  Lightbulb,
+  MapPinIcon,
+  Newspaper,
+  PenBoxIcon,
+  PlusIcon,
+  Store,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 
 interface MerchantDetails {
   merchantPhotoUrl: string;
@@ -33,24 +39,10 @@ interface MerchantDetails {
   merchantAlbums?: string[];
 }
 
-interface UserReviewData {
-  page: number;
-  total: number;
-  perpage: number;
-  data: MerchantDetails[];
-}
-
 const MerchantDetailPage = () => {
   const pathname = usePathname();
   const splitPathname = pathname.split("/");
   const merchantId = splitPathname.pop() || "";
-  const searchParams = useSearchParams();
-  const pageFromQueryParams = searchParams.get("page");
-  const { ref, inView } = useInView();
-
-  const params = {
-    page: pageFromQueryParams,
-  };
 
   const {
     isLoading: getMerchantDetailsloading,
@@ -65,51 +57,13 @@ const MerchantDetailPage = () => {
     enabled: !!merchantId,
   });
 
-  const {
-    data: userReviewData,
-    isLoading: userReviewDataLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["getUserRatingData", params],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get("/api/user/review", {
-        params: {
-          ...params,
-          page: pageParam,
-        },
-      });
-      return response.data as UserReviewData[];
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage: any) => {
-      const { page, total, perpage } = lastPage;
-      if (!lastPage) return undefined;
-      if (page) {
-        if (page * perpage < total) {
-          return page + 1;
-        }
-      }
-
-      return undefined;
-    },
-  });
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [fetchNextPage, inView, hasNextPage]);
-
-  const ceiledRating = getRoundedRating(merchantDetails?.merchantRating || 0);
-
   if (getMerchantDetailsloading) {
     return <Loader />;
   }
 
   return (
     <div className="wrapper pb-20 ">
+      {/* <Image src={"/AdamSucipto.svg"} alt="adam-sucipto" /> */}
       <div className="">
         <div className="relative flex flex-col gap-4 items-start justify-end w-full">
           <Image
@@ -119,37 +73,19 @@ const MerchantDetailPage = () => {
             height={300}
             className="object-cover w-full h-[40vh] brightness-50 object-center"
           />
-          <div className="absolute p-5 grid gap-2">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold sm:text-3xl text-white text-wrap max-w-[200px] sm:max-w-[400px] break-words">
-                {merchantDetails?.merchantName}
-              </h1>
-              <Card className="flex items-center gap-2 px-2 py-1">
-                {merchantDetails?.merchantRating ? (
-                  <>
-                    <Star
-                      size={15}
-                      fill="orange"
-                      strokeWidth={0}
-                      className="text-yellow-400"
-                    />
-                    <p className="text-xs">{ceiledRating}</p>
-                  </>
-                ) : (
-                  <p className="text-gray-400 italic text-xs sm:text-sm">
-                    belum ada rating
-                  </p>
-                )}
-              </Card>
-            </div>
-            <h2 className="text-sm sm:text-2xl text-white flex items-center gap-2 ">
-              <div className="flex flex-wrap max-w-full sm:max-w-full h-fit gap-1 sm:gap-3">
-                {merchantDetails?.merchantCategory.map((value, index) => (
-                  <span key={index}>{value}</span>
-                ))}
-              </div>
+          <div className="absolute grid gap-3 p-5">
+            <h1 className="text-xl font-bold sm:text-3xl text-white">
+              {merchantDetails?.merchantName}
+            </h1>
+            <h2 className="text-lg sm:text-2xl text-white flex  items-center gap-2">
+              <span className="bg-yellow-400 rounded-lg py-1 px-2">
+                <Lightbulb className="text-black w-4" />
+              </span>
+              {merchantDetails?.merchantCategory.map((value, index) => (
+                <div key={index}>{value}</div>
+              ))}
             </h2>
-            <h2 className="text-xs sm:text-2xl text-white flex items-center gap-2 ">
+            <h2 className="text-lg sm:text-2xl text-white flex  items-center gap-2">
               <span className="bg-red-500 rounded-lg py-1 px-2">
                 <MapPinIcon className="text-white w-4" />
               </span>
@@ -189,8 +125,14 @@ const MerchantDetailPage = () => {
           <div>
             <h1 className="text-bold text-2xl flex items-center gap-4">
               Deskripsi{" "}
+              <span className="bg-yellow-400 py-1 px-2 rounded-lg">
+                <Newspaper className="text-black w-4" />
+              </span>
             </h1>
             <p className="mt-10 flex items-center gap-4 max-w-[350px] sm:max-w-[500px] break-words">
+              <span className="bg-green-500 py-1 px-2 rounded-lg">
+                <PenBoxIcon className="text-white w-4" />
+              </span>
               {merchantDetails?.merchantDesc}
             </p>
           </div>
@@ -203,45 +145,18 @@ const MerchantDetailPage = () => {
             </Link>
           </div>
         </div>
-      </div>
-      <div className="px-4">
-        <h1 className="text-bold text-2xl pt-10">Ulasan</h1>
-        <div className="pt-5 grid gap-4">
-          {userReviewData?.pages.map(
-            (page: UserReviewData, pageIndex: number) => (
-              <React.Fragment key={pageIndex}>
-                {page.data.length !== 0 ? (
-                  page.data.map((value: any) => (
-                    <div key={value.bookingId}>
-                      <ReviewCard
-                        name={value.merchant.merchantName}
-                        image={value.merchant.merchantPhotoUrl}
-                        userReview={
-                          value.review !== null ? value.review.reviewBody : ""
-                        }
-                        userRating={
-                          value.review !== null ? value.review.reviewStars : ""
-                        }
-                        bookingPhotoUrl={value.bookingPhotoUrl}
-                        bookingComplain={value.bookingComplain}
-                        reviewCreatedAt={
-                          value.review !== null && value.review.reviewCreatedAt
-                        }
-                        bookingId={value.bookingId}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center h-[50vh]">
-                    <div className="text-center">Hasil tidak ditemukan</div>
-                  </div>
-                )}
-              </React.Fragment>
-            )
-          )}
-
-          <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
-        </div>
+        {/* <div>
+          <h1 className="text-bold text-2xl pt-10">Ulasan</h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Duis aute irure dolor in
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+        </div> */}
       </div>
     </div>
   );

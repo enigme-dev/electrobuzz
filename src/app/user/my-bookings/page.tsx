@@ -1,19 +1,19 @@
 "use client";
 
 import BookingCard from "@/bookings/component/bookingCard";
-import { TGetUserBooking } from "@/bookings/types";
-
+import { BookStatusEnum, TGetUserBooking } from "@/bookings/types";
+import { CalendarPicker } from "@/core/components/calendarPicker";
 import { DatePickerWithRange } from "@/core/components/dateRangePicker";
 import Loader from "@/core/components/loader/loader";
 import { SelectOption } from "@/core/components/select-option";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { format } from "date-fns";
+import axios, { ParamsSerializerOptions } from "axios";
+import { format, toDate } from "date-fns";
 import { useInView } from "react-intersection-observer";
 
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const selectStatusFilter = [
   {
@@ -62,7 +62,7 @@ interface BookingDataResponse {
 }
 
 const BookingPage = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -71,18 +71,17 @@ const BookingPage = () => {
   const fromDateQueryParam = searchParams.get("start-date");
   const toDateQueryParam = searchParams.get("end-date");
   const statusQueryParam = searchParams.get("status");
+  const allQueryParams = searchParams.getAll("");
 
   const initialValue = {
     from: fromDateQueryParam ? new Date(fromDateQueryParam) : undefined,
     to: toDateQueryParam ? new Date(toDateQueryParam) : undefined,
   };
-  const initialFilterValue = statusQueryParam || "";
+  const initialFilterValue = statusQueryParam;
   const [selectedRange, setSelectedRange] = useState(initialValue);
   const [currentPage, setCurrentPage] = useState<number>(
     Number(pageFromQueryParams) || 1
   );
-
-  const [isFilterVisible, setIsFilterVisible] = useState(true);
 
   const params = {
     page: pageFromQueryParams,
@@ -94,15 +93,15 @@ const BookingPage = () => {
   const { ref, inView } = useInView();
 
   const {
+    status,
     data: bookingData,
-    status: bookingDataStatus,
     error,
     isLoading: bookingListLoading,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["getBookingData", params],
+    queryKey: ["getBookingData", session?.user?.id, params],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get<BookingDataResponse>(
         "/api/user/booking",
@@ -123,14 +122,7 @@ const BookingPage = () => {
       }
       return undefined;
     },
-    enabled: !!session?.user?.id,
   });
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -168,55 +160,31 @@ const BookingPage = () => {
     );
   };
 
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const isScrollingUp = currentScrollY - 1 < lastScrollY;
-
-      setIsFilterVisible(isScrollingUp);
-      lastScrollY = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   if (bookingListLoading) {
     return <Loader />;
   }
 
   return (
-    <main className="wrapper px-4">
-      <div
-        className={`sticky top-0  w-full transition-transform duration-300 ${
-          isFilterVisible ? "translate-y-0" : "-translate-y-48"
-        }  z-50 bg-white dark:bg-slate-950 pt-10 pb-5`}
-      >
-        <h1 className="text-xl sm:text-2xl font-bold mb-5">Riwayat Pesanan</h1>
-        <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[50vw]">
-          <DatePickerWithRange
-            onSelect={handleDateRangeAndFilterSelection}
-            selected={selectedRange}
-            handleReset={handleReset}
-          />
-          <SelectOption
-            onValueChange={handleFilterValue}
-            defaultValue={initialFilterValue ? initialFilterValue : ""}
-            selectList={selectStatusFilter}
-            placeholder="Pilih Status"
-          />
-        </div>
+    <main className="wrapper px-4 pt-10">
+      <h1 className="text-xl sm:text-2xl font-bold mb-5">Booking History</h1>
+      <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[25vw]">
+        <DatePickerWithRange
+          onSelect={handleDateRangeAndFilterSelection}
+          selected={selectedRange}
+          handleReset={handleReset}
+        />
+        <SelectOption
+          onValueChange={handleFilterValue}
+          defaultValue={initialFilterValue ? initialFilterValue : ""}
+          selectList={selectStatusFilter}
+          placeholder="Pilih Status"
+        />
       </div>
-      <div className="grid gap-5 pb-24">
-        {bookingData?.pages.map((page, pageIndex) => (
-          <React.Fragment key={pageIndex}>
-            {page.data.length !== 0 && page.perpage === 10 ? (
-              page.data.map((value: TGetUserBooking) => (
+      <div className="relative grid gap-5 max-h-[60vh] sm:max-h-[70vh] overflow-auto no-scrollbar pb-24">
+        {bookingData?.pages?.flat().length !== 0 ? (
+          bookingData?.pages.map((page, pageIndex) => (
+            <React.Fragment key={pageIndex}>
+              {page.data.map((value: TGetUserBooking) => (
                 <div key={value.bookingId}>
                   <BookingCard
                     bookImgAlt={value.bookingId}
@@ -228,17 +196,9 @@ const BookingPage = () => {
                         ? value.bookingPriceMin.toString()
                         : "",
                     }}
-                    bookingComplaintImg={
-                      value.bookingPhotoUrl ? value.bookingPhotoUrl : ""
-                    }
-                    bookingComplaintDesc={
-                      value.bookingComplain ? value.bookingComplain : ""
-                    }
-                    imgSource={
-                      value.merchant.merchantPhotoUrl
-                        ? value.merchant.merchantPhotoUrl
-                        : ""
-                    }
+                    bookingComplaintImg={value.bookingPhotoUrl}
+                    bookingComplaintDesc={value.bookingComplain}
+                    imgSource={value.merchant.merchantPhotoUrl}
                     imgAlt={value.merchant.merchantName}
                     orderId={
                       value.bookingId
@@ -258,15 +218,14 @@ const BookingPage = () => {
                     merchantId={value.merchant.merchantId}
                   />
                 </div>
-              ))
-            ) : (
-              <div className="flex items-center justify-center h-[50vh]">
-                <div className="text-center">Hasil tidak ditemukan</div>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-
+              ))}
+            </React.Fragment>
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-[50vh]">
+            <div className="text-center">Hasil tidak ditemukan</div>
+          </div>
+        )}
         <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
       </div>
     </main>

@@ -34,11 +34,13 @@ const EditProfile = () => {
     isEditName,
     isEditPhone,
     isEditing,
+    onOpenDialog,
+    setOnOpenDialog,
     setIsEditName,
     setIsEditPhone,
   } = useEditProfile();
 
-  const { isLoading, data } = useQuery({
+  const { isLoading: isLoading, data } = useQuery({
     queryKey: ["user", session?.user?.id],
     queryFn: () => axios.get(`/api/user/${session?.user?.id}`),
     enabled: !!session?.user?.id,
@@ -60,10 +62,6 @@ const EditProfile = () => {
   const [step, setStep] = useState(0);
   const [view, setView] = useState<React.ReactNode | null>(null);
 
-  const [isNameDialogOpen, setIsNameDialogOpen] = useState(false);
-  const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
-  const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
-
   const handlePrev = () => {
     if (step > 0) setStep((prev) => prev - 1);
   };
@@ -72,12 +70,10 @@ const EditProfile = () => {
     if (step < 1) setStep((prev) => prev + 1);
   };
 
-  function handleOpenChange(
-    open: boolean,
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  ) {
+  function handleOpenChange(open: boolean) {
     if (!open) {
-      setOpen(false);
+      setStep(0);
+      setOnOpenDialog(false);
     }
   }
 
@@ -99,10 +95,7 @@ const EditProfile = () => {
               isEditName={isEditName}
               isEditPhone={isEditPhone}
               initialFormValues={initialFormValues}
-              handleCloseDialog={() => {
-                setIsNameDialogOpen(false);
-                setIsPhoneDialogOpen(false);
-              }}
+              handleCloseDialog={() => setOnOpenDialog(false)}
             />
           );
           break;
@@ -113,7 +106,7 @@ const EditProfile = () => {
               onNext={() => handleNext()}
               isEditing={isEditing}
               isEditPhone={isEditPhone}
-              handleCloseDialog={() => setIsPhoneDialogOpen(false)}
+              handleCloseDialog={() => setOnOpenDialog(false)}
             />
           );
           break;
@@ -121,9 +114,7 @@ const EditProfile = () => {
           newView = (
             <AddressForm
               isEditing={false}
-              handleOnCloseDialog={() => {
-                setIsAddressDialogOpen(false);
-              }}
+              handleOnCloseDialog={() => setOnOpenDialog(false)}
             />
           );
           break;
@@ -132,7 +123,7 @@ const EditProfile = () => {
       }
     }
     setView(newView);
-  }, [step, isEditing, isEditPhone, isEditName]);
+  }, [step, isEditing, isEditPhone, isEditName, onOpenDialog]);
 
   if (isLoading || addressLoading) {
     return <Loader />;
@@ -156,9 +147,9 @@ const EditProfile = () => {
             {data?.data.data.name}
           </h1>
           <DialogGeneral
-            dialogTitle="Ubah Nama"
-            onOpen={isNameDialogOpen}
-            onOpenChange={(open) => handleOpenChange(open, setIsNameDialogOpen)}
+            dialogTitle="Edit Profile"
+            onOpen={onOpenDialog}
+            onOpenChange={handleOpenChange}
             dialogContent={<>{view}</>}
             dialogTrigger={
               <Button
@@ -166,7 +157,7 @@ const EditProfile = () => {
                 onClick={() => {
                   startEditing();
                   startEditName();
-                  setIsNameDialogOpen(true);
+                  setOnOpenDialog(true);
                   setStep(0);
                 }}
               >
@@ -180,11 +171,9 @@ const EditProfile = () => {
         <div className="flex items-center justify-center gap-4 pl-14">
           <p className="text-sm sm:text-md">{data?.data.data.phone}</p>
           <DialogGeneral
-            dialogTitle="Ubah Nomor Telpon"
-            onOpen={isPhoneDialogOpen}
-            onOpenChange={(open) =>
-              handleOpenChange(open, setIsPhoneDialogOpen)
-            }
+            dialogTitle="Edit Profile"
+            onOpen={onOpenDialog}
+            onOpenChange={handleOpenChange}
             dialogContent={<>{view}</>}
             dialogTrigger={
               <Button
@@ -192,7 +181,7 @@ const EditProfile = () => {
                 onClick={() => {
                   startEditing();
                   startEditPhone();
-                  setIsPhoneDialogOpen(true);
+                  setOnOpenDialog(true);
                   setStep(0);
                 }}
               >
@@ -222,17 +211,15 @@ const EditProfile = () => {
           <h2 className="text-md sm:text-xl font-bold">Alamat</h2>
           <div>
             <DialogGeneral
-              dialogTitle={"Tambah Alamat"}
+              dialogTitle={"Edit Profile"}
               dialogContent={<>{view}</>}
-              onOpen={isAddressDialogOpen}
-              onOpenChange={(open) =>
-                handleOpenChange(open, setIsAddressDialogOpen)
-              }
+              onOpen={onOpenDialog}
+              onOpenChange={handleOpenChange}
               dialogTrigger={
                 <Card
                   className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
                   onClick={() => {
-                    setIsAddressDialogOpen(true);
+                    setOnOpenDialog(true);
                     cancelEditing();
                     setIsEditName(false);
                     setIsEditPhone(false);
