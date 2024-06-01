@@ -81,7 +81,7 @@ const UserRatingPage = () => {
           {userReviewData?.pages.map(
             (page: UserReviewData, pageIndex: number) => (
               <React.Fragment key={pageIndex}>
-                {page.data.length !== 0 ? (
+                {page.data.length !== 0 && page.data !== undefined ? (
                   page.data.map((value: TGetUserBookingDone) => (
                     <div key={value.bookingId}>
                       <ReviewCard

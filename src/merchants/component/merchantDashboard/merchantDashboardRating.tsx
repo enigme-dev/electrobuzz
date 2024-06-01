@@ -46,7 +46,7 @@ const MerchantDashboardRating = () => {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["getUserRatingData", params],
+    queryKey: ["getMerchantRatingData", params],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get("/api/merchant/review", {
         params: {
@@ -89,7 +89,9 @@ const MerchantDashboardRating = () => {
         {reviewMerchantDetail?.pages.map(
           (page: UserReviewData, pageIndex: number) => (
             <React.Fragment key={pageIndex}>
-              {page.data.length !== 0 ? (
+              {page.data.length !== 0 &&
+              page.data !== undefined &&
+              page.data !== null ? (
                 page.data.map((value: any) => (
                   <div key={value.bookingId}>
                     <ReviewCard
@@ -97,8 +99,12 @@ const MerchantDashboardRating = () => {
                       image={value.user ? value.user.image : ""}
                       userReview={value !== null ? value.reviewBody : ""}
                       userRating={value !== null ? value.reviewStars : ""}
-                      bookingPhotoUrl={value.booking.bookingPhotoUrl}
-                      bookingComplain={value.booking.bookingComplain}
+                      bookingPhotoUrl={
+                        value.booking ? value.booking.bookingPhotoUrl : ""
+                      }
+                      bookingComplain={
+                        value.booking ? value.booking.bookingComplain : ""
+                      }
                       reviewCreatedAt={value !== null && value.reviewCreatedAt}
                       bookingId={value.bookingId}
                     />
@@ -106,7 +112,9 @@ const MerchantDashboardRating = () => {
                 ))
               ) : (
                 <div className="flex items-center justify-center h-[50vh]">
-                  <div className="text-center">belum ada rating</div>
+                  <div className="text-cente text-gray-400 italic">
+                    Kamu belum memiliki ulasan
+                  </div>
                 </div>
               )}
             </React.Fragment>

@@ -11,6 +11,7 @@ import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import Loader from "@/core/components/loader/loader";
 import ReviewCard from "@/core/components/reviewCard";
 import StarRating from "@/core/components/starRating";
+import StarRatingInput from "@/core/components/starRatingInput";
 import { Button } from "@/core/components/ui/button";
 import { Card } from "@/core/components/ui/card";
 import {
@@ -43,8 +44,6 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
     resolver: zodResolver(CreateReviewSchema),
   });
 
-  const [isUserHasGivenRate, setIsUserHasGivenRate] = useState(false);
-
   const queryClient = useQueryClient();
 
   const { mutate: createReview, isPending: createReviewLoading } = useMutation({
@@ -60,7 +59,6 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
       queryClient.invalidateQueries({
         queryKey: ["getUserRatingData"],
       });
-      setIsUserHasGivenRate(true);
     },
     onError: () => {
       toast({ title: "Rating gagal terkirim!", variant: "destructive" });
@@ -90,7 +88,7 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
               Booking ini telah selesai...
             </h1>{" "}
           </div>
-          <div className="shadow-lg border  p-5 rounded-lg space-y-5">
+          <div className=" border  p-5 rounded-lg space-y-5">
             <h1 className="font-semibold text-md sm:text-xl text-center">
               Keluhan User
             </h1>
@@ -156,18 +154,12 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
                         <FormLabel>Rating</FormLabel>
                         <FormControl>
                           <div className="flex items-center gap-2">
-                            <Star fill="orange" strokeWidth={0} />
-                            <div className="flex items-center gap-2">
-                              <Input
-                                className="w-14"
-                                disabled={isUserHasGivenRate}
-                                type="number"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(parseInt(e.target.value))
-                                }
-                              />
-                            </div>
+                            <StarRatingInput
+                              rating={field.value}
+                              onRatingChange={(rate: any) =>
+                                field.onChange(rate)
+                              }
+                            />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -183,7 +175,6 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
                         <FormControl>
                           <Input
                             placeholder="Deskripsikan hasil servicemu"
-                            disabled={isUserHasGivenRate}
                             min={1}
                             {...field}
                           />
@@ -194,7 +185,7 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
                   />{" "}
                   <div className="flex justify-end pt-4">
                     <ButtonWithLoader
-                      className={isUserHasGivenRate ? "hidden" : "block"}
+                      className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
                       buttonText="Submit"
                       isLoading={createReviewLoading}
                       type="submit"

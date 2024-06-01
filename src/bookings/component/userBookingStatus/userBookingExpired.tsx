@@ -66,15 +66,19 @@ const UserBookingExpired = ({ bookingDetailData }: UserBookingExpiredProps) => {
                 {format(bookingDetailData.bookingSchedule.toString(), "PPP")}
               </p>
             </div>
-            <div>
-              <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
-              <p className=" text-left text-sm sm:text-lg font-semibold">
-                {bookingDetailData.addressDetail},{" "}
-                {bookingDetailData.addressCity},{" "}
-                {bookingDetailData.addressProvince},{" "}
-                {bookingDetailData.addressZipCode}
-              </p>
-            </div>
+            {bookingDetailData ? (
+              <div>
+                <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
+                <p className=" text-left text-sm sm:text-lg font-semibold">
+                  {bookingDetailData.addressDetail},{" "}
+                  {bookingDetailData.addressCity},{" "}
+                  {bookingDetailData.addressProvince},{" "}
+                  {bookingDetailData.addressZipCode}
+                </p>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
           <Link className="flex justify-center" href={"/user/my-bookings"}>
             <Button variant={"outline"}>Kembali</Button>

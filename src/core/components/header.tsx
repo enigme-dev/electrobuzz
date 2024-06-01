@@ -7,7 +7,6 @@ import { toggleTheme } from "@/core/lib/shadcn";
 import Link from "next/link";
 import { AuthBar } from "./auth-bar";
 import { usePathname } from "next/navigation";
-import NotifBar from "@/notifications/components/NotifBar";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
@@ -42,7 +41,7 @@ export default function Header() {
           <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
             <SunMoon className="mx-2 h-6 w-6" />
           </Button>
-          <NotifBar />
+          {/* <NotifBar /> */}
           <div className="hidden sm:block">
             <AuthBar />
           </div>

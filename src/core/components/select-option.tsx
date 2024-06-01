@@ -26,26 +26,27 @@ export function SelectOption({
   placeholder,
 }: SelectProps) {
   return (
-    <div
-      onChange={(e) => {
-        e.stopPropagation();
-      }}
-    >
-      <Select defaultValue={defaultValue} onValueChange={onValueChange}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>{selectLabel}</SelectLabel>
-            {selectList?.map((value, index) => (
-              <SelectItem key={index} value={value.value}>
-                {value.item}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select defaultValue={defaultValue} onValueChange={onValueChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent
+        ref={(ref) => {
+          if (!ref) return;
+          ref.ontouchstart = (e) => {
+            e.preventDefault();
+          };
+        }}
+      >
+        <SelectGroup>
+          <SelectLabel>{selectLabel}</SelectLabel>
+          {selectList?.map((value, index) => (
+            <SelectItem key={index} value={value.value}>
+              {value.item}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

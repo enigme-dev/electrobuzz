@@ -82,22 +82,26 @@ const MerchantBookingDone = ({
                 {bookingDetailData.addressZipCode}
               </p>
             </div>
-            <Card className="p-5 ">
-              <h1 className="font-bold">{bookingDetailData.user.name}</h1>
-              <div className="flex items-center">
-                <h2>Rating:</h2>
-                <StarRating
-                  userRating={
-                    bookingDetailData.review
-                      ? bookingDetailData.review.reviewStars
-                      : 0
-                  }
-                />
-              </div>
-              <p className="md:max-w-[70vw] max-w-[60vw] break-words">
-                Review: {bookingDetailData.review?.reviewBody}
-              </p>
-            </Card>
+            {bookingDetailData.review ? (
+              <Card className="p-5 ">
+                <h1 className="font-bold">{bookingDetailData.user.name}</h1>
+                <div className="flex items-center">
+                  <h2>Rating:</h2>
+                  <StarRating
+                    userRating={
+                      bookingDetailData.review
+                        ? bookingDetailData.review.reviewStars
+                        : 0
+                    }
+                  />
+                </div>
+                <p className="md:max-w-[70vw] max-w-[60vw] break-words">
+                  Review: {bookingDetailData.review?.reviewBody}
+                </p>
+              </Card>
+            ) : (
+              <></>
+            )}
           </div>
           <Link
             className="flex justify-center"
