@@ -72,7 +72,7 @@ const MerchantDetailPage = () => {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["getUserRatingData", params],
+    queryKey: ["getAllUserRatingInMerchantDetail", params],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get(`/api/merchant/${merchantId}/review`, {
         params: {

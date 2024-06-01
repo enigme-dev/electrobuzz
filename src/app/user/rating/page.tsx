@@ -85,17 +85,23 @@ const UserRatingPage = () => {
                   page.data.map((value: TGetUserBookingDone) => (
                     <div key={value.bookingId}>
                       <ReviewCard
-                        name={value.merchant.merchantName}
-                        image={value.merchant.merchantPhotoUrl}
+                        name={value.merchant ? value.merchant.merchantName : ""}
+                        image={
+                          value.merchant ? value.merchant.merchantPhotoUrl : ""
+                        }
                         userReview={
                           value.review !== null ? value.review?.reviewBody : ""
                         }
                         userRating={
                           value.review !== null ? value.review?.reviewStars : 0
                         }
-                        bookingPhotoUrl={value.bookingPhotoUrl}
-                        bookingComplain={value.bookingComplain}
-                        reviewCreatedAt={value.review?.reviewCreatedAt}
+                        bookingPhotoUrl={value ? value.bookingPhotoUrl : ""}
+                        bookingComplain={value ? value.bookingComplain : ""}
+                        reviewCreatedAt={
+                          value.review
+                            ? value.review.reviewCreatedAt
+                            : undefined
+                        }
                         bookingId={value.bookingId}
                       />
                     </div>
