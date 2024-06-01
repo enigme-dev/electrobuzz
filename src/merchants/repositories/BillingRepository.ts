@@ -1,10 +1,6 @@
 import { PER_PAGE, SearchParams } from "@/core/lib/utils";
 import { BaseRepository } from "@/core/repositories/BaseRepository";
-import {
-  BillingStatusEnum,
-  TCreateBillingSchema,
-  TCreateBillingsSchema,
-} from "../types";
+import { TCreateBillingSchema, TCreateBillingsSchema } from "../types";
 import { Prisma } from "@prisma/client";
 
 export class BillingRepository extends BaseRepository {
@@ -13,7 +9,7 @@ export class BillingRepository extends BaseRepository {
       data: {
         billingAmount: data.billingAmount,
         billingQty: data.billingQty,
-        billingStatus: data.billingStatus,
+        billingPaid: data.billingPaid,
         merchant: {
           connect: { merchantId: data.merchantId },
         },
@@ -30,7 +26,7 @@ export class BillingRepository extends BaseRepository {
       where: { billingId, merchantId },
       select: {
         billingId: true,
-        billingStatus: true,
+        billingPaid: true,
         billingAmount: true,
         billingQty: true,
         billingCreatedAt: true,
@@ -42,6 +38,7 @@ export class BillingRepository extends BaseRepository {
             paymentMethod: true,
             paymentBank: true,
             paymentDate: true,
+            paymentCreatedAt: true,
           },
         },
       },
@@ -58,19 +55,19 @@ export class BillingRepository extends BaseRepository {
         },
         where: {
           merchantId,
-          billingStatus: options?.status,
+          billingPaid: options?.toggle,
           billingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
         },
         select: {
           billingId: true,
-          billingStatus: true,
+          billingPaid: true,
           billingAmount: true,
           billingQty: true,
           billingCreatedAt: true,
         },
       }),
       this.db.billing.count({
-        where: { merchantId, billingStatus: options?.status },
+        where: { merchantId, billingPaid: options?.toggle },
       }),
     ]);
   }

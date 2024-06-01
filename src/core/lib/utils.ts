@@ -37,6 +37,7 @@ export const SearchParams = z.object({
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   status: z.string().optional(),
+  toggle: z.boolean().optional(),
   perPage: z.number().optional(),
 });
 
