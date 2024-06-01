@@ -91,7 +91,7 @@ const AddressForm = ({
       ),
 
     onSuccess: () => {
-      toast({ title: "edit alamat berhasil!" });
+      toast({ title: "Edit alamat berhasil!" });
       queryClient.invalidateQueries({
         queryKey: ["userAddressData", session?.user?.id],
       });
