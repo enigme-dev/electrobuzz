@@ -5,6 +5,7 @@ import {
   TCreateBillingSchema,
   TCreateBillingsSchema,
 } from "../types";
+import { Prisma } from "@prisma/client";
 
 export class BillingRepository extends BaseRepository {
   static create(data: TCreateBillingSchema) {
@@ -72,5 +73,9 @@ export class BillingRepository extends BaseRepository {
         where: { merchantId, billingStatus: options?.status },
       }),
     ]);
+  }
+
+  static update(billingId: string, data: Prisma.BillingUpdateInput) {
+    return this.db.billing.update({ where: { billingId }, data });
   }
 }
