@@ -1,22 +1,27 @@
 import {
   TBookingReasonSchema,
+  TGetMerchantBookingDone,
   TGetMerchantBookingInProgress,
   TGetUserBooking,
+  TGetUserBookingDone,
   TGetUserBookingRejected,
 } from "@/bookings/types";
+import StarRating from "@/core/components/starRating";
 import { Button } from "@/core/components/ui/button";
+import { Card } from "@/core/components/ui/card";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 interface MerchantBookingDoneProps {
-  bookingDetailData: TGetUserBooking;
+  bookingDetailData: TGetMerchantBookingDone;
 }
 
 const MerchantBookingDone = ({
   bookingDetailData,
 }: MerchantBookingDoneProps) => {
+  console.log(bookingDetailData);
   return (
     <div>
       <div>
@@ -77,6 +82,22 @@ const MerchantBookingDone = ({
                 {bookingDetailData.addressZipCode}
               </p>
             </div>
+            <Card className="p-5 ">
+              <h1 className="font-bold">{bookingDetailData.user.name}</h1>
+              <div className="flex items-center">
+                <h2>Rating:</h2>
+                <StarRating
+                  userRating={
+                    bookingDetailData.review
+                      ? bookingDetailData.review.reviewStars
+                      : 0
+                  }
+                />
+              </div>
+              <p className="md:max-w-[70vw] max-w-[60vw] break-words">
+                Review: {bookingDetailData.review?.reviewBody}
+              </p>
+            </Card>
           </div>
           <Link
             className="flex justify-center"

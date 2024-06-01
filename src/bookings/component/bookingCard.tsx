@@ -54,7 +54,7 @@ const BookingCard = ({
       <Card
         onClick={() => {
           isMerchant
-            ? router.push(`/merchant/dashboard/transaction?id=${orderId}`)
+            ? router.push(`/merchant/dashboard/transaction/${orderId}`)
             : router.push(`/user/my-bookings/${orderId}`);
         }}
         className="w-full cursor-pointer z-0 p-3 grid gap-4 max-w-screen"

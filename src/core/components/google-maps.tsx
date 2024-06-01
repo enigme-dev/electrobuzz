@@ -30,13 +30,13 @@ const MyMapComponent = ({ marker, isLoaded, locLatLng }: MapProps) => {
   }, []);
 
   const onUnmount = useCallback((map: any) => {
-    setMap(null);
+    setMap(map);
   }, []);
 
   return isLoaded ? (
     <div>
       <GoogleMap
-        mapContainerClassName="block md:w-[400px] md:h-[400px] w-[300px] h-[300px]"
+        mapContainerClassName="md:w-[400px] md:h-[400px] w-[300px] h-[300px]"
         center={center}
         zoom={5}
         onLoad={onLoad}

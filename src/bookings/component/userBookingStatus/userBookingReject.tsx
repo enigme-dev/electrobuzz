@@ -30,11 +30,14 @@ const UserBookingReject = ({ bookingDetailData }: UserBookingRejectProps) => {
         <p className="pt-2 text-center text-lg">
           Permintaan anda telah ditolak oleh Mitra
         </p>
-
-        <div className="space-y-2">
-          <p className="text-sm sm:text-xl text-center">Alasan Penolakan:</p>
-          <p className=" text-sm sm:text-lg font-semibold text-center w-[60vw] break-words overflow-auto">
-            {bookingDetailData.bookingReason}{" "}
+        <div className="grid place-items-center ">
+          <p className="text-lg pt-2 sm:text-md grid place-items-center">
+            <span className="font-semibold text-sm sm:text-lg">
+              Dengan alasan:{" "}
+            </span>
+            <p className="max-w-[300px] text-wrap break-words text-sm sm:text-lg pt-2">
+              {bookingDetailData.bookingReason}
+            </p>
           </p>
         </div>
         <div className="shadow-lg border p-5 rounded-lg space-y-5">

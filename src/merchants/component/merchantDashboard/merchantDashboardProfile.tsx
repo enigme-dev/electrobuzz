@@ -32,15 +32,9 @@ import { useForm } from "react-hook-form";
 
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
-import MyMapComponent from "@/core/components/google-maps";
-import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { DialogGeneral } from "@/core/components/general-dialog";
-import {
-  EditMerchantIdentitySchema,
-  TEditMerchantIdentitySchema,
-  TUpdateMerchantSchema,
-  UpdateMerchantSchema,
-} from "../types";
+import { TUpdateMerchantSchema, UpdateMerchantSchema } from "@/merchants/types";
+import MyMapComponent from "@/core/components/google-maps";
 
 interface MyMerchantDetails {
   merchantPhotoUrl: string;
@@ -328,13 +322,13 @@ const MerchantDashboardProfile = () => {
   }
 
   return (
-    <div className="m-auto px-8 gap-2 max-h-[90vh] w-full overflow-scroll no-scrollbar">
+    <div className="m-auto px-8 relative">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <DialogGeneral
             dialogContent={
               <>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center pt-10">
                   <FormField
                     control={form.control}
                     name="merchantPhotoUrl"
@@ -378,7 +372,7 @@ const MerchantDashboardProfile = () => {
             onOpenChange={handleOpenChange}
             dialogTrigger={
               <div
-                className="relative flex flex-col gap-4 items-start max-h-[300px] justify-end w-full hover:brightness-75 cursor-pointer"
+                className="relative flex flex-col gap-4 items-start max-h-[300px] pt-10 justify-end w-full hover:brightness-75 cursor-pointer"
                 onClick={() => setOnOpenDialog(true)}
               >
                 <Image
@@ -388,15 +382,15 @@ const MerchantDashboardProfile = () => {
                   alt={myMerchantDetails ? myMerchantDetails?.merchantName : ""}
                   width={300}
                   height={300}
-                  className="object-cover w-full brightness-50 object-center hover:cursor-pointer pb-5"
+                  className="object-cover w-full brightness-50 h-[300px] object-center hover:cursor-pointer pb-5 pt-10"
                 />
-                <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
+                <div className="absolute top-10 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
                   <Upload className="text-white" />
                 </div>
               </div>
             }
           />
-          {/* 
+
           <div className="h-fit">
             <FormLabel>
               Album{" "}
@@ -440,7 +434,7 @@ const MerchantDashboardProfile = () => {
                   </div>
                 ))}
             </div>
-          </div> */}
+          </div>
 
           <FormField
             control={form.control}
@@ -544,7 +538,7 @@ const MerchantDashboardProfile = () => {
               </FormItem>
             )}
           />
-          {/* <div className="pt-8">
+          <div className=" pt-8">
             {isLoaded ? (
               <>
                 <Autocomplete
@@ -581,7 +575,7 @@ const MerchantDashboardProfile = () => {
             ) : (
               "loading..."
             )}
-          </div> */}
+          </div>
         </form>
       </Form>
     </div>
