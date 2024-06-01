@@ -123,57 +123,6 @@ export class BookingRepository extends BaseRepository {
     });
   }
 
-  static findUserReviews(userId: string, options?: SearchParams) {
-    return this.db.$transaction([
-      this.db.booking.findMany({
-        orderBy: [
-          {
-            bookingCreatedAt: "desc",
-          },
-        ],
-        skip: options?.page,
-        take: options?.perPage ?? PER_PAGE,
-        where: {
-          userId,
-          bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
-          bookingStatus: BookStatusEnum.Enum.done,
-        },
-        select: {
-          bookingId: true,
-          bookingStatus: true,
-          bookingComplain: true,
-          bookingPhotoUrl: true,
-          bookingPriceMin: true,
-          bookingPriceMax: true,
-          bookingSchedule: true,
-          bookingCreatedAt: true,
-          merchant: {
-            select: {
-              merchantId: true,
-              merchantName: true,
-              merchantPhotoUrl: true,
-            },
-          },
-          review: {
-            select: {
-              reviewId: true,
-              reviewStars: true,
-              reviewBody: true,
-              reviewCreatedAt: true,
-            },
-          },
-        },
-      }),
-      this.db.booking.count({
-        where: {
-          userId,
-          bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
-          bookingStatus: BookStatusEnum.Enum.done,
-        },
-      }),
-    ]);
-  }
-
   static updateManyStatus(
     status: BookStatusEnum,
     where: Prisma.BookingWhereInput
