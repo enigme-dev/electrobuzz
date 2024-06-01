@@ -135,17 +135,9 @@ export const MerchantIndex = z.object({
 
 export type TMerchantIndex = z.infer<typeof MerchantIndex>;
 
-export const BillingStatusEnum = z.enum([
-  "pending",
-  "success",
-  "failed",
-  "expired",
-]);
-
-export type TBillingStatusEnum = z.infer<typeof BillingStatusEnum>;
-
 export const BillingModel = z.object({
   billingId: z.string().cuid(),
+  billingPaid: z.boolean(),
   billingAmount: z.number(),
   billingQty: z.number(),
   billingCreatedAt: z.date(),
@@ -158,7 +150,7 @@ export const CreateBillingSchema = z.object({
   merchantId: z.string(),
   billingAmount: z.number(),
   billingQty: z.number(),
-  billingStatus: BillingStatusEnum,
+  billingPaid: z.boolean().optional(),
 });
 
 export type TCreateBillingSchema = z.infer<typeof CreateBillingSchema>;
