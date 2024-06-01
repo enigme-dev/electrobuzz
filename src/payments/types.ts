@@ -12,7 +12,6 @@ export type TPaymentStatusEnum = z.infer<typeof PaymentStatusEnum>;
 export const PaymentModel = z.object({
   paymentId: z.string().cuid(),
   paymentStatus: PaymentStatusEnum,
-  paymentToken: z.string(),
   paymentAmount: z.number().nullish(),
   paymentMethod: z.string().nullish(),
   paymentBank: z.string().nullish(),
@@ -22,14 +21,6 @@ export const PaymentModel = z.object({
 });
 
 export type TPaymentModel = z.infer<typeof PaymentModel>;
-
-export const CreatePaymentSchema = PaymentModel.pick({
-  paymentStatus: true,
-  paymentToken: true,
-  billingId: true,
-});
-
-export type TCreatePaymentSchema = z.infer<typeof CreatePaymentSchema>;
 
 export const UpdatePaymentSchema = z
   .object({

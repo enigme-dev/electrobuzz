@@ -93,6 +93,7 @@ export class MerchantRepository extends BaseRepository {
         },
         where: {
           merchantAvailable: true,
+          merchantVerified: true,
         },
         include: {
           merchantIdentity: {

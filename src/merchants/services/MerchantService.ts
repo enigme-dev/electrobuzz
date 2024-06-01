@@ -1,7 +1,5 @@
 import {
-  BillingStatusEnum,
   IdentityStatuses,
-  TBillingStatusEnum,
   TCreateBillingsSchema,
   TRegisterMerchantSchema,
   TUpdateMerchantSchema,
@@ -35,16 +33,13 @@ export async function chargeMonthlyFees() {
     const totalAmount = MONTHLY_FEES * bookingsCt;
 
     // wave billing if amount is zero
-    let billingStatus: TBillingStatusEnum = BillingStatusEnum.Enum.pending;
-    if (totalAmount === 0) {
-      billingStatus = BillingStatusEnum.Enum.success;
-    }
+    let billingPaid = totalAmount != 0;
 
     billings.push({
       merchantId: merchant.merchantId,
       billingQty: bookingsCt,
       billingAmount: totalAmount,
-      billingStatus: BillingStatusEnum.Enum.pending,
+      billingPaid,
     });
   });
 

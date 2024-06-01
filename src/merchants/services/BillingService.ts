@@ -1,10 +1,6 @@
 import { BillingRepository } from "../repositories/BillingRepository";
 import { SearchParams } from "@/core/lib/utils";
-import {
-  BillingStatusEnum,
-  TBillingStatusEnum,
-  TCreateBillingsSchema,
-} from "../types";
+import { TCreateBillingsSchema } from "../types";
 
 export const MONTHLY_FEES = 5000;
 
@@ -17,7 +13,6 @@ export async function createBilling(
     merchantId,
     billingAmount,
     billingQty,
-    billingStatus: BillingStatusEnum.Enum.pending,
   });
 }
 
@@ -36,12 +31,22 @@ export async function getMerchantBillings(
   merchantId: string,
   options?: SearchParams
 ) {
-  return await BillingRepository.findByMerchantId(merchantId, options);
+  let toggle;
+  if (options?.status === "paid") {
+    toggle = true;
+  } else if (options?.status === "unpaid") {
+    toggle = false;
+  }
+
+  return await BillingRepository.findByMerchantId(merchantId, {
+    ...options,
+    toggle,
+  });
 }
 
-export async function updateBillingStatus(
+export async function updateBillingPaid(
   billingId: string,
-  billingStatus: TBillingStatusEnum
+  billingPaid: boolean
 ) {
-  return await BillingRepository.update(billingId, { billingStatus });
+  return await BillingRepository.update(billingId, { billingPaid });
 }
