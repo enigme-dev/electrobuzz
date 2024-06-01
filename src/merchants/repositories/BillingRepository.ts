@@ -40,6 +40,9 @@ export class BillingRepository extends BaseRepository {
             paymentDate: true,
             paymentCreatedAt: true,
           },
+          orderBy: {
+            paymentCreatedAt: "desc",
+          },
         },
       },
     });
