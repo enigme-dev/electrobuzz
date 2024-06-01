@@ -322,57 +322,55 @@ const MerchantDashboardProfile = () => {
   }
 
   return (
-    <div className="m-auto px-8 relative">
+    <div className="p-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <DialogGeneral
             dialogContent={
-              <>
-                <div className="flex items-center justify-center pt-10">
-                  <FormField
-                    control={form.control}
-                    name="merchantPhotoUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center gap-4">
-                          <div className="border-2 border-dashed border-gray-200 rounded-lg h-[120px] w-[100px] grid place-items-center text-gray-400">
-                            <FormLabel
-                              className="flex flex-col items-center gap-1 hover:cursor-pointer"
-                              htmlFor="images"
-                            >
-                              <UploadIcon className="h-6 w-6" />
-                              <span className="underline text-xs underline-offset-2 underline-offset-white-0.5 transition-none p-1">
-                                Click to upload
-                              </span>
-                              <Input
-                                className="hidden "
-                                id="images"
-                                multiple
-                                type="file"
-                                onChange={(e) => {
-                                  onFileChange(e);
-                                  field.onChange(e);
-                                  setOnOpenDialog(false);
-                                }}
-                                onBlur={field.onBlur}
-                                ref={field.ref}
-                              />
-                            </FormLabel>
-                          </div>
+              <div className="flex items-center justify-center">
+                <FormField
+                  control={form.control}
+                  name="merchantPhotoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-4">
+                        <div className="border-2 border-dashed border-gray-200 rounded-lg h-[120px] w-[100px] grid place-items-center text-gray-400">
+                          <FormLabel
+                            className="flex flex-col items-center gap-1 hover:cursor-pointer"
+                            htmlFor="images"
+                          >
+                            <UploadIcon className="h-6 w-6" />
+                            <span className="underline text-xs underline-offset-2 underline-offset-white-0.5 transition-none p-1">
+                              Click to upload
+                            </span>
+                            <Input
+                              className="hidden "
+                              id="images"
+                              multiple
+                              type="file"
+                              onChange={(e) => {
+                                onFileChange(e);
+                                field.onChange(e);
+                                setOnOpenDialog(false);
+                              }}
+                              onBlur={field.onBlur}
+                              ref={field.ref}
+                            />
+                          </FormLabel>
                         </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             }
             dialogTitle="Update Banner"
             onOpen={onOpenDialog}
             onOpenChange={handleOpenChange}
             dialogTrigger={
               <div
-                className="relative flex flex-col gap-4 items-start max-h-[300px] pt-10 justify-end w-full hover:brightness-75 cursor-pointer"
+                className="relative flex flex-col gap-4 items-start max-h-[300px] justify-end w-full hover:brightness-75 cursor-pointer"
                 onClick={() => setOnOpenDialog(true)}
               >
                 <Image
@@ -382,7 +380,7 @@ const MerchantDashboardProfile = () => {
                   alt={myMerchantDetails ? myMerchantDetails?.merchantName : ""}
                   width={300}
                   height={300}
-                  className="object-cover w-full brightness-50 h-[300px] object-center hover:cursor-pointer pb-5 pt-10"
+                  className="object-cover w-full brightness-50 h-[300px] object-center hover:cursor-pointer"
                 />
                 <div className="absolute top-10 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
                   <Upload className="text-white" />
@@ -538,7 +536,7 @@ const MerchantDashboardProfile = () => {
               </FormItem>
             )}
           />
-          <div className=" pt-8">
+          <div className="pt-8">
             {isLoaded ? (
               <>
                 <Autocomplete
@@ -551,7 +549,7 @@ const MerchantDashboardProfile = () => {
                 <p className="italic text-gray-400 pt-5 text-sm">
                   geser marker untuk mendapatkan lokasi detailmu
                 </p>
-                <div className="w-24 h-24">
+                <div className="relative">
                   <MyMapComponent
                     isLoaded={isLoaded}
                     locLatLng={validLocation}

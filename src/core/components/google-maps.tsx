@@ -1,10 +1,5 @@
 import React, { ReactNode, useCallback, useState } from "react";
-import {
-  Autocomplete,
-  GoogleMap,
-  LoadScriptProps,
-  useJsApiLoader,
-} from "@react-google-maps/api";
+import { GoogleMap } from "@react-google-maps/api";
 
 const containerStyle = {
   width: "400px",
@@ -36,7 +31,7 @@ const MyMapComponent = ({ marker, isLoaded, locLatLng }: MapProps) => {
   return isLoaded ? (
     <div>
       <GoogleMap
-        mapContainerClassName="md:w-[400px] md:h-[400px] w-[300px] h-[300px]"
+        mapContainerClassName="w-full h-[400px]"
         center={center}
         zoom={5}
         onLoad={onLoad}
