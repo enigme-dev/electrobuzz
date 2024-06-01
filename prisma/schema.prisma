@@ -179,7 +179,7 @@ model Notification {
 
 model Billing {
   billingId        String   @id @default(cuid())
-  billingStatus    String
+  billingPaid      Boolean  @default(false)
   billingAmount    Int
   billingQty       Int
   billingCreatedAt DateTime @default(now())
@@ -187,7 +187,7 @@ model Billing {
   merchantId       String
   merchant         Merchant @relation(fields: [merchantId], references: [merchantId])
 
-  payment          Payment?
+  payment          Payment[]
 }
 
 model Payment {
@@ -197,9 +197,8 @@ model Payment {
   paymentMethod    String?
   paymentBank      String?
   paymentDate      DateTime?
-  paymentToken     String    /// @encrypted
   paymentCreatedAt DateTime  @default(now())
 
-  billingId        String    @unique
-  billing          Billing   @relation(fields: [billingId], references: [billingId])
+  billingId        String
+  billing          Billing   @relation(fields: [billingId], references: [billingId], onDelete: Cascade)
 }
