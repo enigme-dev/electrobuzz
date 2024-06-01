@@ -21,29 +21,11 @@ export class BillingRepository extends BaseRepository {
     return this.db.billing.createMany({ data });
   }
 
-  static findOne(merchantId: string, billingId: string) {
-    return this.db.billing.findUniqueOrThrow({
-      where: { billingId, merchantId },
-      select: {
-        billingId: true,
-        billingPaid: true,
-        billingAmount: true,
-        billingQty: true,
-        billingCreatedAt: true,
-        payment: {
-          select: {
-            paymentId: true,
-            paymentStatus: true,
-            paymentAmount: true,
-            paymentMethod: true,
-            paymentBank: true,
-            paymentDate: true,
-            paymentCreatedAt: true,
-          },
-          orderBy: {
-            paymentCreatedAt: "desc",
-          },
-        },
+  static findAll(options?: SearchParams) {
+    return this.db.billing.findMany({
+      where: {
+        billingPaid: options?.toggle,
+        billingCreatedAt: { gte: options?.startDate },
       },
     });
   }
@@ -73,6 +55,33 @@ export class BillingRepository extends BaseRepository {
         where: { merchantId, billingPaid: options?.toggle },
       }),
     ]);
+  }
+
+  static findOne(merchantId: string, billingId: string) {
+    return this.db.billing.findUniqueOrThrow({
+      where: { billingId, merchantId },
+      select: {
+        billingId: true,
+        billingPaid: true,
+        billingAmount: true,
+        billingQty: true,
+        billingCreatedAt: true,
+        payment: {
+          select: {
+            paymentId: true,
+            paymentStatus: true,
+            paymentAmount: true,
+            paymentMethod: true,
+            paymentBank: true,
+            paymentDate: true,
+            paymentCreatedAt: true,
+          },
+          orderBy: {
+            paymentCreatedAt: "desc",
+          },
+        },
+      },
+    });
   }
 
   static update(billingId: string, data: Prisma.BillingUpdateInput) {
