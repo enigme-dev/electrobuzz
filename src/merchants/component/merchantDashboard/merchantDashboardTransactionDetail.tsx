@@ -15,11 +15,9 @@ import MerchantBookingDone from "../merchantBookingStatus/merchantBookingDone";
 import MerchantBookingExpired from "../merchantBookingStatus/merchantBookingExpired";
 import MerchantBookingRejected from "../merchantBookingStatus/merchantBookingRejected";
 import MerchantBookingInProgress from "../merchantBookingStatus/merchantBookingInProgress";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const MerchantDashboardTransactionDetail = () => {
-  const { data: session } = useSession();
-  const { toast } = useToast();
   const pathname = usePathname();
   const getLastPathSegment = (pathname: string): string => {
     const segments = pathname.split("/");

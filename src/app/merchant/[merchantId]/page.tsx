@@ -37,7 +37,7 @@ interface UserReviewData {
   page: number;
   total: number;
   perpage: number;
-  data: MerchantDetails[];
+  data: any[];
 }
 
 const MerchantDetailPage = () => {
@@ -74,7 +74,7 @@ const MerchantDetailPage = () => {
   } = useInfiniteQuery({
     queryKey: ["getUserRatingData", params],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get("/api/user/review", {
+      const response = await axios.get(`/api/merchant/${merchantId}/review`, {
         params: {
           ...params,
           page: pageParam,
@@ -96,6 +96,8 @@ const MerchantDetailPage = () => {
     },
   });
 
+  console.log(userReviewData);
+
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
@@ -104,7 +106,7 @@ const MerchantDetailPage = () => {
 
   const ceiledRating = getRoundedRating(merchantDetails?.merchantRating || 0);
 
-  if (getMerchantDetailsloading) {
+  if (getMerchantDetailsloading || userReviewDataLoading) {
     return <Loader />;
   }
 
@@ -114,7 +116,7 @@ const MerchantDetailPage = () => {
         <div className="relative flex flex-col gap-4 items-start justify-end w-full">
           <Image
             src={merchantDetails ? merchantDetails.merchantPhotoUrl : ""}
-            alt={merchantDetails ? merchantDetails?.merchantName : ""}
+            alt={merchantDetails ? merchantDetails.merchantName : ""}
             width={300}
             height={300}
             className="object-cover w-full h-[40vh] brightness-50 object-center"
@@ -206,7 +208,7 @@ const MerchantDetailPage = () => {
       </div>
       <div className="px-4">
         <h1 className="text-bold text-2xl pt-10">Ulasan</h1>
-        <div className="pt-5 grid gap-4">
+        <div className="pt-8 grid gap-4">
           {userReviewData?.pages.map(
             (page: UserReviewData, pageIndex: number) => (
               <React.Fragment key={pageIndex}>
@@ -214,26 +216,24 @@ const MerchantDetailPage = () => {
                   page.data.map((value: any) => (
                     <div key={value.bookingId}>
                       <ReviewCard
-                        name={value.merchant.merchantName}
-                        image={value.merchant.merchantPhotoUrl}
-                        userReview={
-                          value.review !== null ? value.review.reviewBody : ""
-                        }
-                        userRating={
-                          value.review !== null ? value.review.reviewStars : ""
-                        }
-                        bookingPhotoUrl={value.bookingPhotoUrl}
-                        bookingComplain={value.bookingComplain}
+                        name={value.user ? value.user.name : ""}
+                        image={value.user ? value.user.image : ""}
+                        userReview={value ? value.reviewBody : ""}
+                        userRating={value ? value.reviewStars : ""}
+                        bookingPhotoUrl={value.booking.bookingPhotoUrl}
+                        bookingComplain={value.booking.bookingComplain}
                         reviewCreatedAt={
-                          value.review !== null && value.review.reviewCreatedAt
+                          value !== null && value.reviewCreatedAt
                         }
                         bookingId={value.bookingId}
                       />
                     </div>
                   ))
                 ) : (
-                  <div className="flex items-center justify-center h-[50vh]">
-                    <div className="text-center">Hasil tidak ditemukan</div>
+                  <div className="flex items-center justify-center h-[10vh]">
+                    <div className="text-center text-gray-400 italic">
+                      Mitra ini belum memiliki ulasan
+                    </div>
                   </div>
                 )}
               </React.Fragment>

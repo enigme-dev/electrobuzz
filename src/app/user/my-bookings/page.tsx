@@ -6,7 +6,7 @@ import { TGetUserBooking } from "@/bookings/types";
 import { DatePickerWithRange } from "@/core/components/dateRangePicker";
 import Loader from "@/core/components/loader/loader";
 import { SelectOption } from "@/core/components/select-option";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
 import { useInView } from "react-intersection-observer";
@@ -17,7 +17,7 @@ import React, { Suspense, useEffect, useState } from "react";
 
 const selectStatusFilter = [
   {
-    value: "all",
+    value: "",
     item: "Semua",
   },
   {
@@ -160,10 +160,10 @@ const BookingPage = () => {
     setSelectedRange(range);
     setCurrentPage(1);
     router.push(
-      `${pathname}?page=${currentPage}&start-date=${formatDateString(
-        range.from
-      )}&end-date=${formatDateString(range.to)}&status=${
-        statusQueryParam ? statusQueryParam : "all"
+      `${pathname}?page=${currentPage}&start-date=${
+        formatDateString(range.from) || ""
+      }&end-date=${formatDateString(range.to) || ""}&status=${
+        statusQueryParam ? statusQueryParam : ""
       }`
     );
   };

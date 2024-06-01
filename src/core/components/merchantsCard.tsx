@@ -16,7 +16,7 @@ interface Props {
   serviceCategory: string[];
   location: string;
   merchantId: string;
-  distance: number;
+  distance?: number;
   merchantRating: number;
 }
 
@@ -30,11 +30,13 @@ const MerchantsCard: React.FC<Props> = ({
   distance,
   merchantRating,
 }: Props) => {
-  const { data: session } = useSession();
   const router = useRouter();
 
-  const parsedDistance =
-    distance >= 1000 ? `${(distance / 1000).toFixed(1)}km` : `${distance} m`;
+  const parsedDistance = distance
+    ? distance
+    : 0 >= 1000
+    ? `${(distance ? distance : 0 / 1000).toFixed(1)}km`
+    : `${distance} m`;
 
   const renderedCategories = serviceCategory.slice(0, 5).join(", ");
 
@@ -96,9 +98,6 @@ const MerchantsCard: React.FC<Props> = ({
             <>
               {" "}
               <Star size={15} strokeWidth={1} className="text-orange-400" />
-              <p className="hidden lg:block text-[0.6rem] sm:text-xs italic text-gray-400">
-                belum ada rating
-              </p>
             </>
           )}
         </div>

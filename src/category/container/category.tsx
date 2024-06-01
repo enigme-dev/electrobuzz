@@ -19,7 +19,7 @@ const CategoryData = [
     categoryName: "AC",
     categoryIcon: (
       <AirVentIcon
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
@@ -29,7 +29,7 @@ const CategoryData = [
     categoryName: "Mesin Cuci",
     categoryIcon: (
       <WashingMachineIcon
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
@@ -39,7 +39,7 @@ const CategoryData = [
     categoryName: "Smartphone",
     categoryIcon: (
       <SmartphoneIcon
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
@@ -49,7 +49,7 @@ const CategoryData = [
     categoryName: "Kulkas",
     categoryIcon: (
       <RefrigeratorIcon
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
@@ -59,7 +59,7 @@ const CategoryData = [
     categoryName: "Laptop",
     categoryIcon: (
       <Laptop
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
@@ -69,7 +69,7 @@ const CategoryData = [
     categoryName: "TV",
     categoryIcon: (
       <Tv
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
@@ -79,7 +79,7 @@ const CategoryData = [
     categoryName: "Microwave",
     categoryIcon: (
       <MicrowaveIcon
-        className="w-[30px] h-[30px] sm:w-[100px] sm:h-[100px]"
+        className="w-[30px] h-[30px] sm:w-[90px] sm:h-[90px]"
         size={100}
         strokeWidth={1}
       />
