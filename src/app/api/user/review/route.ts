@@ -1,4 +1,4 @@
-import { getUserReviews } from "@/bookings/services/BookingService";
+import { getUserReviews } from "@/bookings/services/ReviewService";
 import { buildErr } from "@/core/lib/errors";
 import { Logger } from "@/core/lib/logger";
 import { buildRes, parseParams } from "@/core/lib/utils";
