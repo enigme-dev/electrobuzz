@@ -20,6 +20,17 @@ export async function createBillings(input: TCreateBillingsSchema) {
   return await BillingRepository.createMany(input);
 }
 
+export async function getBillings(options?: SearchParams) {
+  let toggle;
+  if (options?.status === "paid") {
+    toggle = true;
+  } else if (options?.status === "unpaid") {
+    toggle = false;
+  }
+
+  return await BillingRepository.findAll({ ...options, toggle });
+}
+
 export async function getMerchantBilling(
   merchantId: string,
   billingId: string
