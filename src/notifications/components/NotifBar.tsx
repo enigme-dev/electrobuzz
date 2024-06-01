@@ -3,7 +3,6 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { TNotificationSchema } from "../types";
-import Pusher from "pusher-js";
 import {
   Popover,
   PopoverContent,
@@ -13,6 +12,12 @@ import { Bell } from "lucide-react";
 import { Button } from "@/core/components/ui/button";
 import axios from "axios";
 import NotifCard from "./NotifCard";
+import Pusher from "pusher-js";
+
+const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {
+  authEndpoint: "/api/notification/auth",
+  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
+});
 
 export default function NotifBar() {
   const [notifications, setNotifications] = useState<TNotificationSchema[]>([]);

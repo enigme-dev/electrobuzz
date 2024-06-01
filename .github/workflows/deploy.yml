@@ -38,6 +38,7 @@ jobs:
            "QSTASH_NEXT_SIGNING_KEY=${{ secrets.QSTASH_NEXT_SIGNING_KEY }}"
            "NEXT_PUBLIC_PUSHER_KEY=${{ secrets.NEXT_PUBLIC_PUSHER_KEY }}"
            "NEXT_PUBLIC_PUSHER_CLUSTER=${{ secrets.NEXT_PUBLIC_PUSHER_CLUSTER }}"
+           "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=${{ secrets.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY }}"
 
   deploy:
     needs: build
