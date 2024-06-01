@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import Loader from "@/core/components/loader/loader";
 
 const MerchantsResponse = z.object({
   data: MerchantModel.array(),
@@ -28,6 +29,7 @@ type MerchantsResponse = z.infer<typeof MerchantsResponse>;
 
 export default function Page() {
   const [query, setQuery] = useState("");
+  const { status } = useSession();
 
   const { data, isLoading } = useQuery({
     queryKey: ["merchants", query],
@@ -48,8 +50,8 @@ export default function Page() {
     []
   );
 
-  if (isLoading) {
-    return <span>Loading...</span>;
+  if (isLoading || status === "unauthenticated") {
+    return <Loader />;
   }
 
   return (

@@ -75,6 +75,12 @@ export function DatePickerWithRange({
             onSelect={handleOnSelect}
             numberOfMonths={1}
           />
+          <p className="text-[0.6rem] sm:text-sm text-gray-400 max-w-[250px] break-words px-4">
+            *Klik 2 kali untuk mendapatkan range pada hari yang sama
+          </p>
+          <p className="text-[0.6rem] sm:text-sm text-gray-400 max-w-[250px] break-words px-4 pt-2">
+            *Masukan tanggal berdasarkan dari dan sampai
+          </p>
           <div className="flex justify-end gap-3 p-5">
             <Button
               onClick={() => {

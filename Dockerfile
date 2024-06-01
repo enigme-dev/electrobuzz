@@ -24,6 +24,10 @@ RUN --mount=type=secret,id=MINIO_ACCESS_KEY echo "MINIO_ACCESS_KEY=$(cat /run/se
 RUN --mount=type=secret,id=MINIO_SECRET_KEY echo "MINIO_SECRET_KEY=$(cat /run/secrets/MINIO_SECRET_KEY)" >> .env.production
 RUN --mount=type=secret,id=QSTASH_CURRENT_SIGNING_KEY echo "QSTASH_CURRENT_SIGNING_KEY=$(cat /run/secrets/QSTASH_CURRENT_SIGNING_KEY)" >> .env.production
 RUN --mount=type=secret,id=QSTASH_NEXT_SIGNING_KEY echo "QSTASH_NEXT_SIGNING_KEY=$(cat /run/secrets/QSTASH_NEXT_SIGNING_KEY)" >> .env.production
+RUN --mount=type=secret,id=NEXT_PUBLIC_PUSHER_KEY echo "NEXT_PUBLIC_PUSHER_KEY=$(cat /run/secrets/NEXT_PUBLIC_PUSHER_KEY)" >> .env.production
+RUN --mount=type=secret,id=NEXT_PUBLIC_PUSHER_CLUSTER echo "NEXT_PUBLIC_PUSHER_CLUSTER=$(cat /run/secrets/NEXT_PUBLIC_PUSHER_CLUSTER)" >> .env.production
+RUN --mount=type=secret,id=NEXT_PUBLIC_MIDTRANS_CLIENT_KEY echo "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=$(cat /run/secrets/NEXT_PUBLIC_MIDTRANS_CLIENT_KEY)" >> .env.production
+
 
 RUN npm run build && rm .env.production
 

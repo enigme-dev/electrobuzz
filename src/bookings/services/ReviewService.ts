@@ -8,6 +8,7 @@ import {
 } from "../types";
 import { getUserBooking } from "./BookingService";
 import { addMerchantIndex } from "@/merchants/services/MerchantService";
+import { createNotification } from "@/notifications/services/NotificationService";
 import { Cache } from "@/core/lib/cache";
 
 export async function createReview(
@@ -36,6 +37,16 @@ export async function createReview(
   const merchant = await ReviewRepository.create(data);
   await addMerchantIndex(merchant);
 
+  // create notif to merchant
+  createNotification(merchant.merchantId, {
+    service: "booking/merchant",
+    level: "info",
+    title: "Anda mendapatkan ulasan baru",
+    photoUrl: booking.bookingPhotoUrl,
+    message: booking.bookingComplain,
+    actionUrl: bookingId,
+  });
+
   // delete cached merchant reviews
   Cache.deleteWithPrefix(`merchant_reviews/${merchant.merchantId}`);
 }
@@ -52,8 +63,4 @@ export async function getMerchantReviewsDetail(
   options?: SearchParams
 ) {
   return await ReviewRepository.findMerchantReviewsDetail(merchantId, options);
-}
-
-export async function getUserReviews(userId: string, options?: SearchParams) {
-  return await ReviewRepository.findUserReviews(userId, options);
 }

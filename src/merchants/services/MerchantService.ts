@@ -1,5 +1,6 @@
 import {
   IdentityStatuses,
+  TCreateBillingsSchema,
   TRegisterMerchantSchema,
   TUpdateMerchantSchema,
 } from "@/merchants/types";
@@ -10,9 +11,58 @@ import { SearchParams } from "@/core/lib/utils";
 import { getPrivateProfile } from "@/users/services/UserService";
 import { ErrorCode } from "@/core/lib/errors";
 import { Cache } from "@/core/lib/cache";
+import { BookStatusEnum } from "@/bookings/types";
+import dayjs from "dayjs";
+import { MONTHLY_FEES, createBillings, getBillings } from "./BillingService";
+import { createNotification } from "@/notifications/services/NotificationService";
+import { editMerchantIdentity } from "./MerchantIdentityService";
 
 export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
+}
+
+export async function chargeMonthlyFees() {
+  const firstDayOfMonth = dayjs()
+    .subtract(1, "month")
+    .startOf("month")
+    .toDate();
+  const lastDayOfMonth = dayjs(firstDayOfMonth).endOf("month").toDate();
+
+  const merchants = await MerchantRepository.countBookings(
+    BookStatusEnum.Enum.done,
+    { startDate: firstDayOfMonth, endDate: lastDayOfMonth }
+  );
+
+  let billings: TCreateBillingsSchema = [];
+  merchants.forEach((merchant) => {
+    const bookingsCt = merchant._count.bookings;
+    const totalAmount = MONTHLY_FEES * bookingsCt;
+
+    // wave billing if amount is zero
+    let billingPaid = totalAmount === 0;
+
+    // notify merchant for new billing
+    createNotification(merchant.merchantId, {
+      service: "billing",
+      level: "info",
+      title: "Anda memiliki billing baru",
+    });
+
+    billings.push({
+      merchantId: merchant.merchantId,
+      billingQty: bookingsCt,
+      billingAmount: totalAmount,
+      billingPaid,
+    });
+  });
+
+  if (billings.length > 0) {
+    await createBillings(billings);
+  }
+}
+
+export async function deleteMerchantIndex(merchantId: string) {
+  return MerchantRepository.deleteIndex(merchantId);
 }
 
 export async function getMerchant(merchantId: string) {
@@ -66,12 +116,7 @@ export async function registerMerchant(
       images.push(data.merchantIdentity.identityDocs);
     }
 
-    const merchant = await MerchantRepository.create(userId, data);
-
-    // delete cached merchants
-    Cache.delete(`merchant/${merchant.merchantId}`);
-    Cache.delete("merchantsCt");
-    Cache.deleteWithPrefix(`merchants/`);
+    await MerchantRepository.create(userId, data);
   } catch (e) {
     await deleteImg(data.merchantPhotoUrl);
 
@@ -81,6 +126,30 @@ export async function registerMerchant(
 
     throw e;
   }
+}
+
+export async function suspendUnpaidMerchant() {
+  const firstDayOfMonth = dayjs().startOf("month").toDate();
+  const merchants = await getBillings({
+    startDate: firstDayOfMonth,
+    status: "unpaid",
+  });
+
+  merchants.map(async (merchant) => {
+    // notify suspended merchant
+    createNotification(merchant.merchantId, {
+      service: "billing",
+      level: "error",
+      title: "Akun Mitra Anda dibekukan",
+      message: "Mohon segera lakukan pelunasan billing",
+      actionUrl: merchant.billingId,
+    });
+
+    await editMerchantIdentity(
+      merchant.merchantId,
+      IdentityStatuses.Enum.suspended
+    );
+  });
 }
 
 export async function updateMerchantProfile(

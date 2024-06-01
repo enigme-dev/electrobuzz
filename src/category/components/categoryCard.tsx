@@ -8,7 +8,6 @@ interface CategoryProps {
 }
 
 const CategoryCard = ({ categoryName, categoryIcon }: CategoryProps) => {
-  const categoryParamsName = categoryName.toLowerCase().replace(" ", "-");
   return (
     <div className="grid place-items-center items-center gap-5">
       <Link
