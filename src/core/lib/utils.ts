@@ -8,7 +8,10 @@ export function parseParams(searchParams: URLSearchParams) {
   const query = searchParams.get("query") ?? "";
   const page = parseInt(searchParams.get("page") || "1");
   const skip = (page - 1) * PER_PAGE;
-  const status = searchParams.get("status") ?? undefined;
+  let status = searchParams.get("status") ?? undefined;
+  if (status === "all" || status === "" || status === null) {
+    status = undefined;
+  }
 
   const startDateParam = z.coerce
     .string()
