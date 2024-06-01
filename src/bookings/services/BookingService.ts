@@ -234,6 +234,10 @@ export async function getUserBookings(userId: string, options?: SearchParams) {
   return await BookingRepository.findByUserId(userId, options);
 }
 
+export async function getUserReviews(userId: string, options?: SearchParams) {
+  return await BookingRepository.findUserReviews(userId, options);
+}
+
 export async function setStatusAccepted(
   merchantId: string,
   bookingId: string,
