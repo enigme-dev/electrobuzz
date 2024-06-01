@@ -17,7 +17,7 @@ import React, { Suspense, useEffect, useState } from "react";
 
 const selectStatusFilter = [
   {
-    value: "",
+    value: "all",
     item: "Semua",
   },
   {
@@ -76,7 +76,7 @@ const BookingPage = () => {
     from: fromDateQueryParam ? new Date(fromDateQueryParam) : undefined,
     to: toDateQueryParam ? new Date(toDateQueryParam) : undefined,
   };
-  const initialFilterValue = statusQueryParam || "";
+  const initialFilterValue = statusQueryParam || "all";
   const [selectedRange, setSelectedRange] = useState(initialValue);
   const [currentPage, setCurrentPage] = useState<number>(
     Number(pageFromQueryParams) || 1
