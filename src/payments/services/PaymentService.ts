@@ -2,31 +2,17 @@ import { MidtransSnap } from "@/core/adapters/midtrans";
 import { Logger } from "@/core/lib/logger";
 import { PaymentRepository } from "../repositories/PaymentRepository";
 import { PaymentStatusEnum, TUpdatePaymentSchema } from "../types";
-import { updateBillingStatus } from "@/merchants/services/BillingService";
-import { BillingStatusEnum, TBillingStatusEnum } from "@/merchants/types";
+import { updateBillingPaid } from "@/merchants/services/BillingService";
 
-export async function createPayment(billingId: string, amount: number) {
-  try {
-    const transaction = await MidtransSnap.createTransaction(billingId, amount);
-
-    await PaymentRepository.create({
-      billingId,
-      paymentToken: transaction.token,
-      paymentStatus: PaymentStatusEnum.Enum.pending,
-    });
-
-    return { token: transaction.token, redirect_url: transaction.redirect_url };
-  } catch (e) {
-    Logger.error("payment", "create payment error", e);
-    throw e;
-  }
+export async function createPayment(merchantId: string, billingId: string) {
+  return await PaymentRepository.create(merchantId, billingId);
 }
 
 export async function updatePayment(
-  billingId: string,
+  paymentId: string,
   data: TUpdatePaymentSchema
 ) {
-  return await PaymentRepository.updateByBillingId(billingId, data);
+  return await PaymentRepository.update(paymentId, data);
 }
 
 export function verifyPayment(response: any) {
@@ -39,12 +25,11 @@ export function verifyPayment(response: any) {
           paymentMethod: data.payment_type,
           paymentBank: data.bank,
           paymentDate: data.settlement_time,
+        }).then((payment) => {
+          if (data.transaction_status === PaymentStatusEnum.Enum.success) {
+            updateBillingPaid(payment.billingId, true);
+          }
         });
-
-        const billingStatus: TBillingStatusEnum = BillingStatusEnum.parse(
-          data.transaction_status
-        );
-        updateBillingStatus(data.order_id, billingStatus);
       }
     })
     .catch((err) =>
