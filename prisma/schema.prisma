@@ -97,6 +97,7 @@ model Merchant {
   merchantIdentity  MerchantIdentity?
   bookings          Booking[]
   reviews           Review[]
+  billings          Billing[]
 }
 
 model MerchantAlbum {
@@ -174,4 +175,30 @@ model Notification {
 
   userId           String
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Billing {
+  billingId        String   @id @default(cuid())
+  billingPaid      Boolean  @default(false)
+  billingAmount    Int
+  billingQty       Int
+  billingCreatedAt DateTime @default(now())
+
+  merchantId       String
+  merchant         Merchant @relation(fields: [merchantId], references: [merchantId])
+
+  payment          Payment[]
+}
+
+model Payment {
+  paymentId        String    @id @default(cuid())
+  paymentStatus    String
+  paymentAmount    Int?
+  paymentMethod    String?
+  paymentBank      String?
+  paymentDate      DateTime?
+  paymentCreatedAt DateTime  @default(now())
+
+  billingId        String
+  billing          Billing   @relation(fields: [billingId], references: [billingId], onDelete: Cascade)
 }

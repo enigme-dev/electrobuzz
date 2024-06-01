@@ -134,3 +134,27 @@ export const MerchantIndex = z.object({
 });
 
 export type TMerchantIndex = z.infer<typeof MerchantIndex>;
+
+export const BillingModel = z.object({
+  billingId: z.string().cuid(),
+  billingPaid: z.boolean(),
+  billingAmount: z.number(),
+  billingQty: z.number(),
+  billingCreatedAt: z.date(),
+  merchantId: z.string().cuid(),
+});
+
+export type TBillingModel = z.infer<typeof BillingModel>;
+
+export const CreateBillingSchema = z.object({
+  merchantId: z.string(),
+  billingAmount: z.number(),
+  billingQty: z.number(),
+  billingPaid: z.boolean().optional(),
+});
+
+export type TCreateBillingSchema = z.infer<typeof CreateBillingSchema>;
+
+export const CreateBillingsSchema = CreateBillingSchema.array();
+
+export type TCreateBillingsSchema = z.infer<typeof CreateBillingsSchema>;

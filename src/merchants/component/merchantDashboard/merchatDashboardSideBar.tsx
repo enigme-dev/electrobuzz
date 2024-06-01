@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/core/components/ui/button";
-import { File, Folder, User } from "lucide-react";
+import { File, Folder, Star, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -17,10 +17,17 @@ const merchantDashboardNavList = [
     link: "/merchant/dashboard/transaction",
     icon: <Folder />,
   },
+
+  {
+    title: "Rating",
+    link: "/merchant/dashboard/rating",
+    icon: <Star />,
+  },
 ];
 
 const MerchantDashboardSideBar = () => {
   const pathname = usePathname();
+
   return (
     <div className="lg:flex max-h-[calc(100vh-65px)] w-[30vh] hidden ">
       <div className="w-[30vh] p-10 ">
@@ -38,7 +45,7 @@ const MerchantDashboardSideBar = () => {
                   <Button
                     variant={"ghost"}
                     className={
-                      pathname === value.link
+                      pathname.startsWith(value.link)
                         ? "w-full flex gap-5 justify-start bg-accent"
                         : "w-full flex gap-5 justify-start"
                     }
@@ -52,7 +59,7 @@ const MerchantDashboardSideBar = () => {
           ))}
         </div>
       </div>
-      <div className="border-r-[1px] border-solid border-[#cecece] dark:border-[#383838]"></div>
+      <div className="border-r-[1px] h-screen border-solid border-[#cecece] dark:border-[#383838]"></div>
     </div>
   );
 };
