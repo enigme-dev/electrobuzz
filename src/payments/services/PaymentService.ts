@@ -2,6 +2,8 @@ import { MidtransSnap } from "@/core/adapters/midtrans";
 import { Logger } from "@/core/lib/logger";
 import { PaymentRepository } from "../repositories/PaymentRepository";
 import { PaymentStatusEnum, TUpdatePaymentSchema } from "../types";
+import { updateBillingStatus } from "@/merchants/services/BillingService";
+import { BillingStatusEnum, TBillingStatusEnum } from "@/merchants/types";
 
 export async function createPayment(billingId: string, amount: number) {
   try {
@@ -38,6 +40,11 @@ export function verifyPayment(response: any) {
           paymentBank: data.bank,
           paymentDate: data.settlement_time,
         });
+
+        const billingStatus: TBillingStatusEnum = BillingStatusEnum.parse(
+          data.transaction_status
+        );
+        updateBillingStatus(data.order_id, billingStatus);
       }
     })
     .catch((err) =>

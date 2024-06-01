@@ -1,6 +1,10 @@
 import { BillingRepository } from "../repositories/BillingRepository";
 import { SearchParams } from "@/core/lib/utils";
-import { BillingStatusEnum, TCreateBillingsSchema } from "../types";
+import {
+  BillingStatusEnum,
+  TBillingStatusEnum,
+  TCreateBillingsSchema,
+} from "../types";
 
 export const MONTHLY_FEES = 5000;
 
@@ -33,4 +37,11 @@ export async function getMerchantBillings(
   options?: SearchParams
 ) {
   return await BillingRepository.findByMerchantId(merchantId, options);
+}
+
+export async function updateBillingStatus(
+  billingId: string,
+  billingStatus: TBillingStatusEnum
+) {
+  return await BillingRepository.update(billingId, { billingStatus });
 }
