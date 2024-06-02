@@ -1,86 +1,50 @@
 import { SendMessage } from "@/core/adapters/watzap";
-import { VerificationRepository } from "@/users/repositories/VerificationRepository";
 import dayjs from "dayjs";
 import { generateOTP } from "../lib/verification";
 import { VerifyStatuses } from "../types";
 import { hash } from "@/core/lib/security";
-import { Prisma } from "@prisma/client";
+import { Cache } from "@/core/lib/cache";
 
 export async function checkOTP(verifId: string, code: string) {
   let verification;
+  const key = `code/${verifId}`;
 
-  try {
-    verification = await VerificationRepository.findOne(verifId);
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return VerifyStatuses.Enum.not_found;
-      }
-    }
-
-    return VerifyStatuses.Enum.error;
-  }
+  verification = Cache.get(key);
 
   if (!verification) {
     return VerifyStatuses.Enum.not_found;
   }
 
-  if (dayjs().diff(verification.createdAt, "minute") >= 2) {
-    try {
-      await VerificationRepository.delete(verifId);
-    } catch (e) {
-      return VerifyStatuses.Enum.error;
-    }
-
-    return VerifyStatuses.Enum.expired;
-  }
-
   const hashedCode = hash(code);
-  if (verification.code != hashedCode) {
+  if (verification != hashedCode) {
     return VerifyStatuses.Enum.incorrect;
   }
 
-  try {
-    await VerificationRepository.delete(verifId);
-  } catch (e) {
-    return VerifyStatuses.Enum.error;
-  }
+  Cache.delete(key);
 
   return VerifyStatuses.Enum.correct;
 }
 
-export async function deleteExpiredOTP() {
-  const now = new Date();
-  const epoch = new Date(0);
-
-  const startDate = epoch;
-  const endDate = dayjs(now).subtract(1, "hours").toDate();
-
-  return VerificationRepository.deleteMany(startDate, endDate);
-}
-
 export async function sendOTP(phoneNumber: string) {
-  let verification, expiredAt;
+  let ttl, expiredAt;
   const verifId = hash(phoneNumber);
+  const key = `code/${verifId}`;
   const code = generateOTP();
 
-  try {
-    verification = await VerificationRepository.findOne(verifId);
-    expiredAt = dayjs(verification?.createdAt).add(2, "minute");
-    if (verification && dayjs().diff(verification.createdAt, "minute") < 2) {
-      return {
-        error: "ErrTooManyRequest",
-        expiredAt,
-      };
-    }
-  } catch (e) {}
+  ttl = Cache.getTTL(key);
+  if (ttl && ttl > 0) {
+    return {
+      error: "ErrTooManyRequest",
+      expiredAt: dayjs.unix(ttl / 1000).toDate(),
+    };
+  }
 
   const hashedCode = hash(code);
-  verification = await VerificationRepository.upsert(verifId, hashedCode);
-  expiredAt = dayjs(verification?.createdAt).add(2, "minute");
+  Cache.set(key, hashedCode, 120);
+  expiredAt = dayjs().add(2, "minute");
   await SendMessage(
     phoneNumber,
-    `Kode verifikasi akun Electrobuzz anda adalah ${code}`
+    `Kode verifikasi akun Electrobuzz Anda adalah: ${code}`
   );
 
   return { data: verifId, expiredAt };

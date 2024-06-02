@@ -157,12 +157,6 @@ model Review {
   booking         Booking  @relation(fields: [bookingId], references: [bookingId])
 }
 
-model Verification {
-  verifId   String   @id
-  code      String
-  createdAt DateTime @default(now())
-}
-
 model Notification {
   notifId          String   @id @default(cuid())
   notifService     String

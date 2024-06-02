@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
-import { deleteExpiredOTP } from "@/users/services/VerificationService";
 import { Logger } from "@/core/lib/logger";
 import {
   flagDoneInProgressBooking,
@@ -11,7 +10,6 @@ import {
 
 async function handler(_req: NextRequest) {
   try {
-    deleteExpiredOTP();
     flagDoneInProgressBooking();
     flagExpiredAcceptedBooking();
     flagExpiredInProgressRequestedBooking();
