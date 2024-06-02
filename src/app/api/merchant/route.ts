@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
   try {
     merchants = Cache.get(`merchants/${page}`);
-    merchantsCt = Cache.get<number>("merchantsCt");
+    merchantsCt = Cache.get("merchantsCt") as number;
 
     if (merchants && merchantsCt) {
       return buildRes({ data: merchants, page, total: merchantsCt });
