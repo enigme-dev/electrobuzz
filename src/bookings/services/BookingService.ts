@@ -29,6 +29,8 @@ import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { createNotification } from "@/notifications/services/NotificationService";
+import { Cache } from "@/core/lib/cache";
+import { generateOTP } from "@/users/lib/verification";
 
 export async function addBooking(
   userId: string,
@@ -99,12 +101,35 @@ export async function addBooking(
   return result;
 }
 
+export async function createBookingCode(userId: string, bookingId: string) {
+  let code, ttl;
+  const booking = await getUserBooking(userId, bookingId);
+  if (booking.bookingStatus != BookStatusEnum.Enum.accepted) {
+    throw new Error(ErrorCode.ErrConflict);
+  }
+
+  if (!dayjs().isSame(booking.bookingSchedule, "date")) {
+    throw new Error(ErrorCode.ErrBookWrongSchedule);
+  }
+
+  code = Cache.get(`code/${bookingId}`);
+  ttl = Cache.getTTL(`code/${bookingId}`);
+  if (code) {
+    return { code, expiredAt: dayjs.unix((ttl ?? 0) / 1000).toDate() };
+  }
+
+  code = generateOTP();
+  Cache.set(`code/${bookingId}`, code, 600);
+
+  return { code, expiredAt: dayjs().add(10, "minutes").toDate() };
+}
+
 export async function flagDoneInProgressBooking() {
   const yesterday = dayjs().subtract(1, "day").toDate();
   await BookingRepository.updateManyStatus(BookStatusEnum.Enum.done, {
     AND: {
       bookingSchedule: { lte: yesterday },
-      bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
+      bookingStatus: BookStatusEnum.Enum.in_progress,
     },
   });
 }
@@ -115,16 +140,6 @@ export async function flagExpiredAcceptedBooking() {
     AND: {
       bookingSchedule: { lte: today },
       bookingStatus: BookStatusEnum.Enum.accepted,
-    },
-  });
-}
-
-export async function flagExpiredInProgressRequestedBooking() {
-  const yesterday = dayjs().subtract(1, "day").toDate();
-  await BookingRepository.updateManyStatus(BookStatusEnum.Enum.expired, {
-    AND: {
-      bookingSchedule: { lte: yesterday },
-      bookingStatus: BookStatusEnum.Enum.in_progress_requested,
     },
   });
 }
@@ -165,9 +180,7 @@ export async function getMerchantBooking(
       return GetMerchantBookingRejected.parse(booking);
     case BookStatusEnum.Enum.canceled:
       return GetMerchantBookingCanceled.parse(booking);
-    case BookStatusEnum.Enum.in_progress_requested:
-      return GetMerchantBookingInProgress.parse(booking);
-    case BookStatusEnum.Enum.in_progress_accepted:
+    case BookStatusEnum.Enum.in_progress:
       return GetMerchantBookingInProgress.parse(booking);
     case BookStatusEnum.Enum.done:
       return GetMerchantBookingDone.parse(booking);
@@ -314,7 +327,7 @@ export async function setStatusDone(userId: string, bookingId: string) {
   const { merchantId } = await BookingRepository.updateUserBookingStatus(
     userId,
     bookingId,
-    [BookStatusEnum.Enum.in_progress_accepted],
+    [BookStatusEnum.Enum.in_progress],
     data
   );
 
@@ -329,17 +342,23 @@ export async function setStatusDone(userId: string, bookingId: string) {
   });
 }
 
-export async function setStatusInProgressRequested(
+export async function setStatusInProgress(
   merchantId: string,
-  bookingId: string
+  bookingId: string,
+  code: string
 ) {
   const booking = await getMerchantBooking(merchantId, bookingId);
   if (!dayjs().isSame(booking.bookingSchedule, "date")) {
     throw new Error(ErrorCode.ErrBookWrongSchedule);
   }
 
+  const savedCode = Cache.get(`code/${bookingId}`);
+  if (savedCode != code) {
+    throw new Error("invalid booking code");
+  }
+
   const data: Prisma.BookingUpdateInput = {
-    bookingStatus: BookStatusEnum.Enum.in_progress_requested,
+    bookingStatus: BookStatusEnum.Enum.in_progress,
   };
 
   const { userId } = await BookingRepository.updateMerchantBookingStatus(
@@ -352,39 +371,8 @@ export async function setStatusInProgressRequested(
   // create notif to user
   createNotification(userId, {
     service: "booking/user",
-    level: "warn",
-    title: "Mitra telah mengajukan permintaan untuk mulai servis",
-    photoUrl: booking.bookingPhotoUrl,
-    message: booking.bookingComplain,
-    actionUrl: bookingId,
-  });
-}
-
-export async function setStatusInProgressAccepted(
-  userId: string,
-  bookingId: string
-) {
-  const booking = await getUserBooking(userId, bookingId);
-  if (!dayjs().isSame(booking.bookingSchedule, "date")) {
-    throw new Error(ErrorCode.ErrBookWrongSchedule);
-  }
-
-  const data: Prisma.BookingUpdateInput = {
-    bookingStatus: BookStatusEnum.Enum.in_progress_accepted,
-  };
-
-  const { merchantId } = await BookingRepository.updateUserBookingStatus(
-    userId,
-    bookingId,
-    [BookStatusEnum.Enum.in_progress_requested],
-    data
-  );
-
-  // create notif to merchant
-  createNotification(merchantId, {
-    service: "booking/merchant",
-    level: "success",
-    title: "Pengguna telah menyetujui permintaan mulai servis Anda",
+    level: "info",
+    title: "Mitra sedang mengerjakan permintaan servis",
     photoUrl: booking.bookingPhotoUrl,
     message: booking.bookingComplain,
     actionUrl: bookingId,
