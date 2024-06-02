@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     if (result.error === "ErrTooManyRequest") {
       return buildErr("ErrTooManyRequest", 429, {
         message: "OTP can be requested every 2 minutes",
-        expiredAt: result.expiredAt?.toISOString(),
+        expiredAt: result.expiredAt.toISOString(),
       });
     }
   } catch (e) {
@@ -76,12 +76,8 @@ export async function POST(req: NextRequest) {
     switch (response) {
       case VerifyStatuses.Enum.incorrect:
         return buildErr("ErrOTPIncorrect", 400, "incorrect OTP code");
-      case VerifyStatuses.Enum.expired:
-        return buildErr("ErrOTPExpired", 400, "expired OTP code");
       case VerifyStatuses.Enum.not_found:
         return buildErr("ErrOTPNotFound", 404, "verifId does not exist");
-      case VerifyStatuses.Enum.error:
-        return buildErr("ErrOTPUnknown", 500);
     }
   } catch (e) {
     Logger.error("user", "check otp error", e);
