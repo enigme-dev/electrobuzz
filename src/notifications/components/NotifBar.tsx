@@ -21,7 +21,7 @@ const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {
 
 export default function NotifBar() {
   const [notifications, setNotifications] = useState<TNotificationSchema[]>([]);
-  const [showBadge, setShowBadge] = useState(false);
+  const [counter, setCounter] = useState(0);
 
   const { data: session, status } = useSession();
 
@@ -36,7 +36,9 @@ export default function NotifBar() {
       const channel = pusher.subscribe(privateChannel);
       channel.bind("notification", (data: TNotificationSchema) => {
         setNotifications((prev) => [data, ...prev]);
-        setShowBadge(true);
+        if (counter < 99) {
+          setCounter((prev) => prev + 1);
+        }
       });
 
       return () => {
@@ -47,19 +49,21 @@ export default function NotifBar() {
 
   return (
     <Popover>
-      <PopoverTrigger asChild onClick={() => setShowBadge(false)}>
+      <PopoverTrigger asChild onClick={() => setCounter(0)}>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-6 w-6" />
-          {showBadge && (
-            <span className="bg-red-500 w-2 h-2 rounded-full absolute top-[15%] right-[20%]"></span>
+          {counter > 0 && (
+            <span className="bg-red-500 w-4 h-4 flex justify-center items-center rounded-full absolute top-[10%] right-[15%] text-[0.6rem] font-semibold text-white">
+              <span>{counter}</span>
+            </span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[360px] h-[480px] p-0">
+      <PopoverContent align="end" className="md:w-[360px] w-full p-0">
         <div className="p-3 border-b">
           <span className="text-lg">Notifikasi</span>
         </div>
-        <ul className="overflow-auto">
+        <ul className="h-[480px] overflow-auto">
           {notifications.map((notif) => (
             <NotifCard key={notif.id} data={notif} />
           ))}
