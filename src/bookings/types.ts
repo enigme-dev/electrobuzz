@@ -7,8 +7,7 @@ import { z } from "zod";
  * accepted: merchant accepted
  * rejected: merchant rejected
  * canceled: user canceled
- * in_progress_requested: service in progress requested by merchant
- * in_progress_accepted: service in progress accepted by user
+ * in_progress: service in progress
  * done: user done
  */
 export const BookStatusEnum = z.enum([
@@ -17,8 +16,7 @@ export const BookStatusEnum = z.enum([
   "accepted",
   "rejected",
   "canceled",
-  "in_progress_requested",
-  "in_progress_accepted",
+  "in_progress",
   "done",
 ]);
 
@@ -260,3 +258,9 @@ export const CreateBookingSchema = z.object({
 });
 
 export type TCreateBookingSchema = z.infer<typeof CreateBookingSchema>;
+
+export const CheckBookingCodeSchema = z.object({
+  code: z.string().length(6),
+});
+
+export type TCheckBookingCodeSchema = z.infer<typeof CheckBookingCodeSchema>;

@@ -1,4 +1,5 @@
-import { setStatusInProgressRequested } from "@/bookings/services/BookingService";
+import { setStatusInProgress } from "@/bookings/services/BookingService";
+import { CheckBookingCodeSchema } from "@/bookings/types";
 import { ErrorCode, buildErr } from "@/core/lib/errors";
 import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
@@ -8,7 +9,14 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 export async function PATCH(req: NextRequest, { params }: IdParam) {
+  let body;
   const token = await getToken({ req });
+
+  try {
+    body = await req.json();
+  } catch (e) {
+    return buildErr("ErrValidation", 400);
+  }
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -20,8 +28,17 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
     return buildErr("ErrValidation", 400, "invalid booking id");
   }
 
+  const bookingCode = CheckBookingCodeSchema.safeParse(body);
+  if (!bookingCode.success) {
+    return buildErr("ErrValidation", 400, bookingCode.error);
+  }
+
   try {
-    await setStatusInProgressRequested(userId.data, bookingId.data);
+    await setStatusInProgress(
+      userId.data,
+      bookingId.data,
+      bookingCode.data.code
+    );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -41,6 +58,8 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
           return buildErr("ErrNotFound", 404, "booking does not exist");
         case ErrorCode.ErrBookWrongSchedule:
           return buildErr("ErrBookWrongSchedule", 409, e.message);
+        case "invalid booking code":
+          return buildErr("ErrValidation", 400, e.message);
       }
     }
 

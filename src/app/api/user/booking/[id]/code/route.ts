@@ -1,13 +1,12 @@
-import { setStatusInProgressAccepted } from "@/bookings/services/BookingService";
-import { buildErr, ErrorCode } from "@/core/lib/errors";
+import { createBookingCode } from "@/bookings/services/BookingService";
+import { ErrorCode, buildErr } from "@/core/lib/errors";
 import { Logger } from "@/core/lib/logger";
 import { IdParam, buildRes } from "@/core/lib/utils";
-import { Prisma } from "@prisma/client";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-export async function PATCH(req: NextRequest, { params }: IdParam) {
+export async function GET(req: NextRequest, { params }: IdParam) {
   const token = await getToken({ req });
 
   const userId = z.string().cuid().safeParse(token?.sub);
@@ -21,21 +20,22 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   }
 
   try {
-    await setStatusInProgressAccepted(userId.data, bookingId.data);
+    const { code, expiredAt } = await createBookingCode(
+      userId.data,
+      bookingId.data
+    );
+    return buildRes({
+      status: "booking code created successfully",
+      data: { code, expiredAt: expiredAt.toISOString() },
+    });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2025") {
-        return buildErr("ErrNotFound", 404, "booking does not exist");
-      }
-    }
-
     if (e instanceof Error) {
       switch (e.message) {
         case ErrorCode.ErrConflict:
           return buildErr(
             "ErrConflict",
             409,
-            "can not accept any requested in progress booking"
+            "can only request code on accepted booking"
           );
         case ErrorCode.ErrNotFound:
           return buildErr("ErrNotFound", 404, "booking does not exist");
@@ -44,9 +44,7 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
       }
     }
 
-    Logger.error("booking", "set user booking in progress error", e);
+    Logger.error("booking", "create booking code error", e);
     return buildErr("ErrUnknown", 500);
   }
-
-  return buildRes("booking updated successfully");
 }

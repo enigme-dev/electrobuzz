@@ -23,7 +23,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
     reviews = Cache.get(
       `merchant_reviews/${merchantId.data}/${page}/${startDate}/${endDate}`
     );
-    reviewsCt = Cache.get<number>(`merchant_reviews/${merchantId.data}`);
+    reviewsCt = Cache.get(`merchant_reviews/${merchantId.data}`) as number;
 
     if (!reviews || !reviewsCt) {
       [reviews, reviewsCt] = await getMerchantReviewsDetail(merchantId.data, {
