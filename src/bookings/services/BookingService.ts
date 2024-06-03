@@ -29,8 +29,8 @@ import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { createNotification } from "@/notifications/services/NotificationService";
-import { Cache } from "@/core/lib/cache";
 import { generateOTP } from "@/users/lib/verification";
+import { RedisClient } from "@/core/adapters/redis";
 
 export async function addBooking(
   userId: string,
@@ -112,14 +112,16 @@ export async function createBookingCode(userId: string, bookingId: string) {
     throw new Error(ErrorCode.ErrBookWrongSchedule);
   }
 
-  code = Cache.get(`code/${bookingId}`);
-  ttl = Cache.getTTL(`code/${bookingId}`);
+  const key = `code/${bookingId}`;
+  code = await RedisClient.get(key);
+  ttl = await RedisClient.ttl(key);
+  console.log(ttl);
   if (code) {
-    return { code, expiredAt: dayjs.unix((ttl ?? 0) / 1000).toDate() };
+    return { code, expiredAt: dayjs().add(ttl, "s").toDate() };
   }
 
   code = generateOTP();
-  Cache.set(`code/${bookingId}`, code, 600);
+  RedisClient.set(key, code, "EX", 600);
 
   return { code, expiredAt: dayjs().add(10, "minutes").toDate() };
 }
@@ -352,7 +354,8 @@ export async function setStatusInProgress(
     throw new Error(ErrorCode.ErrBookWrongSchedule);
   }
 
-  const savedCode = Cache.get(`code/${bookingId}`);
+  const key = `code/${bookingId}`;
+  const savedCode = await RedisClient.get(key);
   if (savedCode != code) {
     throw new Error("invalid booking code");
   }
@@ -367,6 +370,8 @@ export async function setStatusInProgress(
     [BookStatusEnum.Enum.accepted],
     data
   );
+
+  RedisClient.del(key);
 
   // create notif to user
   createNotification(userId, {

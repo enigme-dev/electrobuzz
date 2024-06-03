@@ -3,13 +3,13 @@ import dayjs from "dayjs";
 import { generateOTP } from "../lib/verification";
 import { VerifyStatuses } from "../types";
 import { hash } from "@/core/lib/security";
-import { Cache } from "@/core/lib/cache";
+import { RedisClient } from "@/core/adapters/redis";
 
 export async function checkOTP(verifId: string, code: string) {
   let verification;
   const key = `code/${verifId}`;
 
-  verification = Cache.get(key);
+  verification = await RedisClient.get(key);
 
   if (!verification) {
     return VerifyStatuses.Enum.not_found;
@@ -20,7 +20,7 @@ export async function checkOTP(verifId: string, code: string) {
     return VerifyStatuses.Enum.incorrect;
   }
 
-  Cache.delete(key);
+  RedisClient.del(key);
 
   return VerifyStatuses.Enum.correct;
 }
@@ -31,16 +31,16 @@ export async function sendOTP(phoneNumber: string) {
   const key = `code/${verifId}`;
   const code = generateOTP();
 
-  ttl = Cache.getTTL(key);
+  ttl = await RedisClient.ttl(key);
   if (ttl && ttl > 0) {
     return {
       error: "ErrTooManyRequest",
-      expiredAt: dayjs.unix(ttl / 1000).toDate(),
+      expiredAt: dayjs().add(ttl, "s").toDate(),
     };
   }
 
   const hashedCode = hash(code);
-  Cache.set(key, hashedCode, 120);
+  RedisClient.set(key, hashedCode, "EX", 120);
   expiredAt = dayjs().add(2, "minute");
   await SendMessage(
     phoneNumber,
