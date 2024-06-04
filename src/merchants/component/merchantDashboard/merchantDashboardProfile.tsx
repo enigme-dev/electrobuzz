@@ -322,7 +322,7 @@ const MerchantDashboardProfile = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 w-screen lg:w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           <DialogGeneral

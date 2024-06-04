@@ -83,7 +83,7 @@ const MerchantDashboardRating = () => {
   }
 
   return (
-    <div className="px-4">
+    <div className="px-4 w-screen lg:w-full">
       <h1 className="text-xl sm:text-2xl font-bold pt-5">Ulasan</h1>
       <ul className="pt-5 grid gap-4 pb-14">
         {reviewMerchantDetail?.pages.map(
