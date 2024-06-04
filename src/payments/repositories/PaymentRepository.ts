@@ -28,8 +28,9 @@ export class PaymentRepository extends BaseRepository {
 
         // check if last payment is pending / success
         if (
-          billing.payment[paymentLen - 1].paymentStatus === "pending" ||
-          billing.payment[paymentLen - 1].paymentStatus === "success"
+          paymentLen > 0 &&
+          (billing.payment[paymentLen - 1].paymentStatus === "pending" ||
+            billing.payment[paymentLen - 1].paymentStatus === "success")
         ) {
           throw new Error(ErrorCode.ErrConflict);
         }
