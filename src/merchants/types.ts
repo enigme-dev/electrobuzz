@@ -1,3 +1,4 @@
+import { PaymentModel } from "@/payments/types";
 import { z } from "zod";
 
 export const ALBUM_QUOTA = 4;
@@ -189,3 +190,16 @@ export type TCreateBillingSchema = z.infer<typeof CreateBillingSchema>;
 export const CreateBillingsSchema = CreateBillingSchema.array();
 
 export type TCreateBillingsSchema = z.infer<typeof CreateBillingsSchema>;
+
+export const BillingDetailSchema = z.object({
+  billingId: z.string().cuid(),
+  billingPaid: z.boolean(),
+  billingAmount: z.number(),
+  billingQty: z.number(),
+  billingCreatedAt: z.date(),
+  payment: PaymentModel.extend({ paymentStatus: z.string() })
+    .omit({ billingId: true })
+    .optional(),
+});
+
+export type TBillingDetailSchema = z.infer<typeof BillingDetailSchema>;
