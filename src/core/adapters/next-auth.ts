@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
 
       if (trigger === "update") {
         if (session?.name) token.name = session.name;
-        if (session?.image) token.image = session.image;
+        if (session?.image) token.picture = session.image;
         if (session?.isMerchant) token.isMerchant = session.isMerchant;
       }
 

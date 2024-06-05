@@ -2,14 +2,16 @@
 
 import { Input } from "@/core/components/ui/input";
 import { Button } from "@/core/components/ui/button";
-import { Home, NotepadText, Search, SunMoon } from "lucide-react";
+import { Home, NotepadText, Search } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toggleTheme } from "@/core/lib/shadcn";
 import Link from "next/link";
 import { AuthBar } from "./auth-bar";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const { setTheme, theme } = useTheme();
+  const pathname = usePathname();
 
   const handleToggleTheme = () => {
     const selectedTheme = toggleTheme(theme);
@@ -35,7 +37,7 @@ export default function Footer() {
   ];
 
   return (
-    <div className="w-full p-3 border-t border-solid border-t-[#cecece] dark:border-t-[#383838] bg-white dark:bg-[#020817] z-50">
+    <div className="w-full p-3 border-t border-solid border-t-[#cecece] bg-white dark:border-t-[#383838] dark:bg-slate-950 z-50">
       <div className="wrapper flex justify-around items-center ">
         {footerNavLink.map((value, index) => (
           <div key={index}>

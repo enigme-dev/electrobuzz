@@ -1,20 +1,26 @@
 "use client";
+
 import { Button } from "@/core/components/ui/button";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Card } from "@/core/components/ui/card";
-import { PencilIcon, PlusIcon } from "lucide-react";
+import { Camera, PencilIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import RegisterForm from "@/users/components/registerForm";
 import OTPVerification from "@/users/components/otpVerification";
 import useEditProfile from "../hooks/useEditProfiles";
 import AddressForm from "@/users/components/addressForm";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Loader from "@/core/components/loader/loader";
 import AddressCard from "./addressCard";
+import { Input } from "@/core/components/ui/input";
+import { FormLabel } from "@/core/components/ui/form";
+import { fileInputToDataURL } from "@/core/lib/utils";
+import { TUserModel, UpdateProfileModel } from "@/users/types";
+import { toast, useToast } from "@/core/components/ui/use-toast";
 
 interface AddressData {
   addressId: string | undefined;
@@ -26,6 +32,8 @@ interface AddressData {
 
 const EditProfile = () => {
   const { data: session, update } = useSession();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const {
     startEditing,
     startEditName,
@@ -134,21 +142,65 @@ const EditProfile = () => {
     setView(newView);
   }, [step, isEditing, isEditPhone, isEditName]);
 
-  if (isLoading || addressLoading) {
+  const { mutate: updateUserImage, isPending: updateUserImageLoading } =
+    useMutation({
+      mutationFn: async (value: UpdateProfileModel) =>
+        await axios.patch(`/api/user/${session?.user?.id}`, value),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["user", session?.user?.id],
+        });
+        toast({
+          title: "Update image berhasil!",
+        });
+        axios.get(`/api/user/${session?.user?.id}`).then((response) => {
+          update({ image: response.data.data.image });
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Update image gagal!",
+        });
+      },
+    });
+
+  if (isLoading || addressLoading || updateUserImageLoading) {
     return <Loader />;
   }
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const fileToDataUrl = await fileInputToDataURL(file);
+    updateUserImage({
+      image: fileToDataUrl,
+      name: initialFormValues.name,
+      phone: initialFormValues.phone,
+    });
+  };
 
   return (
     <div>
       <div className="grid place-items-center place-content-center gap-1">
         <div>
-          <Image
-            src={data?.data.data.image}
-            className="aspect-square rounded-full"
-            alt="userImage"
-            width={100}
-            height={100}
-          />
+          <label htmlFor="imageProfile" className="relative ">
+            <Image
+              src={data?.data.data.image}
+              className="aspect-square  rounded-full object-cover object-center hover:cursor-pointer hover:opacity-40"
+              alt="userImage"
+              width={100}
+              height={100}
+            />
+            <Camera className="absolute top-1/2 right-1/2 hover:block hidden" />
+            <Input
+              type="file"
+              className="hidden"
+              id="imageProfile"
+              onChange={(e) => onFileChange(e)}
+            />
+          </label>
         </div>
 
         <div className="flex gap-2 items-center pl-12">

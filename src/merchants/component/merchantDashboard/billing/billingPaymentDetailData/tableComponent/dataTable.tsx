@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { subDays } from "date-fns";
+import { format, subDays } from "date-fns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import {
@@ -24,6 +24,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { TransactionDoneColumns } from "./column";
 import { TGetMerchantBookingDone } from "@/bookings/types";
+import dayjs from "dayjs";
 
 interface BookingDataResponse {
   data: TGetMerchantBookingDone[];
@@ -55,6 +56,14 @@ export function TransactionDoneDataTable() {
 
   const params = {
     page: 1,
+    "start-date": dayjs()
+      .subtract(1, "month")
+      .startOf("month")
+      .format("YYYY-MM-DD"),
+    "end-date": dayjs()
+      .subtract(1, "month")
+      .endOf("month")
+      .format("YYYY-MM-DD"),
     status: "done",
   };
 
@@ -128,13 +137,6 @@ export function TransactionDoneDataTable() {
 
   return (
     <div>
-      <div className="flex justify-between pb-10">
-        <DatePickerWithRange
-          onSelect={handleDateRangeSelection}
-          selected={selectedRange}
-          handleReset={handleReset}
-        />
-      </div>
       <div className="rounded-md border shadow-md">
         <Table>
           <TableHeader>

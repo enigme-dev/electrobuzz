@@ -79,7 +79,11 @@ const MerchantDashboardRating = () => {
   console.log(reviewMerchantDetail);
 
   if (reviewMerchantDetailLoading) {
-    return <Loader />;
+    return (
+      <div className="w-screen sm:w-[80vw] ">
+        <Loader />
+      </div>
+    );
   }
 
   return (
@@ -120,7 +124,6 @@ const MerchantDashboardRating = () => {
             </React.Fragment>
           )
         )}
-
         <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
       </ul>
     </div>

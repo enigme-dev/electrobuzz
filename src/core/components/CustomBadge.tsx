@@ -18,7 +18,7 @@ const CustomBadge = ({ title, status }: CustomBadgeProps) => {
   return (
     <div
       className={clsx(
-        "rounded-lg  py-1 text-center font-medium uppercase ",
+        "rounded-lg  py-1 px-2 text-center font-medium uppercase text-xs md:text-sm",
         styleBadge()
       )}
     >

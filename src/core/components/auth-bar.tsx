@@ -58,7 +58,7 @@ export function AuthBar() {
                   <AvatarImage
                     src={session?.user?.image ?? undefined}
                     referrerPolicy="no-referrer"
-                    className="w-full"
+                    className="object-cover object-center aspect-square"
                   />
                   <AvatarFallback>{session?.user?.name}</AvatarFallback>
                 </Avatar>

@@ -5,11 +5,13 @@ import { DialogGeneral } from "@/core/components/general-dialog";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
 import { useToast } from "@/core/components/ui/use-toast";
+import OTPVerification from "@/users/components/otpVerification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
 import Image from "next/image";
 import React from "react";
+import CodeBookingInput from "../codeBookingInput";
 
 interface MerchantBookingAcceptedProps {
   bookingDetailData: TGetMerchantBookingAccepted;
@@ -68,17 +70,10 @@ const MerchantBookingAccepted = ({
           Kamu sudah menerima orderan ini...
         </h1>
         <div className=" flex justify-center">
-          <ButtonWithLoader
-            buttonText="Mulai Mengerjakan"
-            className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
-            isLoading={false}
-            type="button"
-            onClick={() => updateRequestInProgressBooking()}
-          />
+          <CodeBookingInput bookingId={bookingDetailData.bookingId} />
         </div>
         <p className="text-xs text-red-400 italic text-center">
-          *Tekan tombol &quot;Mulai Mengerjakan&quot; jika kamu sudah memulai
-          service.
+          *Isi kode saat mau mulai pengerjaan
         </p>
         <p className="text-xs text-red-400 italic text-center">
           *Mohon segera melakukan pengecekan pada tanggal yang dicantumkan, Jika
