@@ -23,7 +23,14 @@ import {
 } from "@react-google-maps/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { PlusIcon, Settings, Upload, UploadIcon, XIcon } from "lucide-react";
+import {
+  Camera,
+  PlusIcon,
+  Settings,
+  Upload,
+  UploadIcon,
+  XIcon,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
@@ -33,26 +40,18 @@ import { useForm } from "react-hook-form";
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
 import { DialogGeneral } from "@/core/components/general-dialog";
-import { TUpdateMerchantSchema, UpdateMerchantSchema } from "@/merchants/types";
+import {
+  TMerchantIdentityModel,
+  TMerchantModel,
+  TUpdateMerchantSchema,
+  UpdateMerchantSchema,
+} from "@/merchants/types";
 import MyMapComponent from "@/core/components/google-maps";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
+import { Switch } from "@/core/components/ui/switch";
+import { Separator } from "@/core/components/ui/separator";
+import { Button } from "@/core/components/ui/button";
 
-interface MyMerchantDetails {
-  merchantPhotoUrl: string;
-  merchantAvailable: boolean;
-  merchantCategory: string[];
-  merchantCity: string;
-  merchantCreatedAt: string;
-  merchantDesc: string;
-  merchantId: string;
-  merchantLat: number;
-  merchantLong: number;
-  merchantName: string;
-  merchantProvince: string;
-  merchantRating: number | null;
-  merchantReviewCt: number | null;
-  merchantVerified: boolean;
-  merchantAlbums?: MerchantAlbum[];
-}
 interface MerchantAlbum {
   albumPhotoUrl: string;
   merchantAlbumId?: string;
@@ -78,6 +77,14 @@ interface FileObject {
   merchantId?: string;
 }
 
+export enum Tab {
+  Profile = "Profile",
+  Location = "Location",
+  Album = "Album",
+}
+
+const libraries: LoadScriptProps["libraries"] = ["places"];
+
 const MerchantDashboardProfile = () => {
   const { data: session } = useSession();
   const { toast } = useToast();
@@ -90,7 +97,19 @@ const MerchantDashboardProfile = () => {
         await axios
           .get(`/api/merchant/${session?.user?.id}`)
           .then((response) => {
-            return response.data.data as MyMerchantDetails;
+            return response.data.data as TMerchantModel;
+          }),
+      enabled: !!session?.user?.id,
+    });
+
+  const { isLoading: getMerchantAlbumsloading, data: merchantAlbums } =
+    useQuery({
+      queryKey: ["getMerchantAlbum", session?.user?.id],
+      queryFn: async () =>
+        await axios
+          .get(`/api/merchant/${session?.user?.id}`)
+          .then((response) => {
+            return response.data.data.merchantAlbums as MerchantAlbum[];
           }),
       enabled: !!session?.user?.id,
     });
@@ -100,10 +119,14 @@ const MerchantDashboardProfile = () => {
     lng: myMerchantDetails?.merchantLong || null,
   });
   const [provinceOptions, setProvinceOptions] = useState([]);
-  const [onOpenDialog, setOnOpenDialog] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Profile);
+
+  const handleTabClick = (tab: Tab) => {
+    setActiveTab(tab);
+  };
 
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const libraries: LoadScriptProps["libraries"] = ["places"];
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -220,13 +243,14 @@ const MerchantDashboardProfile = () => {
       });
     },
   });
+
   const { mutate: deleteMerchantAlbum, isPending: deleteMerchantAlbumLoading } =
     useMutation({
       mutationFn: (values: any) =>
         axios.delete(`/api/merchant/album/${values}`),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["getMerchantDetails", session?.user?.id],
+          queryKey: ["getMerchantAlbum", session?.user?.id],
         });
         toast({
           title: "Delete Album Merchant Berhasil!",
@@ -246,7 +270,7 @@ const MerchantDashboardProfile = () => {
       onSuccess: () => {
         toast({ title: "Tambah foto album berhasil!" });
         queryClient.invalidateQueries({
-          queryKey: ["getMerchantDetails", session?.user?.id],
+          queryKey: ["getMerchantAlbum", session?.user?.id],
         });
       },
       onError: () => {
@@ -270,12 +294,6 @@ const MerchantDashboardProfile = () => {
     setProvinceOptions(provinceOptions);
   }
 
-  function handleOpenChange(open: boolean) {
-    if (!open) {
-      setOnOpenDialog(false);
-    }
-  }
-
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
@@ -284,6 +302,16 @@ const MerchantDashboardProfile = () => {
     const fileToDataUrl = await fileInputToDataURL(file);
 
     updateMerchantProfile({ merchantPhotoUrl: fileToDataUrl });
+  };
+
+  const onBannerFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const fileToDataUrl = await fileInputToDataURL(file);
+
+    updateMerchantProfile({ merchantBanner: fileToDataUrl });
   };
 
   const onFileAlbumChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -311,8 +339,8 @@ const MerchantDashboardProfile = () => {
   if (
     getMerchantDetailsloading ||
     deleteMerchantAlbumLoading ||
-    updateMerchantLoadingProfile ||
-    AddAlbumPhotoLoading
+    AddAlbumPhotoLoading ||
+    getMerchantAlbumsloading
   ) {
     return (
       <div className="md:w-[80vw] w-screen h-full">
@@ -321,257 +349,304 @@ const MerchantDashboardProfile = () => {
     );
   }
 
+  console.log(myMerchantDetails);
+  console.log(merchantAlbums);
+
   return (
-    <div className="p-8">
+    <div className="p-8 w-screen lg:w-full pb-20">
+      <h1 className="font-bold text-lg sm:text-2xl">Profile Mitra</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-          <DialogGeneral
-            dialogContent={
-              <div className="flex items-center justify-center">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex items-start gap-4 pt-10 flex-col sm:flex-row"
+        >
+          <div className="border rounded-lg shadow-md w-full sm:w-[40vw]">
+            <label
+              htmlFor="imageBanner"
+              className="relative flex flex-col gap-4 items-start max-h-[300px] justify-end w-full cursor-pointer group"
+            >
+              <Image
+                src={
+                  myMerchantDetails && myMerchantDetails.merchantBanner
+                    ? myMerchantDetails.merchantBanner
+                    : ""
+                }
+                alt={myMerchantDetails ? myMerchantDetails.merchantName : ""}
+                width={300}
+                height={300}
+                className="object-cover rounded-t-lg w-full h-[300px] object-center brightness-50"
+              />
+              <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-t-lg"></div>
+              <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <UploadIcon className="text-white" />
+              </div>
+              <Input
+                type="file"
+                className="hidden"
+                id="imageBanner"
+                onChange={(e) => onBannerFileChange(e)}
+              />
+            </label>
+
+            <div className="flex justify-center mt-[-60px]">
+              <label
+                htmlFor="imageProfile"
+                className="relative border border-dashed rounded-full p-3 cursor-pointer group"
+              >
+                <Image
+                  src={
+                    myMerchantDetails ? myMerchantDetails.merchantPhotoUrl : ""
+                  }
+                  className="aspect-square rounded-full object-cover object-center"
+                  alt="userImage"
+                  width={100}
+                  height={100}
+                />
+                <div className="absolute top-0 right-0 bottom-0 left-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-full"></div>
+                <Camera className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Input
+                  type="file"
+                  className="hidden"
+                  id="imageProfile"
+                  onChange={(e) => onFileChange(e)}
+                />
+              </label>
+            </div>
+            <FormDescription className="text-gray-400 text-center">
+              *.jpeg, *.jpg, *.png
+            </FormDescription>
+            <div className="flex justify-around pt-10">
+              <h2>Aktif</h2>
+              <div>
+                <Switch />
+              </div>
+            </div>
+          </div>
+
+          <div className="border p-8 rounded-lg shadow-md space-y-4 w-full">
+            <div className="flex sm:gap-4">
+              {Object.values(Tab).map((tab) => (
+                <Button
+                  variant={"ghost"}
+                  key={tab}
+                  type="button"
+                  className={`text-sm sm:text-lg  ${
+                    activeTab === tab ? "bg-accent" : "text-black"
+                  }`}
+                  onClick={() => handleTabClick(tab)}
+                >
+                  {tab}
+                </Button>
+              ))}
+            </div>
+            <Separator />
+            {activeTab === Tab.Profile && (
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="merchantPhotoUrl"
+                  name="merchantName"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center gap-4">
-                        <div className="border-2 border-dashed border-gray-200 rounded-lg h-[120px] w-[100px] grid place-items-center text-gray-400">
-                          <FormLabel
-                            className="flex flex-col items-center gap-1 hover:cursor-pointer"
-                            htmlFor="images"
-                          >
-                            <UploadIcon className="h-6 w-6" />
-                            <span className="underline text-xs underline-offset-2 underline-offset-white-0.5 transition-none p-1">
-                              Click to upload
-                            </span>
-                            <Input
-                              className="hidden "
-                              id="images"
-                              multiple
-                              type="file"
-                              onChange={(e) => {
-                                onFileChange(e);
-                                field.onChange(e);
-                                setOnOpenDialog(false);
-                              }}
-                              onBlur={field.onBlur}
-                              ref={field.ref}
-                            />
-                          </FormLabel>
-                        </div>
-                      </div>
+                      <FormLabel>Nama Toko</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nama tokomu" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-            }
-            dialogTitle="Update Banner"
-            onOpen={onOpenDialog}
-            onOpenChange={handleOpenChange}
-            dialogTrigger={
-              <div
-                className="relative flex flex-col gap-4 items-start max-h-[300px] justify-end w-full hover:brightness-75 cursor-pointer"
-                onClick={() => setOnOpenDialog(true)}
-              >
-                <Image
-                  src={
-                    myMerchantDetails ? myMerchantDetails?.merchantPhotoUrl : ""
-                  }
-                  alt={myMerchantDetails ? myMerchantDetails?.merchantName : ""}
-                  width={300}
-                  height={300}
-                  className="object-cover w-full brightness-50 h-[300px] object-center hover:cursor-pointer"
-                />
-                <div className="absolute top-10 right-0 bottom-0 left-0 flex justify-center items-center sm:opacity-0 sm:hover:opacity-100 transition-opacity">
-                  <Upload className="text-white" />
-                </div>
-              </div>
-            }
-          />
 
-          <div className="h-fit">
-            <FormLabel>
-              Album{" "}
-              <span className="text-gray-300 italic text-xs">(maks 4)</span>
-            </FormLabel>
-            <div className="flex flex-col sm:flex-row w-44 h-full max-w-screen overflow-scroll mt-4 gap-4">
-              <FormLabel
-                htmlFor="images2"
-                className="border border-dashed flex justify-center items-center h-32 cursor-pointer w-full "
-              >
-                <PlusIcon className="text-gray-400" />
-                <Input
-                  id="images2"
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => onFileAlbumChange(e)}
-                />
-              </FormLabel>
-              {myMerchantDetails?.merchantAlbums &&
-                myMerchantDetails?.merchantAlbums.length > 0 &&
-                myMerchantDetails?.merchantAlbums.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <div className="relative h-32 w-full">
-                      <Image
-                        src={photo.albumPhotoUrl}
-                        alt={`Album photo ${index + 1}`}
-                        layout="fill"
-                        objectFit="cover"
-                        className="rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        className="absolute top-0 right-0 p-1 text-white bg-red-500 rounded-full"
-                        onClick={() =>
-                          handleDeleteFileAlbum(photo.merchantAlbumId)
-                        }
-                      >
-                        <XIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
+                <FormField
+                  control={form.control}
+                  name="merchantCategory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kategori</FormLabel>
+                      <FormControl>
+                        <MultipleSelector
+                          value={
+                            field.value
+                              ? field.value.map((value: any) => ({
+                                  label: value,
+                                  value,
+                                }))
+                              : []
+                          }
+                          onChange={(selectedOptions) => {
+                            const selectedValues = selectedOptions.map(
+                              (option) => option.value
+                            );
 
-          <FormField
-            control={form.control}
-            name="merchantName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nama Toko</FormLabel>
-                <FormControl>
-                  <Input placeholder="Nama tokomu" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="merchantCategory"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Kategori</FormLabel>
-                <FormControl>
-                  <MultipleSelector
-                    value={
-                      field.value
-                        ? field.value.map((value: any) => ({
-                            label: value,
-                            value,
-                          }))
-                        : []
-                    }
-                    onChange={(selectedOptions) => {
-                      const selectedValues = selectedOptions.map(
-                        (option) => option.value
-                      );
-
-                      field.onChange(selectedValues);
-                    }}
-                    defaultOptions={OPTIONS}
-                    hidePlaceholderWhenSelected
-                    placeholder="Pilih kategorimu"
-                    emptyIndicator={
-                      <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                        no results found.
-                      </p>
-                    }
-                  />
-                </FormControl>
-                <FormDescription>
-                  isi kategori sesuai dengan keahlianmu
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="merchantDesc"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Deskripsi</FormLabel>
-                <FormControl>
-                  <Input placeholder="Deskripsikan tokomu" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="merchantProvince"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Provinsi</FormLabel>
-                <FormControl>
-                  <SelectOption
-                    placeholder="Pilih Provinsi"
-                    selectLabel={"Provinsi"}
-                    selectList={provinceOptions}
-                    defaultValue={myMerchantDetails?.merchantProvince}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="merchantCity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="pb-2">Kota</FormLabel>
-                <FormControl>
-                  <Input placeholder="Kota" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="pt-8">
-            {isLoaded ? (
-              <>
-                <Autocomplete
-                  onLoad={onLoad}
-                  options={options}
-                  onPlaceChanged={handlePlaceChanged}
-                >
-                  <Input placeholder="Enter a location" />
-                </Autocomplete>
-                <p className="italic text-gray-400 pt-5 text-sm">
-                  geser marker untuk mendapatkan lokasi detailmu
-                </p>
-                <div className="relative">
-                  <MyMapComponent
-                    isLoaded={isLoaded}
-                    locLatLng={validLocation}
-                    marker={
-                      selectedLocation.lat !== null &&
-                      selectedLocation.lng !== null ? (
-                        <MarkerF
-                          draggable
-                          position={{
-                            lat: selectedLocation.lat,
-                            lng: selectedLocation.lng,
+                            field.onChange(selectedValues);
                           }}
-                          onClick={markerClicked}
-                          onDragEnd={markerFinish}
+                          defaultOptions={OPTIONS}
+                          hidePlaceholderWhenSelected
+                          placeholder="Pilih kategorimu"
+                          emptyIndicator={
+                            <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                              no results found.
+                            </p>
+                          }
                         />
-                      ) : null
-                    }
+                      </FormControl>
+                      <FormDescription>
+                        isi kategori sesuai dengan keahlianmu
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="merchantDesc"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Deskripsi</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Deskripsikan tokomu" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="merchantProvince"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Provinsi</FormLabel>
+                      <FormControl>
+                        <SelectOption
+                          placeholder="Pilih Provinsi"
+                          selectLabel={"Provinsi"}
+                          selectList={provinceOptions}
+                          defaultValue={myMerchantDetails?.merchantProvince}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="merchantCity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="pb-2">Kota</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Kota" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="w-full flex justify-end pt-10">
+                  <ButtonWithLoader
+                    buttonText="Save Changes"
+                    type="submit"
+                    className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+                    isLoading={updateMerchantLoadingProfile}
                   />
                 </div>
-              </>
-            ) : (
-              "loading..."
+              </div>
+            )}
+            {activeTab === Tab.Album && (
+              <div className="h-fit">
+                <FormLabel>
+                  Album{" "}
+                  <span className="text-gray-300 italic text-xs">(maks 4)</span>
+                </FormLabel>
+                <div className="grid grid-cols-1 sm:grid-cols-3 w-full h-full mt-4 gap-4">
+                  <FormLabel
+                    htmlFor="images2"
+                    className="border border-dashed flex justify-center items-center h-32 cursor-pointer w-full "
+                  >
+                    <PlusIcon className="text-gray-400" />
+                    <Input
+                      id="images2"
+                      type="file"
+                      className="hidden"
+                      onChange={(e) => onFileAlbumChange(e)}
+                    />
+                  </FormLabel>
+                  {merchantAlbums &&
+                    merchantAlbums.length > 0 &&
+                    merchantAlbums.map((photo: any, index: any) => (
+                      <div key={index} className="relative">
+                        <div className="relative grid grid-cols-3 h-32 w-full">
+                          <Image
+                            src={photo.albumPhotoUrl}
+                            alt={`Album photo ${index + 1}`}
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            className="absolute top-0 right-0 p-1 text-white bg-red-500 rounded-full"
+                            onClick={() =>
+                              handleDeleteFileAlbum(photo.merchantAlbumId)
+                            }
+                          >
+                            <XIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+            {activeTab === Tab.Location && (
+              <div className="pt-8">
+                {isLoaded ? (
+                  <>
+                    <Autocomplete
+                      onLoad={onLoad}
+                      options={options}
+                      onPlaceChanged={handlePlaceChanged}
+                    >
+                      <Input placeholder="Enter a location" />
+                    </Autocomplete>
+                    <p className="italic text-gray-400 pt-5 text-sm">
+                      geser marker untuk mendapatkan lokasi detailmu
+                    </p>
+                    <div className="relative">
+                      <MyMapComponent
+                        isLoaded={isLoaded}
+                        locLatLng={validLocation}
+                        marker={
+                          selectedLocation.lat !== null &&
+                          selectedLocation.lng !== null ? (
+                            <MarkerF
+                              draggable
+                              position={{
+                                lat: selectedLocation.lat,
+                                lng: selectedLocation.lng,
+                              }}
+                              onClick={markerClicked}
+                              onDragEnd={markerFinish}
+                            />
+                          ) : null
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  "loading..."
+                )}
+                <div className="w-full flex justify-end pt-10">
+                  <ButtonWithLoader
+                    buttonText="Save Changes"
+                    type="submit"
+                    className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+                    isLoading={updateMerchantLoadingProfile}
+                  />
+                </div>
+              </div>
             )}
           </div>
         </form>

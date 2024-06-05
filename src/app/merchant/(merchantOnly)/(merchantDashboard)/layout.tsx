@@ -7,7 +7,7 @@ import React, { ReactNode, Suspense } from "react";
 const layout = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense fallback={<Loader />}>
-      <div className="md:flex block">
+      <div className="lg:flex block">
         <div className="sticky top-0 left-0 right-0 h-full grow">
           <MerchantDashboardSideBar />
         </div>

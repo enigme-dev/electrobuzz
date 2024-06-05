@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/core/components/ui/button";
-import { File, Folder, Star, User } from "lucide-react";
+import { Folder, Star, User, Wallet } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -22,6 +22,11 @@ const merchantDashboardNavList = [
     title: "Rating",
     link: "/merchant/dashboard/rating",
     icon: <Star />,
+  },
+  {
+    title: "Billing",
+    link: "/merchant/dashboard/billing",
+    icon: <Wallet />,
   },
 ];
 

@@ -38,7 +38,7 @@ const MerchantDashboardTransactionDetail = () => {
     return <Loader />;
   }
   return (
-    <main className="pb-20 px-8 sm:wrapper ">
+    <main className="pb-20 px-8 sm:wrapper w-screen lg:w-full">
       {bookingDetailData?.bookingStatus == "pending" && (
         <MerchantBookingPending bookingDetailData={bookingDetailData} />
       )}
