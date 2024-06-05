@@ -1,6 +1,6 @@
 import { BillingRepository } from "../repositories/BillingRepository";
 import { SearchParams } from "@/core/lib/utils";
-import { TCreateBillingsSchema } from "../types";
+import { TBillingDetailSchema, TCreateBillingsSchema } from "../types";
 
 export const MONTHLY_FEES = 5000;
 
@@ -35,7 +35,24 @@ export async function getMerchantBilling(
   merchantId: string,
   billingId: string
 ) {
-  return await BillingRepository.findOne(merchantId, billingId);
+  const billing = await BillingRepository.findOne(merchantId, billingId);
+  const result: TBillingDetailSchema = {
+    billingId: billing.billingId,
+    billingPaid: billing.billingPaid,
+    billingAmount: billing.billingAmount,
+    billingQty: billing.billingQty,
+    billingCreatedAt: billing.billingCreatedAt,
+    payment: {
+      paymentId: billing.payment[0].paymentId,
+      paymentStatus: billing.payment[0].paymentStatus,
+      paymentAmount: billing.payment[0].paymentAmount,
+      paymentMethod: billing.payment[0].paymentMethod,
+      paymentBank: billing.payment[0].paymentBank,
+      paymentDate: billing.payment[0].paymentDate,
+      paymentCreatedAt: billing.payment[0].paymentCreatedAt,
+    },
+  };
+  return result;
 }
 
 export async function getMerchantBillings(

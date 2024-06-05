@@ -198,6 +198,7 @@ model Billing {
 model Payment {
   paymentId        String    @id @default(cuid())
   paymentStatus    String
+  paymentUrl       String?   /// @encrypted
   paymentAmount    Int?
   paymentMethod    String?
   paymentBank      String?
