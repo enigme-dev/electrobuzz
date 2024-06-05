@@ -178,6 +178,7 @@ export async function updateMerchantProfile(
     merchantName: input.merchantName,
     merchantDesc: input.merchantDesc,
     merchantPhotoUrl: input.merchantPhotoUrl,
+    merchantBanner: input.merchantBanner,
     merchantCity: input.merchantCity,
     merchantProvince: input.merchantProvince,
     merchantLat: input.merchantLat,
