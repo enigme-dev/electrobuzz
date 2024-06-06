@@ -65,7 +65,6 @@ const UserBookingDone = ({ bookingDetailData }: UserBookingDoneProps) => {
     },
   });
 
-  console.log(bookingDetailData);
   function onSubmit(value: TCreateReviewSchema) {
     createReview(value);
   }

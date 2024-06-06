@@ -158,7 +158,6 @@ const MerchantDashboardTransaction = () => {
       }`
     );
   };
-  console.log(bookingDataAsMerchant);
 
   if (bookingListLoading) {
     return (

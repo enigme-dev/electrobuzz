@@ -64,7 +64,6 @@ const BillingPaymentDetail = () => {
         console.log(error);
       });
   };
-  console.log(getBillingsDetailData);
 
   const getStatusBilling = getBillingsDetailData?.payment;
 
@@ -102,7 +101,12 @@ const BillingPaymentDetail = () => {
               getStatusBilling.length > 0 ? (
                 getStatusBilling?.[0].paymentStatus
               ) : (
-                <p>Belum ada transaksi</p>
+                <Button
+                  onClick={() => getRedirectUrl()}
+                  className="bg-yellow-600 border-yellow-600 w-[200px] hover:bg-yellow-500"
+                >
+                  Bayar
+                </Button>
               )
             ) : (
               <Button
@@ -119,7 +123,9 @@ const BillingPaymentDetail = () => {
         </div>
       </div>
       <div className="pb-10 pt-6">
-        <TransactionDoneDataTable />
+        <TransactionDoneDataTable
+          billingCreatedAt={getBillingsDetailData?.billingCreatedAt}
+        />
       </div>
     </div>
   );

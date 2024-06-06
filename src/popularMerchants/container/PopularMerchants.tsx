@@ -32,7 +32,6 @@ const PopularMerchants = () => {
         }),
     });
 
-  console.log(getMerchantsPopular);
   if (getMerchantsPopularLoading) {
     return <Loader />;
   }

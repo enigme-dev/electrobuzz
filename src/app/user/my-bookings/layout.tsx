@@ -1,7 +1,10 @@
+"use client";
 import Loader from "@/core/components/loader/loader";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import React, { ReactNode, Suspense } from "react";
 
-const layout = ({ children }: { children: ReactNode }) => {
+const BookingLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <Suspense fallback={<Loader />}>{children}</Suspense>
@@ -9,4 +12,4 @@ const layout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default layout;
+export default BookingLayout;

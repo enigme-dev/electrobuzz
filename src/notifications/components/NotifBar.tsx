@@ -25,6 +25,11 @@ export default function NotifBar() {
 
   const { data: session, status } = useSession();
 
+  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY as string, {
+    authEndpoint: "/api/notification/auth",
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER as string,
+  });
+
   useEffect(() => {
     if (status === "authenticated" && session.user) {
       axios
@@ -45,7 +50,7 @@ export default function NotifBar() {
         pusher.unsubscribe(privateChannel);
       };
     }
-  }, [status, session]);
+  }, [status]);
 
   return (
     <Popover>

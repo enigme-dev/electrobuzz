@@ -76,8 +76,6 @@ const MerchantDashboardRating = () => {
     }
   }, [fetchNextPage, inView, hasNextPage]);
 
-  console.log(reviewMerchantDetail);
-
   if (reviewMerchantDetailLoading) {
     return (
       <div className="w-screen sm:w-[80vw] ">

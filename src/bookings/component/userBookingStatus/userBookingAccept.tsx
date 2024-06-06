@@ -101,8 +101,6 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
       });
   };
 
-  // console.log(code);
-
   if (updateBookingToInProgressLoading) {
     return <Loader />;
   }

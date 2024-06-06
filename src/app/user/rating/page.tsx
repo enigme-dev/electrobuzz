@@ -68,8 +68,6 @@ const UserRatingPage = () => {
     }
   }, [fetchNextPage, inView, hasNextPage]);
 
-  console.log(userReviewData);
-
   if (userReviewDataLoading) {
     return <Loader />;
   }

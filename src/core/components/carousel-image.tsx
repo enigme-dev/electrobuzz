@@ -44,7 +44,7 @@ export function CarouselImage({ children }: any) {
       >
         <CarouselContent>{children}</CarouselContent>
       </Carousel>
-      <div className="py-2 text-center text-sm text-muted-foreground">
+      <div className="absolute py-2 text-center text-sm text-muted-foreground">
         Slide {current} of {count}
       </div>
     </div>

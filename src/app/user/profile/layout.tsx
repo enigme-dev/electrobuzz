@@ -1,10 +1,11 @@
 "use client";
 
-import { Toast } from "@/core/components/ui/toast";
 import { Toaster } from "@/core/components/ui/toaster";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import React from "react";
 
-const EditProfileLayout = ({ children }: any) => {
+const ProfileLayout = ({ children }: any) => {
   return (
     <div>
       <Toaster />
@@ -13,4 +14,4 @@ const EditProfileLayout = ({ children }: any) => {
   );
 };
 
-export default EditProfileLayout;
+export default ProfileLayout;

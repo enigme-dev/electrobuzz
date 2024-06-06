@@ -52,7 +52,7 @@ import { Switch } from "@/core/components/ui/switch";
 import { Separator } from "@/core/components/ui/separator";
 import { Button } from "@/core/components/ui/button";
 
-interface MerchantAlbum {
+export interface MerchantAlbum {
   albumPhotoUrl: string;
   merchantAlbumId?: string;
   merchantId?: string;
@@ -86,7 +86,7 @@ export enum Tab {
 const libraries: LoadScriptProps["libraries"] = ["places"];
 
 const MerchantDashboardProfile = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -340,7 +340,8 @@ const MerchantDashboardProfile = () => {
     getMerchantDetailsloading ||
     deleteMerchantAlbumLoading ||
     AddAlbumPhotoLoading ||
-    getMerchantAlbumsloading
+    getMerchantAlbumsloading ||
+    status === "loading"
   ) {
     return (
       <div className="md:w-[80vw] w-screen h-full">
@@ -348,9 +349,6 @@ const MerchantDashboardProfile = () => {
       </div>
     );
   }
-
-  console.log(myMerchantDetails);
-  console.log(merchantAlbums);
 
   return (
     <div className="p-8 w-screen lg:w-full pb-20">
@@ -510,40 +508,6 @@ const MerchantDashboardProfile = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="merchantProvince"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Provinsi</FormLabel>
-                      <FormControl>
-                        <SelectOption
-                          placeholder="Pilih Provinsi"
-                          selectLabel={"Provinsi"}
-                          selectList={provinceOptions}
-                          defaultValue={myMerchantDetails?.merchantProvince}
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="merchantCity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="pb-2">Kota</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Kota" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <div className="w-full flex justify-end pt-10">
                   <ButtonWithLoader
                     buttonText="Save Changes"
@@ -601,43 +565,79 @@ const MerchantDashboardProfile = () => {
               </div>
             )}
             {activeTab === Tab.Location && (
-              <div className="pt-8">
-                {isLoaded ? (
-                  <>
-                    <Autocomplete
-                      onLoad={onLoad}
-                      options={options}
-                      onPlaceChanged={handlePlaceChanged}
-                    >
-                      <Input placeholder="Enter a location" />
-                    </Autocomplete>
-                    <p className="italic text-gray-400 pt-5 text-sm">
-                      geser marker untuk mendapatkan lokasi detailmu
-                    </p>
-                    <div className="relative">
-                      <MyMapComponent
-                        isLoaded={isLoaded}
-                        locLatLng={validLocation}
-                        marker={
-                          selectedLocation.lat !== null &&
-                          selectedLocation.lng !== null ? (
-                            <MarkerF
-                              draggable
-                              position={{
-                                lat: selectedLocation.lat,
-                                lng: selectedLocation.lng,
-                              }}
-                              onClick={markerClicked}
-                              onDragEnd={markerFinish}
-                            />
-                          ) : null
-                        }
-                      />
-                    </div>
-                  </>
-                ) : (
-                  "loading..."
-                )}
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="merchantProvince"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Provinsi</FormLabel>
+                      <FormControl>
+                        <SelectOption
+                          placeholder="Pilih Provinsi"
+                          selectLabel={"Provinsi"}
+                          selectList={provinceOptions}
+                          defaultValue={myMerchantDetails?.merchantProvince}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="merchantCity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="pb-2">Kota</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Kota" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="pt-8">
+                  {isLoaded ? (
+                    <>
+                      <Autocomplete
+                        onLoad={onLoad}
+                        options={options}
+                        onPlaceChanged={handlePlaceChanged}
+                      >
+                        <Input placeholder="Enter a location" />
+                      </Autocomplete>
+                      <p className="italic text-gray-400 pt-5 text-sm">
+                        geser marker untuk mendapatkan lokasi detailmu
+                      </p>
+                      <div className="relative">
+                        <MyMapComponent
+                          isLoaded={isLoaded}
+                          locLatLng={validLocation}
+                          marker={
+                            selectedLocation.lat !== null &&
+                            selectedLocation.lng !== null ? (
+                              <MarkerF
+                                draggable
+                                position={{
+                                  lat: selectedLocation.lat,
+                                  lng: selectedLocation.lng,
+                                }}
+                                onClick={markerClicked}
+                                onDragEnd={markerFinish}
+                              />
+                            ) : null
+                          }
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    "loading..."
+                  )}
+                </div>
                 <div className="w-full flex justify-end pt-10">
                   <ButtonWithLoader
                     buttonText="Save Changes"

@@ -53,8 +53,6 @@ export function BillingHistoryDataTable({
   );
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  console.log(data);
-
   const columns = BillingColumns();
 
   const table = useReactTable({
