@@ -6,11 +6,14 @@ import axios from "axios";
 import { ChangeEvent } from "react";
 import { z } from "zod";
 import { MerchantIdentitiesSchema } from "@/merchants/types";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const MerchantIdentityResponse = z.object({ data: MerchantIdentitiesSchema });
 type MerchantIdentityResponse = z.infer<typeof MerchantIdentityResponse>;
 
 export default function Page({ params }: Readonly<{ params: { id: string } }>) {
+  const { status } = useSession();
   const handleSelect = (option: ChangeEvent<HTMLSelectElement>) => {
     axios.patch(
       `/api/admin/merchants/${params.id}`,
@@ -44,7 +47,7 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
   });
 
   const isLoading = merchant.some((query) => query.isLoading);
-  if (isLoading) {
+  if (isLoading || status === "loading") {
     return <Loader />;
   }
 
@@ -68,10 +71,47 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
         </div>
       </div>
       <div className="grid grid-cols-2 justify-items-center">
-        <img src={merchant[0]?.data?.data.identityKTP} alt="ktp" />
-        <img src={merchant[0]?.data?.data.identitySKCK} alt="skck" />
+        <Image
+          src={
+            merchant && merchant[0].data
+              ? merchant[0]?.data?.data.identityKTP
+              : ""
+          }
+          alt="ktp"
+          width={200}
+          height={200}
+        />
+        <Image
+          src={
+            merchant && merchant[0].data
+              ? merchant[0]?.data?.data.identitySKCK
+              : ""
+          }
+          alt="skck"
+          width={200}
+          height={200}
+        />
+        <Image
+          src={
+            merchant && merchant[0].data
+              ? merchant[0]?.data?.data.identityKTP
+              : ""
+          }
+          alt="ktp"
+          width={200}
+          height={200}
+        />
         {merchant[0]?.data?.data.identityDocs && (
-          <img src={merchant[0]?.data.data.identityDocs} alt="docs" />
+          <Image
+            src={
+              merchant && merchant[0].data
+                ? merchant[0]?.data?.data.identityDocs
+                : ""
+            }
+            alt="docs"
+            width={200}
+            height={200}
+          />
         )}
       </div>
     </div>

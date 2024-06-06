@@ -33,7 +33,11 @@ interface BookingDataResponse {
   perpage: number;
 }
 
-export function TransactionDoneDataTable() {
+export function TransactionDoneDataTable({
+  billingCreatedAt,
+}: {
+  billingCreatedAt?: Date;
+}) {
   const router = useRouter();
   const { data: session } = useSession();
   const searchParams = useSearchParams();
@@ -56,11 +60,11 @@ export function TransactionDoneDataTable() {
 
   const params = {
     page: 1,
-    "start-date": dayjs()
+    "start-date": dayjs(billingCreatedAt)
       .subtract(1, "month")
       .startOf("month")
       .format("YYYY-MM-DD"),
-    "end-date": dayjs()
+    "end-date": dayjs(billingCreatedAt)
       .subtract(1, "month")
       .endOf("month")
       .format("YYYY-MM-DD"),
@@ -86,8 +90,6 @@ export function TransactionDoneDataTable() {
   });
 
   const data = getBookingsDataDone ? getBookingsDataDone.data : [];
-
-  console.log(data);
 
   const columns = TransactionDoneColumns();
 

@@ -21,7 +21,6 @@ interface MerchantBookingDoneProps {
 const MerchantBookingDone = ({
   bookingDetailData,
 }: MerchantBookingDoneProps) => {
-  console.log(bookingDetailData);
   return (
     <div>
       <div>

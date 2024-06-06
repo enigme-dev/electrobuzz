@@ -115,7 +115,7 @@ export async function createBookingCode(userId: string, bookingId: string) {
   const key = `code/${bookingId}`;
   code = await RedisClient.get(key);
   ttl = await RedisClient.ttl(key);
-  console.log(ttl);
+
   if (code) {
     return { code, expiredAt: dayjs().add(ttl, "s").toDate() };
   }

@@ -1,38 +1,33 @@
 "use client";
 import Loader from "@/core/components/loader/loader";
 import { Toaster } from "@/core/components/ui/toaster";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 
 const MerchantLayout = ({ children }: any) => {
   const router = useRouter();
-  const { data: session } = useSession();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["merchant", session?.user?.id],
-    queryFn: () => axios.get(`/api/merchant/${session?.user?.id}`),
-    enabled: !!session?.user?.id,
-  });
+  const { data: session, status } = useSession();
 
-  // if (isLoading) {
-  //   return <Loader />;
-  // }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+    if (session?.user?.isMerchant === false) {
+      router.push("/merchant/register");
+    }
+  }, [status, router, session]);
 
-  // if (isError) {
-  //   router.push("/merchant/register");
-  // }
-  // if (session?.user?.id === undefined) {
-  //   redirect("/login");
-  // }
-
-  return (
-    <div>
-      {children}
-      <Toaster />
-    </div>
-  );
+  if (status === "loading") {
+    return <Loader />;
+  }
+  if (status === "authenticated")
+    return (
+      <div>
+        {children}
+        <Toaster />
+      </div>
+    );
 };
 
 export default MerchantLayout;
