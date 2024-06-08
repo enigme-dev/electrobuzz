@@ -44,7 +44,9 @@ export const BillingColumns: () => ColumnDef<BillingData>[] = () => [
           return <CustomBadge title="Sudah Bayar" status={"success"} />;
         }
         default: {
-          return <CustomBadge title="Belum Bayar" status={"failed"} />;
+          return (
+            <CustomBadge title="Belum Ada Transaksi" status={"no status"} />
+          );
         }
       }
     },

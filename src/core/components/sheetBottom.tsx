@@ -52,7 +52,7 @@ export function SheetSide({ buttonTrigger }: SheetSideProps) {
             {buttonTrigger}
           </Button>
         </SheetTrigger>
-        <SheetContent side="left">
+        <SheetContent side="bottom">
           <SheetHeader>
             <SheetTitle>Merchant Dashboard</SheetTitle>
           </SheetHeader>

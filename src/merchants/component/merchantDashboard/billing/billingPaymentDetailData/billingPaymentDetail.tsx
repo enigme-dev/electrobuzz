@@ -124,10 +124,14 @@ const BillingPaymentDetail = () => {
               Status Pembayaran
             </h2>
             <div className="pt-3">
-              {getBillingsDetailData?.billingPaid ? (
-                <CustomBadge status="success" title="Sudah Bayar" />
+              {getBillingsDetailData ? (
+                getBillingsDetailData.billingPaid ? (
+                  <CustomBadge status="success" title="Sudah Bayar" />
+                ) : (
+                  <CustomBadge status="failed" title="Belum Bayar" />
+                )
               ) : (
-                <CustomBadge status="failed" title="Belum Bayar" />
+                <p className="text-gray-400 italic">Belum ada transaksi</p>
               )}
             </div>
           </div>
@@ -154,9 +158,15 @@ const BillingPaymentDetail = () => {
             </li>
           </ul>
           <p className="md:text-2xl lg:text-3xl sm:text-lg text-sm py-2 font-extrabold text-yellow-700">
-            {getStatusBilling ? (
-              getStatusBilling.length > 0 ? (
-                getStatusBilling?.[0].paymentStatus
+            {getBillingsDetailData?.billingPaid ? (
+              getStatusBilling && getStatusBilling.length > 0 ? (
+                <a
+                  href={getStatusBilling[0].paymentStatus}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open Payment Link
+                </a>
               ) : (
                 <Button
                   onClick={() => getRedirectUrl()}
@@ -165,14 +175,7 @@ const BillingPaymentDetail = () => {
                   Bayar
                 </Button>
               )
-            ) : (
-              <Button
-                onClick={() => getRedirectUrl()}
-                className="bg-yellow-600 border-yellow-600 w-[200px] hover:bg-yellow-500"
-              >
-                Bayar
-              </Button>
-            )}
+            ) : null}
           </p>
         </div>
       </div>
