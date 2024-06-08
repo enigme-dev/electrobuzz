@@ -38,7 +38,7 @@ const merchantDashboardNavList = [
     icon: <Star />,
   },
   {
-    title: "Billing",
+    title: "Tagihan",
     link: "/merchant/dashboard/billing",
     icon: <Wallet />,
   },
