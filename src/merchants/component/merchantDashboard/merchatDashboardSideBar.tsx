@@ -24,7 +24,7 @@ const merchantDashboardNavList = [
     icon: <Star />,
   },
   {
-    title: "Billing",
+    title: "Tagihan",
     link: "/merchant/dashboard/billing",
     icon: <Wallet />,
   },
@@ -50,8 +50,8 @@ const MerchantDashboardSideBar = () => {
                   variant={"ghost"}
                   className={
                     pathname.startsWith(value.link)
-                      ? "w-full flex gap-5 justify-start py-6 bg-yellow-100/50 text-yellow-800 hover:bg-yellow-200/50 hover:text-yellow-800"
-                      : "w-full flex gap-5 justify-start py-6"
+                      ? "w-full flex gap-5 justify-start py-6 ripple  bg-yellow-400 text-black hover:bg-yellow-400 hover:text-black"
+                      : "w-full flex gap-5 justify-start py-6 ripple text-gray-500 hover:bg-yellow-100 hover:text-black"
                   }
                 >
                   <span>{value.icon}</span>

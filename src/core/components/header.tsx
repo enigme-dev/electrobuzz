@@ -8,7 +8,7 @@ import Link from "next/link";
 import { AuthBar } from "./auth-bar";
 import { usePathname } from "next/navigation";
 import NotifBar from "@/notifications/components/NotifBar";
-import { SheetSide } from "./sheetLeft";
+import { SheetSide } from "./sheetBottom";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
@@ -20,11 +20,6 @@ export default function Header() {
 
   return (
     <div className="w-full p-3 border-b border-solid border-b-[#cecece] dark:border-b-[#383838] flex items-center sm:block">
-      {pathname.startsWith("/merchant/dashboard") && (
-        <div className="sm:hidden fixed z-50">
-          <SheetSide buttonTrigger={<AlignLeft />} />
-        </div>
-      )}
       <div className="wrapper flex justify-center sm:justify-between ">
         <div className="flex gap-6 items-center">
           <Link href="/" className="select-none">

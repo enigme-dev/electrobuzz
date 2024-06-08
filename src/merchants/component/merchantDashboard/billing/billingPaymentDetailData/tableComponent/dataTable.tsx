@@ -139,6 +139,7 @@ export function TransactionDoneDataTable({
 
   return (
     <div>
+      <h1 className="font-bold text-lg mb-5">Transaksi Selesai</h1>
       <div className="rounded-md border shadow-md">
         <Table>
           <TableHeader>

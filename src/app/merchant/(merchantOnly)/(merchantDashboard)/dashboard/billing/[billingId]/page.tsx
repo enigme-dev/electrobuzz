@@ -1,9 +1,13 @@
 "use client";
 
+import { BillingData } from "@/merchants/component/merchantDashboard/billing/billingHistory/tableComponent/column";
 import BillingPaymentDetail from "@/merchants/component/merchantDashboard/billing/billingPaymentDetailData/billingPaymentDetail";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import React from "react";
 
-const page = () => {
+const BillingDetailPage = () => {
   return (
     <div>
       <BillingPaymentDetail />
@@ -11,4 +15,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default BillingDetailPage;

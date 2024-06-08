@@ -37,19 +37,4 @@ export const TransactionDoneColumns: () => ColumnDef<TGetMerchantBookingDone>[] 
         return <div className="text-left">{formattedDate}</div>;
       },
     },
-    {
-      accessorKey: "bookingStatus",
-      header: "Status",
-      cell: ({ row }: any) => {
-        const bookingStatus = row.original.bookingStatus;
-        switch (bookingStatus) {
-          case "done": {
-            return <CustomBadge title="Done" status={"success"} />;
-          }
-          default: {
-            return <CustomBadge title="Done" status={"success"} />;
-          }
-        }
-      },
-    },
   ];

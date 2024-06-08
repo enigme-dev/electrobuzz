@@ -33,6 +33,7 @@ import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
 import { useSession } from "next-auth/react";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
+import { Textarea } from "@/core/components/ui/textarea";
 
 const OPTIONS: Option[] = [
   { label: "AC", value: "AC" },
@@ -404,7 +405,10 @@ const RegisterAsMerchantForm = () => {
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
                 <FormControl>
-                  <Input placeholder="Deskripsikan tokomu" {...field} />
+                  <Textarea
+                    placeholder="Deskripsikan tentang tokomu..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

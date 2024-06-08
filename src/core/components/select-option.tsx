@@ -12,7 +12,7 @@ import {
 
 interface SelectProps {
   selectLabel?: string;
-  selectList: { item: string; value: string; id?: string }[];
+  selectList?: { item: string; value: string; id?: string }[];
   defaultValue?: string;
   onValueChange: (value: any) => void;
   placeholder: React.ReactNode;
