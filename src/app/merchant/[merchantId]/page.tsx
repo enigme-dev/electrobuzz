@@ -8,12 +8,14 @@ import { Card } from "@/core/components/ui/card";
 import { CarouselItem } from "@/core/components/ui/carousel";
 import { getRoundedRating } from "@/core/lib/utils";
 import { MerchantAlbum } from "@/merchants/component/merchantDashboard/merchantDashboardProfile";
-import { TMerchantModel } from "@/merchants/types";
+import { TMerchantBenefitModel, TMerchantModel } from "@/merchants/types";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   Check,
+  CheckCircle,
+  FormInputIcon,
   Hammer,
   Handshake,
   MapPinIcon,
@@ -82,6 +84,16 @@ const MerchantDetailPage = () => {
       }),
     enabled: !!merchantId,
   });
+  const { data: getMerchantBenefits, isLoading: getMerchantBenefitsLoading } =
+    useQuery({
+      queryKey: ["getMerchantBenefits", merchantId],
+      queryFn: async () =>
+        await axios.get(`/api/merchant/${merchantId}`).then((response) => {
+          return response.data.data.benefits as TMerchantBenefitModel[];
+        }),
+    });
+
+  console.log(getMerchantBenefits);
 
   const { isLoading: getMerchantAlbumsloading, data: merchantAlbums } =
     useQuery({
@@ -134,7 +146,8 @@ const MerchantDetailPage = () => {
   if (
     getMerchantDetailsloading ||
     userReviewDataLoading ||
-    getMerchantAlbumsloading
+    getMerchantAlbumsloading ||
+    getMerchantBenefitsLoading
   ) {
     return <Loader />;
   }
@@ -231,22 +244,49 @@ const MerchantDetailPage = () => {
             <div className="grid place-items-start gap-2 pt-5">
               <div className="flex items-center gap-2">
                 <Star size={15} />
-                <p className=" text-sm font-semibold">
-                  Rating:{" "}
-                  <span className="text-sm font-normal text-gray-600">
-                    {ceiledRating}
-                  </span>
-                </p>
+                {ceiledRating !== 0 ? (
+                  <p className=" text-sm font-semibold">
+                    Rating:{" "}
+                    <span className="text-sm font-normal text-gray-600">
+                      {ceiledRating}, ({merchantDetails?.merchantReviewCt})
+                    </span>{" "}
+                  </p>
+                ) : (
+                  <p className=" text-sm font-semibold">
+                    Rating:{" "}
+                    <span className="text-sm font-normal text-gray-600">
+                      Belum ada rating
+                    </span>{" "}
+                  </p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <Hammer size={15} />
-                <p className=" text-sm font-semibold">
-                  Pengalaman:{" "}
-                  <span className="text-sm font-normal text-gray-600">
-                    lebih dari 1 tahun
-                  </span>
-                </p>
-              </div>
+              {getMerchantBenefits?.map((value, index) => (
+                <div key={index}>
+                  {value.benefitType === "experience" && (
+                    <div className="flex items-center gap-2">
+                      <Hammer size={15} />
+                      <p className=" text-sm font-semibold">
+                        Pengalaman:{" "}
+                        <span className="text-sm font-normal text-gray-600">
+                          {value.benefitBody}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                  {value.benefitType === "warranty" && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle size={15} />
+                      <p className=" text-sm font-semibold">
+                        Garansi:{" "}
+                        <span className="text-sm font-normal text-gray-600">
+                          {value.benefitBody}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+
               <div className="flex items-center gap-2">
                 <MapPinIcon size={15} />
                 <p className=" text-sm font-semibold max-w-[250px] sm:max-w-full break-words">
@@ -254,15 +294,6 @@ const MerchantDetailPage = () => {
                   <span className="text-sm font-normal text-gray-600 ">
                     {merchantDetails?.merchantCity},{" "}
                     {merchantDetails?.merchantProvince}
-                  </span>
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Handshake size={15} />
-                <p className=" text-sm font-semibold">
-                  Total Transaksi:{" "}
-                  <span className="text-sm font-normal text-gray-600">
-                    {merchantDetails?.merchantReviewCt}{" "}
                   </span>
                 </p>
               </div>

@@ -1,7 +1,8 @@
 "use client";
+import Loader from "@/core/components/loader/loader";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import React, { ReactNode } from "react";
+import { redirect, useRouter } from "next/navigation";
+import React, { ReactNode, useEffect } from "react";
 
 interface RegisterAsMerchantLayoutProps {
   children: ReactNode;
@@ -9,10 +10,20 @@ interface RegisterAsMerchantLayoutProps {
 const RegisterAsMerchantLayout = ({
   children,
 }: RegisterAsMerchantLayoutProps) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  if (session?.user?.id === undefined) {
-    redirect("/login");
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+    // if (session?.user?.isMerchant === true) {
+    //   router.push("/merchant/dashboard/profile");
+    // }
+  }, [status, router, session]);
+
+  if (status === "loading") {
+    return <Loader />;
   }
 
   return <div>{children}</div>;

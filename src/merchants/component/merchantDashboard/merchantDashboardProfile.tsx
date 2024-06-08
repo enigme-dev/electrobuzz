@@ -41,6 +41,8 @@ import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import {
+  TBenefitType,
+  TMerchantBenefitModel,
   TMerchantIdentityModel,
   TMerchantModel,
   TUpdateMerchantSchema,
@@ -51,6 +53,8 @@ import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { Switch } from "@/core/components/ui/switch";
 import { Separator } from "@/core/components/ui/separator";
 import { Button } from "@/core/components/ui/button";
+import { updateMerchantVerified } from "@/merchants/services/MerchantService";
+import { Textarea } from "@/core/components/ui/textarea";
 
 export interface MerchantAlbum {
   albumPhotoUrl: string;
@@ -83,6 +87,21 @@ export enum Tab {
   Album = "Album",
 }
 
+const experience = [
+  { item: "Lebih dari 1 tahun", value: "Lebih dari 1 tahun" },
+  { item: "Kurang dari 1 tahun", value: "Kurang dari 1 tahun" },
+];
+
+const warranty = [
+  { item: "Tidak ada garansi", value: "Tidak ada garansi" },
+  { item: "1 Bulan", value: "1 Bulan" },
+  { item: "2 Bulan", value: "2 Bulan" },
+  { item: "3 Bulan", value: "3 Bulan" },
+  { item: "4 Bulan", value: "4 Bulan" },
+  { item: "5 Bulan", value: "5 Bulan" },
+  { item: "6 Bulan", value: "6 Bulan" },
+];
+
 const libraries: LoadScriptProps["libraries"] = ["places"];
 
 const MerchantDashboardProfile = () => {
@@ -101,6 +120,14 @@ const MerchantDashboardProfile = () => {
           }),
       enabled: !!session?.user?.id,
     });
+  const { data: myMerchantBenefits } = useQuery({
+    queryKey: ["getMerchantBenefits", session?.user?.id],
+    queryFn: async () =>
+      await axios.get(`/api/merchant/${session?.user?.id}`).then((response) => {
+        return response.data.data.benefits as TMerchantBenefitModel[];
+      }),
+    enabled: !!session?.user?.id,
+  });
 
   const { isLoading: getMerchantAlbumsloading, data: merchantAlbums } =
     useQuery({
@@ -189,13 +216,6 @@ const MerchantDashboardProfile = () => {
     }
   }, [myMerchantDetails]);
 
-  useEffect(() => {
-    if (selectedLocation.lat !== null && selectedLocation.lng !== null) {
-      form.setValue("merchantLat", selectedLocation.lat);
-      form.setValue("merchantLong", selectedLocation.lng);
-    }
-  }, [selectedLocation]);
-
   const form = useForm<TUpdateMerchantSchema>({
     resolver: zodResolver(UpdateMerchantSchema),
     defaultValues: {
@@ -208,6 +228,13 @@ const MerchantDashboardProfile = () => {
       merchantLong: 0,
     },
   });
+
+  useEffect(() => {
+    if (selectedLocation.lat !== null && selectedLocation.lng !== null) {
+      form.setValue("merchantLat", selectedLocation.lat);
+      form.setValue("merchantLong", selectedLocation.lng);
+    }
+  }, [form, selectedLocation]);
 
   useEffect(() => {
     if (myMerchantDetails) {
@@ -330,6 +357,28 @@ const MerchantDashboardProfile = () => {
     deleteMerchantAlbum(photoId);
   };
 
+  const handleValueChange = (type?: string, value?: string) => {
+    if (type === "experience") {
+      updateMerchantProfile({
+        benefits: [
+          {
+            benefitType: "experience",
+            benefitBody: value ? value : "",
+          },
+        ],
+      });
+    } else if (type === "warranty") {
+      updateMerchantProfile({
+        benefits: [
+          {
+            benefitType: "warranty",
+            benefitBody: value ? value : "",
+          },
+        ],
+      });
+    }
+  };
+
   useEffect(() => {
     if (session) {
       getProvince();
@@ -350,8 +399,9 @@ const MerchantDashboardProfile = () => {
     );
   }
 
+  console.log(myMerchantBenefits);
   return (
-    <div className="p-8 w-screen lg:w-full pb-20">
+    <div className="pt-10 px-4 sm:px-8 w-screen lg:w-full pb-20">
       <h1 className="font-bold text-lg sm:text-2xl">Profile Mitra</h1>
       <Form {...form}>
         <form
@@ -414,10 +464,34 @@ const MerchantDashboardProfile = () => {
               *.jpeg, *.jpg, *.png
             </FormDescription>
             <div className="flex justify-around pt-10">
-              <h2>Aktif</h2>
-              <div>
-                <Switch />
-              </div>
+              <FormField
+                control={form.control}
+                name="merchantAvailable"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Available</FormLabel>
+                      <FormDescription>
+                        Tekan tombol ke kanan jika kamu sedang aktif dan tekan
+                        tombol ke kiri jika kamu sedang tidak aktif
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        defaultChecked={myMerchantDetails?.merchantAvailable}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            updateMerchantProfile({ merchantAvailable: true });
+                          } else {
+                            updateMerchantProfile({ merchantAvailable: false });
+                          }
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
 
@@ -429,7 +503,7 @@ const MerchantDashboardProfile = () => {
                   key={tab}
                   type="button"
                   className={`text-sm sm:text-lg  ${
-                    activeTab === tab ? "bg-accent" : "text-black"
+                    activeTab === tab ? "bg-accent" : ""
                   }`}
                   onClick={() => handleTabClick(tab)}
                 >
@@ -453,6 +527,38 @@ const MerchantDashboardProfile = () => {
                     </FormItem>
                   )}
                 />
+                {myMerchantBenefits?.map((value, index) => (
+                  <div key={index} className="space-y-4">
+                    <div className="space-y-2">
+                      {value.benefitType === "experience" && (
+                        <>
+                          <FormLabel>Pengalaman</FormLabel>
+                          <SelectOption
+                            selectList={experience}
+                            defaultValue={value.benefitBody}
+                            onValueChange={(value) =>
+                              handleValueChange("experience", value)
+                            }
+                            placeholder="Pilih Pengalaman"
+                          />
+                        </>
+                      )}
+                      {value.benefitType === "warranty" && (
+                        <>
+                          <FormLabel>Garansi</FormLabel>
+                          <SelectOption
+                            selectList={warranty}
+                            defaultValue={value.benefitBody}
+                            onValueChange={(value) =>
+                              handleValueChange("warranty", value)
+                            }
+                            placeholder="Pilih Pengalaman"
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
 
                 <FormField
                   control={form.control}
@@ -501,7 +607,11 @@ const MerchantDashboardProfile = () => {
                     <FormItem>
                       <FormLabel>Deskripsi</FormLabel>
                       <FormControl>
-                        <Input placeholder="Deskripsikan tokomu" {...field} />
+                        <Textarea
+                          placeholder="Deskripsikan tentang tokomu..."
+                          className=""
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

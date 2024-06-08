@@ -38,13 +38,13 @@ export const BillingColumns: () => ColumnDef<BillingData>[] = () => [
       const billingStatus = row.original.billingPaid;
       switch (billingStatus) {
         case false: {
-          return <CustomBadge title="Unpaid" status={"failed"} />;
+          return <CustomBadge title="Belum Bayar" status={"failed"} />;
         }
         case true: {
-          return <CustomBadge title="Paid" status={"success"} />;
+          return <CustomBadge title="Sudah Bayar" status={"success"} />;
         }
         default: {
-          return <CustomBadge title="Unpaid" status={"failed"} />;
+          return <CustomBadge title="Belum Bayar" status={"failed"} />;
         }
       }
     },
