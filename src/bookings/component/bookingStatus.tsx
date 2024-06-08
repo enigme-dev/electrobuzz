@@ -35,15 +35,8 @@ const BookingStatus = ({ status }: Props) => {
             </p>
           </div>
         )}
-        {status === "in_progress_requested" && (
-          <div className=" rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-orange-500">
-            {" "}
-            <p className="text-[0.7rem] font-semibold sm:text-md text-white">
-              Permohonan service
-            </p>
-          </div>
-        )}
-        {status === "in_progress_accepted" && (
+
+        {status === "in_progress" && (
           <div className="rounded-full px-2 py-1 sm:px-3 sm:py-2 bg-blue-400">
             {" "}
             <p className="text-[0.7rem] font-semibold sm:text-md text-white ">

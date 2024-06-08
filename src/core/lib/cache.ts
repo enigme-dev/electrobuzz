@@ -5,7 +5,7 @@ export class Cache {
 
   private static init(): NodeCache {
     if (!Cache.instance) {
-      Cache.instance = new NodeCache();
+      Cache.instance = new NodeCache({ checkperiod: 120 });
     }
 
     return Cache.instance;
@@ -15,8 +15,12 @@ export class Cache {
     Cache.init().set(key, val, ttl);
   }
 
-  public static get<T>(key: string): T | undefined {
-    return Cache.init().get<T>(key);
+  public static get(key: string) {
+    return Cache.init().get(key);
+  }
+
+  public static getTTL(key: string) {
+    return Cache.init().getTtl(key);
   }
 
   public static delete(key: string) {

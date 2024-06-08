@@ -12,6 +12,7 @@ export type TPaymentStatusEnum = z.infer<typeof PaymentStatusEnum>;
 export const PaymentModel = z.object({
   paymentId: z.string().cuid(),
   paymentStatus: PaymentStatusEnum,
+  paymentUrl: z.string().nullish(),
   paymentAmount: z.number().nullish(),
   paymentMethod: z.string().nullish(),
   paymentBank: z.string().nullish(),
@@ -25,6 +26,7 @@ export type TPaymentModel = z.infer<typeof PaymentModel>;
 export const UpdatePaymentSchema = z
   .object({
     paymentStatus: PaymentStatusEnum,
+    paymentUrl: z.string(),
     paymentAmount: z.number(),
     paymentMethod: z.string(),
     paymentBank: z.string(),

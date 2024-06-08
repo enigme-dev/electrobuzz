@@ -158,17 +158,22 @@ const MerchantDashboardTransaction = () => {
       }`
     );
   };
-  console.log(bookingDataAsMerchant);
 
   if (bookingListLoading) {
-    return <Loader />;
+    return (
+      <div className="w-screen sm:w-[80vw] ">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <main className="px-4 w-full">
-      <div className="sticky top-0 bg-white dark:bg-slate-950 w-full py-5">
-        <h1 className="text-xl sm:text-2xl font-bold pb-5">Transaksi</h1>
-        <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[25vw]">
+    <main className="px-4 w-screen lg:w-full">
+      <div className="sticky top-0 bg-white dark:bg-slate-950 h-full w-full py-5">
+        <h1 className="text-xl sm:text-2xl font-bold pb-5 relative">
+          Transaksi
+        </h1>
+        <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 w-[50vw]">
           <DatePickerWithRange
             onSelect={handleDateRangeAndFilterSelection}
             selected={selectedRange}

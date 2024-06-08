@@ -3,13 +3,25 @@ import { TNotificationSchema } from "../types";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import NotifIcon from "./NotifIcon";
+import { twMerge } from "tailwind-merge";
 
 dayjs.extend(relativeTime);
 
-export default function NotifCard({ data }: { data: TNotificationSchema }) {
+export default function NotifCard({
+  data,
+  className,
+}: Readonly<{
+  data: TNotificationSchema;
+  className?: string;
+}>) {
   let target;
   const base = (
-    <li className="flex gap-3 py-2 px-4 border-b hover:bg-gray-100">
+    <li
+      className={twMerge(
+        "flex gap-3 py-2 px-4 border-b hover:bg-gray-100",
+        className
+      )}
+    >
       <div className="min-w-[48px] h-[48px]">
         {data.photoUrl ? (
           <Image

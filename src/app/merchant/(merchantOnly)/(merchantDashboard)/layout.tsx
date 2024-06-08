@@ -7,12 +7,12 @@ import React, { ReactNode, Suspense } from "react";
 const layout = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense fallback={<Loader />}>
-      <div className="md:flex block">
-        <div className="sticky top-0 left-0 right-0 h-full w-fit">
+      <div className="lg:flex block">
+        <div className="sticky top-0 left-0 right-0 h-full grow">
           <MerchantDashboardSideBar />
         </div>
-        <div className="w-full ">{children}</div>
-      </div>{" "}
+        <main className="w-[calc(100%-280px)]">{children}</main>
+      </div>
     </Suspense>
   );
 };

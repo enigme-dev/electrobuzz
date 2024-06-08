@@ -9,17 +9,23 @@ import Loader from "@/core/components/loader/loader";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
 import { toast } from "@/core/components/ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 interface UserBookingAcceptProps {
   bookingDetailData: TGetUserBooking;
 }
-
+interface BookingCode {
+  status: string;
+  data: {
+    code: string;
+    expiredAt: Date;
+  };
+}
 const radioOptionsForCancelReason = [
   { option: "Budjet tidak cukup", label: "Budjet tidak cukup" },
   { option: "Mau cari teknisi lain", label: "Mau cari teknisi lain" },
@@ -29,6 +35,11 @@ const radioOptionsForCancelReason = [
 
 const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
   const queryClient = useQueryClient();
+
+  const [bookingCode, setBookingCode] = useState<BookingCode>({
+    status: "",
+    data: { code: "", expiredAt: new Date() },
+  });
 
   const { mutate: updateCancelBooking, isPending: updateCancelBookingLoading } =
     useMutation({
@@ -74,6 +85,22 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
     },
   });
 
+  const getBookingCode = async () => {
+    await axios
+      .get(`/api/user/booking/${bookingDetailData.bookingId}/code`)
+      .then((response) => {
+        setBookingCode(response.data as BookingCode);
+      })
+      .catch((error) => {
+        if (error.response.data.status === "ErrBookWrongSchedule") {
+          toast({
+            title: "Kode hanya bisa diberikan pada saat tanggal janji!",
+            variant: "destructive",
+          });
+        }
+      });
+  };
+
   if (updateBookingToInProgressLoading) {
     return <Loader />;
   }
@@ -91,14 +118,33 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
       </div>
       <div className="grid gap-5">
         <div className="pb-5 flex justify-center">
-          <h1 className="w-fit text-lg sm:text-xl font-bold text-center bg-green-500 text-white rounded-lg p-3">
-            Selamat merchant telah menerima keluhanmu!
+          <h1 className="w-fit text-lg sm:text-xl font-bold text-center  rounded-lg p-3">
+            Selamat mitra telah menerima keluhanmu!
           </h1>
         </div>
-        <p className=" text-sm sm:text-lg text-red-500 italic text-center">
-          *Merchant akan datang pada tanggal yang dijanjikan ke alamatmu, mohon
-          konfirmasi lebih lanjut melalui nomor dibawah ini.
-        </p>
+        <div className="flex justify-center">
+          <Button
+            className="bg-yellow-400 text-black hover:bg-yellow-300"
+            onClick={() => getBookingCode()}
+          >
+            Dapatkan Kode
+          </Button>
+        </div>
+        <div className="grid place-items-center">
+          <h1>Kode Bookingmu:</h1>
+          <span className="text-2xl font-bold">
+            {bookingCode ? bookingCode?.data.code : ""}
+          </span>
+          <span>{/* Expired pada {bookingCode ? } */}</span>
+          <p className=" text-sm sm:text-lg text-red-500 italic text-center pt-5">
+            *Mohon jangan berikan kode ini kepada mitra jika mitra belum mulai
+            mengerjakan!
+          </p>
+          <p className=" text-sm sm:text-lg text-red-500 italic text-center pt-5">
+            *Merchant akan datang pada tanggal yang dijanjikan ke alamatmu,
+            mohon konfirmasi lebih lanjut melalui nomor dibawah ini.
+          </p>
+        </div>
 
         <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
@@ -194,7 +240,7 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
           />
         </div>
       </div>
-      {bookingDetailData.bookingStatus === "in_progress_requested" && (
+      {/* {bookingDetailData.bookingStatus === "in_progress_requested" && (
         <AlertDialogComponent
           alertDialogSubmitTitle="Ya"
           defaultOpen={true}
@@ -202,7 +248,7 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
           dialogTitle=""
           submitAction={updateBookingToInProgress}
         />
-      )}
+      )} */}
     </div>
   );
 };

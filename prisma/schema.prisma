@@ -79,6 +79,7 @@ model Merchant {
   merchantName      String
   merchantDesc      String
   merchantPhotoUrl  String
+  merchantBanner    String?
   merchantCity      String
   merchantProvince  String
   merchantLat       Float
@@ -98,6 +99,7 @@ model Merchant {
   bookings          Booking[]
   reviews           Review[]
   billings          Billing[]
+  benefits          MerchantBenefit[]
 }
 
 model MerchantAlbum {
@@ -106,6 +108,15 @@ model MerchantAlbum {
 
   merchantId      String
   merchant        Merchant @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
+}
+
+model MerchantBenefit {
+  benefitType String
+  benefitBody String
+
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
+  @@id([merchantId, benefitType])
 }
 
 model MerchantIdentity {
@@ -157,12 +168,6 @@ model Review {
   booking         Booking  @relation(fields: [bookingId], references: [bookingId])
 }
 
-model Verification {
-  verifId   String   @id
-  code      String
-  createdAt DateTime @default(now())
-}
-
 model Notification {
   notifId          String   @id @default(cuid())
   notifService     String
@@ -193,6 +198,7 @@ model Billing {
 model Payment {
   paymentId        String    @id @default(cuid())
   paymentStatus    String
+  paymentUrl       String?   /// @encrypted
   paymentAmount    Int?
   paymentMethod    String?
   paymentBank      String?

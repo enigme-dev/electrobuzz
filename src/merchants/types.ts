@@ -1,3 +1,4 @@
+import { PaymentModel } from "@/payments/types";
 import { z } from "zod";
 
 export const ALBUM_QUOTA = 4;
@@ -36,11 +37,40 @@ export const IdentitiesParam = z.object({
 
 export type TIdentitiesParam = z.infer<typeof IdentitiesParam>;
 
+export const BenefitType = z.enum(["experience", "warranty", "service_type"]);
+
+export type TBenefitType = z.infer<typeof BenefitType>;
+
+export const MerchantBenefitModel = z.object({
+  benefitType: BenefitType,
+  benefitBody: z.string(),
+  merchantId: z.string().optional(),
+});
+
+export type TMerchantBenefitModel = z.infer<typeof MerchantBenefitModel>;
+
+export const UpsertMerchantBenefitSchema = MerchantBenefitModel.omit({
+  merchantId: true,
+});
+
+export type TUpsertMerchantBenefitSchema = z.infer<
+  typeof UpsertMerchantBenefitSchema
+>;
+
+export const UpsertMerchantBenefitsSchema = UpsertMerchantBenefitSchema.array()
+  .min(1)
+  .max(3);
+
+export type TUpsertMerchantBenefitsSchema = z.infer<
+  typeof UpsertMerchantBenefitsSchema
+>;
+
 export const MerchantModel = z.object({
   merchantId: z.string().cuid().optional(),
   merchantName: z.string(),
   merchantDesc: z.string(),
   merchantPhotoUrl: z.string(),
+  merchantBanner: z.string().optional(),
   merchantCity: z.string(),
   merchantProvince: z.string(),
   merchantLat: z.number(),
@@ -90,6 +120,7 @@ export const UpdateMerchantSchema = z
       .min(8, "name can be between 8 and 32 characters")
       .max(32, "name can be between 8 and 32 characters"),
     merchantPhotoUrl: z.string(),
+    merchantBanner: z.string(),
     merchantDesc: z
       .string()
       .min(32, "description can be between 32 and 1200 characters")
@@ -100,6 +131,7 @@ export const UpdateMerchantSchema = z
     merchantLong: z.number(),
     merchantCategory: z.string().array().min(1, "pick at least 1 category"),
     merchantAvailable: z.boolean(),
+    benefits: UpsertMerchantBenefitsSchema,
   })
   .partial();
 
@@ -158,3 +190,16 @@ export type TCreateBillingSchema = z.infer<typeof CreateBillingSchema>;
 export const CreateBillingsSchema = CreateBillingSchema.array();
 
 export type TCreateBillingsSchema = z.infer<typeof CreateBillingsSchema>;
+
+export const BillingDetailSchema = z.object({
+  billingId: z.string().cuid(),
+  billingPaid: z.boolean(),
+  billingAmount: z.number(),
+  billingQty: z.number(),
+  billingCreatedAt: z.date(),
+  payment: PaymentModel.extend({ paymentStatus: z.string() })
+    .omit({ billingId: true })
+    .optional(),
+});
+
+export type TBillingDetailSchema = z.infer<typeof BillingDetailSchema>;

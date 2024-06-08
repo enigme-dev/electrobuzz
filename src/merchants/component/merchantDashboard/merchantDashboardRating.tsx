@@ -76,14 +76,16 @@ const MerchantDashboardRating = () => {
     }
   }, [fetchNextPage, inView, hasNextPage]);
 
-  console.log(reviewMerchantDetail);
-
   if (reviewMerchantDetailLoading) {
-    return <Loader />;
+    return (
+      <div className="w-screen sm:w-[80vw] ">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <div className="px-4">
+    <div className="px-4 w-screen lg:w-full">
       <h1 className="text-xl sm:text-2xl font-bold pt-5">Ulasan</h1>
       <ul className="pt-5 grid gap-4 pb-14">
         {reviewMerchantDetail?.pages.map(
@@ -120,7 +122,6 @@ const MerchantDashboardRating = () => {
             </React.Fragment>
           )
         )}
-
         <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
       </ul>
     </div>

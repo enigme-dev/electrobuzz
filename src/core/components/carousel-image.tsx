@@ -43,8 +43,10 @@ export function CarouselImage({ children }: any) {
         onMouseLeave={plugin.current.reset}
       >
         <CarouselContent>{children}</CarouselContent>
+        <CarouselPrevious className="left-4 z-40" />
+        <CarouselNext className="right-4 z-40" />
       </Carousel>
-      <div className="py-2 text-center text-sm text-muted-foreground">
+      <div className="absolute py-2 text-center text-sm text-muted-foreground">
         Slide {current} of {count}
       </div>
     </div>

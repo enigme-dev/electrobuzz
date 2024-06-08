@@ -7,7 +7,7 @@ import { getData } from "@/core/lib/service";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function RegisterLayout({
   children,
@@ -23,6 +23,12 @@ export default function RegisterLayout({
     queryFn: () => getData(`/api/user/${userId}`),
     enabled: !!userId,
   });
+
+  useEffect(() => {
+    if (!session?.user?.id) {
+      router.push("/login");
+    }
+  }, [session, router]);
 
   if (isLoading || status === "loading") {
     return <Loader />;

@@ -50,7 +50,7 @@ export default function Page() {
     []
   );
 
-  if (isLoading || status === "unauthenticated") {
+  if (isLoading || status === "loading") {
     return <Loader />;
   }
 

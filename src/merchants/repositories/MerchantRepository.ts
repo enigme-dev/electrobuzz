@@ -146,29 +146,14 @@ export class MerchantRepository extends BaseRepository {
         merchantAlbums: {
           select: { merchantAlbumId: true, albumPhotoUrl: true },
         },
+        benefits: {
+          select: { benefitType: true, benefitBody: true },
+        },
       },
     });
   }
 
-  static update(id: string, data: Prisma.MerchantUpdateInput) {
-    return this.db.merchant.update({
-      where: {
-        merchantId: id,
-      },
-      data: {
-        merchantName: data.merchantName,
-        merchantDesc: data.merchantDesc,
-        merchantPhotoUrl: data.merchantPhotoUrl,
-        merchantCity: data.merchantCity,
-        merchantProvince: data.merchantProvince,
-        merchantLat: data.merchantLat,
-        merchantLong: data.merchantLong,
-        merchantCategory: data.merchantCategory,
-        merchantRating: data.merchantRating,
-        merchantReviewCt: data.merchantReviewCt,
-        merchantVerified: data.merchantVerified,
-        merchantAvailable: data.merchantAvailable,
-      },
-    });
+  static update(merchantId: string, data: Prisma.MerchantUpdateInput) {
+    return this.db.merchant.update({ where: { merchantId }, data });
   }
 }

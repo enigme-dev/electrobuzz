@@ -1,37 +1,50 @@
 "use client";
 import { CarouselImage } from "@/core/components/carousel-image";
 import Loader from "@/core/components/loader/loader";
+import Modal from "@/core/components/modal";
 import ReviewCard from "@/core/components/reviewCard";
+import { Button } from "@/core/components/ui/button";
 import { Card } from "@/core/components/ui/card";
 import { CarouselItem } from "@/core/components/ui/carousel";
 import { getRoundedRating } from "@/core/lib/utils";
+import { MerchantAlbum } from "@/merchants/component/merchantDashboard/merchantDashboardProfile";
+import { TMerchantBenefitModel, TMerchantModel } from "@/merchants/types";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { MapPinIcon, PlusIcon, Star } from "lucide-react";
+import {
+  Check,
+  CheckCircle,
+  FormInputIcon,
+  Hammer,
+  Handshake,
+  MapPinIcon,
+  PlusIcon,
+  Star,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
-interface MerchantDetails {
-  merchantPhotoUrl: string;
-  merchantAvailable: boolean;
-  merchantCategory: string[];
-  merchantCity: string;
-  merchantCreatedAt: string;
-  merchantDesc: string;
-  merchantId: string;
-  merchantLat: number;
-  merchantLong: number;
-  merchantName: string;
-  merchantProvince: string;
-  merchantRating: number | null;
-  merchantReviewCt: number | null;
-  merchantVerified: boolean;
-  merchantAlbums?: string[];
-}
+// interface MerchantDetails {
+//   merchantPhotoUrl: string;
+//   merchantAvailable: boolean;
+//   merchantCategory: string[];
+//   merchantCity: string;
+//   merchantCreatedAt: string;
+//   merchantDesc: string;
+//   merchantId: string;
+//   merchantLat: number;
+//   merchantLong: number;
+//   merchantName: string;
+//   merchantProvince: string;
+//   merchantRating: number | null;
+//   merchantReviewCt: number | null;
+//   merchantVerified: boolean;
+//   merchantAlbums?: string[];
+// }
 
 interface UserReviewData {
   page: number;
@@ -41,6 +54,13 @@ interface UserReviewData {
 }
 
 const MerchantDetailPage = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [currentImageUrl, setCurrentImageUrl] = useState("");
+
+  const handleImageClick = (imageUrl: string) => {
+    setCurrentImageUrl(imageUrl);
+    setShowModal(true);
+  };
   const pathname = usePathname();
   const splitPathname = pathname.split("/");
   const merchantId = splitPathname.pop() || "";
@@ -60,10 +80,27 @@ const MerchantDetailPage = () => {
     queryKey: ["getMerchantDetails", merchantId],
     queryFn: async () =>
       await axios.get(`/api/merchant/${merchantId}`).then((response) => {
-        return response.data.data as MerchantDetails;
+        return response.data.data as TMerchantModel;
       }),
     enabled: !!merchantId,
   });
+  const { data: getMerchantBenefits, isLoading: getMerchantBenefitsLoading } =
+    useQuery({
+      queryKey: ["getMerchantBenefits", merchantId],
+      queryFn: async () =>
+        await axios.get(`/api/merchant/${merchantId}`).then((response) => {
+          return response.data.data.benefits as TMerchantBenefitModel[];
+        }),
+    });
+
+  const { isLoading: getMerchantAlbumsloading, data: merchantAlbums } =
+    useQuery({
+      queryKey: ["getMerchantAlbum", merchantId],
+      queryFn: async () =>
+        await axios.get(`/api/merchant/${merchantId}`).then((response) => {
+          return response.data.data.merchantAlbums as MerchantAlbum[];
+        }),
+    });
 
   const {
     data: userReviewData,
@@ -96,8 +133,6 @@ const MerchantDetailPage = () => {
     },
   });
 
-  console.log(userReviewData);
-
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
@@ -106,24 +141,44 @@ const MerchantDetailPage = () => {
 
   const ceiledRating = getRoundedRating(merchantDetails?.merchantRating || 0);
 
-  if (getMerchantDetailsloading || userReviewDataLoading) {
+  if (
+    getMerchantDetailsloading ||
+    userReviewDataLoading ||
+    getMerchantAlbumsloading ||
+    getMerchantBenefitsLoading
+  ) {
     return <Loader />;
   }
 
   return (
     <div className="wrapper pb-20 ">
-      <div className="">
-        <div className="relative flex flex-col gap-4 items-start justify-end w-full">
+      <div className="relative flex flex-col gap-4 items-start justify-end w-full">
+        <div className="w-full bg-white shadow-md sm:mt-10 rounded-lg ">
           <Image
-            src={merchantDetails ? merchantDetails.merchantPhotoUrl : ""}
+            src={
+              merchantDetails && merchantDetails.merchantBanner
+                ? merchantDetails.merchantBanner
+                : ""
+            }
             alt={merchantDetails ? merchantDetails.merchantName : ""}
             width={300}
             height={300}
-            className="object-cover w-full h-[40vh] brightness-50 object-center"
+            className="object-cover w-full h-[40vh] brightness-50 object-center sm:rounded-lg"
           />
-          <div className="absolute p-5 grid gap-2">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold sm:text-3xl text-white text-wrap max-w-[200px] sm:max-w-[400px] break-words">
+        </div>
+        <div className="flex absolute p-5 gap-2 items-center">
+          <div className="">
+            <Image
+              src={merchantDetails ? merchantDetails.merchantPhotoUrl : ""}
+              className="aspect-square rounded-full object-cover object-center"
+              alt="userImage"
+              width={100}
+              height={100}
+            />
+          </div>
+          <div className="grid gap-1">
+            <div className="flex gap-4 items-center">
+              <h1 className="text-sm font-bold sm:text-2xl text-white text-wrap max-w-[200px] sm:max-w-[400px] break-words">
                 {merchantDetails?.merchantName}
               </h1>
               <Card className="flex items-center gap-2 px-2 py-1">
@@ -144,39 +199,31 @@ const MerchantDetailPage = () => {
                 )}
               </Card>
             </div>
-            <h2 className="text-sm sm:text-2xl text-white flex items-center gap-2 ">
+            <h2 className="text-xs sm:text-xl text-white flex items-center gap-2 ">
               <div className="flex flex-wrap max-w-full sm:max-w-full h-fit gap-1 sm:gap-3">
                 {merchantDetails?.merchantCategory.map((value, index) => (
                   <span key={index}>{value}</span>
                 ))}
               </div>
             </h2>
-            <h2 className="text-xs sm:text-2xl text-white flex items-center gap-2 ">
-              <span className="bg-red-500 rounded-lg py-1 px-2">
-                <MapPinIcon className="text-white w-4" />
-              </span>
-              {merchantDetails?.merchantCity}
-            </h2>
           </div>
-          {/* <StatusMerchant status={"online"} /> */}
         </div>
+        {/* <StatusMerchant status={"online"} /> */}
       </div>
-      <div className="px-4 grid sm:grid-cols-2 sm:flex-row gap-8 pt-10 w-full ">
-        <div className="w-full ">
-          {merchantDetails?.merchantAlbums &&
-          merchantDetails.merchantAlbums.length > 0 ? (
+      <div className="px-4 sm:px-0 flex flex-col sm:flex-row gap-10 pt-10 w-full ">
+        <div className="w-full">
+          {merchantAlbums && merchantAlbums.length > 0 ? (
             <CarouselImage>
-              {merchantDetails.merchantAlbums.map((value: any, index) => (
+              {merchantAlbums.map((value: any, index) => (
                 <CarouselItem key={index}>
                   <Image
                     key={index}
-                    src={
-                      merchantDetails?.merchantAlbums ? value.albumPhotoUrl : ""
-                    }
+                    src={merchantAlbums ? value.albumPhotoUrl : ""}
                     width={300}
                     height={300}
                     alt="biaya-service-ac"
-                    className="object-contain w-full h-[320px]"
+                    className="object-cover object-center w-full sm:h-[500px] h-[300px] rounded-lg border hover:cursor-pointer"
+                    onClick={() => handleImageClick(value.albumPhotoUrl)}
                   />
                 </CarouselItem>
               ))}
@@ -187,27 +234,92 @@ const MerchantDetailPage = () => {
             </div>
           )}
         </div>
-        <div className="flex flex-col justify-between gap-2">
+        <div className="flex flex-col gap-10 border h-full w-full border-gray-200 shadow-md rounded-lg p-4 sticky top-0">
           <div>
-            <h1 className="text-bold text-2xl flex items-center gap-4">
-              Deskripsi{" "}
+            <h1 className=" text-lg font-bold flex items-center gap-4">
+              Tentang Mitra{" "}
             </h1>
-            <p className="mt-10 flex items-center gap-4 max-w-[350px] sm:max-w-[500px] break-words">
-              {merchantDetails?.merchantDesc}
-            </p>
+            <div className="grid place-items-start gap-2 pt-5">
+              <div className="flex items-center gap-2">
+                <Star size={15} />
+                {ceiledRating !== 0 ? (
+                  <p className=" text-sm font-semibold">
+                    Rating:{" "}
+                    <span className="text-sm font-normal text-gray-600">
+                      {ceiledRating}, ({merchantDetails?.merchantReviewCt})
+                    </span>{" "}
+                  </p>
+                ) : (
+                  <p className=" text-sm font-semibold">
+                    Rating:{" "}
+                    <span className="text-sm font-normal text-gray-600">
+                      Belum ada rating
+                    </span>{" "}
+                  </p>
+                )}
+              </div>
+              {getMerchantBenefits?.map((value, index) => (
+                <div key={index}>
+                  {value.benefitType === "experience" && (
+                    <div className="flex items-center gap-2">
+                      <Hammer size={15} />
+                      <p className=" text-sm font-semibold">
+                        Pengalaman:{" "}
+                        <span className="text-sm font-normal text-gray-600">
+                          {value.benefitBody}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                  {value.benefitType === "warranty" && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle size={15} />
+                      <p className=" text-sm font-semibold">
+                        Garansi:{" "}
+                        <span className="text-sm font-normal text-gray-600">
+                          {value.benefitBody}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <div className="flex items-center gap-2">
+                <MapPinIcon size={15} />
+                <p className=" text-sm font-semibold max-w-[250px] sm:max-w-full break-words">
+                  Lokasi:{" "}
+                  <span className="text-sm font-normal text-gray-600 ">
+                    {merchantDetails?.merchantCity},{" "}
+                    {merchantDetails?.merchantProvince}
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center ">
             <Link href={`${pathname}/buat-janji`}>
-              <Card className="flex gap-5 items-center sm:w-52 bg-yellow-400 text-black dark:text-black hover:bg-yellow-300 px-5 py-2 mt-10 sm:mb-10">
-                <PlusIcon width={15} />
-                <p className="text-sm sm:text-lg">Buat Janji</p>
-              </Card>
+              <Button
+                variant={"default"}
+                className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 text-sm"
+              >
+                Buat janji
+              </Button>
             </Link>
           </div>
         </div>
       </div>
+      <div className="px-4 sm:px-0">
+        <div className="relative border shadow-md p-4 w-full mt-20 rounded-lg">
+          <h1 className="text-lg font-semibold">Deskripsi</h1>
+          <p className="mt-10 flex items-center gap-4 max-w-[350px] sm:max-w-full break-words">
+            {merchantDetails?.merchantDesc}
+          </p>
+        </div>
+      </div>
       <div className="px-4">
         <h1 className="text-bold text-2xl pt-10">Ulasan</h1>
+
         <div className="pt-8 grid gap-4">
           {userReviewData?.pages.map(
             (page: UserReviewData, pageIndex: number) => (
@@ -243,6 +355,11 @@ const MerchantDetailPage = () => {
           <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
         </div>
       </div>
+      <Modal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        imageUrl={currentImageUrl}
+      />
     </div>
   );
 };

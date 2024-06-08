@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 import { MONTHLY_FEES, createBillings, getBillings } from "./BillingService";
 import { createNotification } from "@/notifications/services/NotificationService";
 import { editMerchantIdentity } from "./MerchantIdentityService";
+import { upsertMerchantBenefits } from "./MerchantBenefitService";
 
 export async function addMerchantIndex(data: any) {
   return MerchantRepository.createIndex(data);
@@ -166,9 +167,32 @@ export async function updateMerchantProfile(
     await deleteImg(merchant.merchantPhotoUrl);
   }
 
-  const updated = await MerchantRepository.update(merchantId, input);
+  if (input.merchantBanner?.startsWith("data:image")) {
+    input.merchantBanner = await uploadImg(input.merchantBanner);
+    if (merchant.merchantBanner) {
+      await deleteImg(merchant.merchantBanner);
+    }
+  }
 
-  await addMerchantIndex(updated);
+  const data = {
+    merchantName: input.merchantName,
+    merchantDesc: input.merchantDesc,
+    merchantPhotoUrl: input.merchantPhotoUrl,
+    merchantBanner: input.merchantBanner,
+    merchantCity: input.merchantCity,
+    merchantProvince: input.merchantProvince,
+    merchantLat: input.merchantLat,
+    merchantLong: input.merchantLong,
+    merchantCategory: input.merchantCategory,
+    merchantAvailable: input.merchantAvailable,
+  };
+  const updatedMerchant = await MerchantRepository.update(merchantId, data);
+
+  await addMerchantIndex(updatedMerchant);
+
+  if (input.benefits && input.benefits.length > 0) {
+    await upsertMerchantBenefits(merchantId, input.benefits);
+  }
 
   // delete cached merchants
   Cache.delete(`merchant/${merchantId}`);

@@ -19,6 +19,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { TMerchantModel } from "@/merchants/types";
 import Loader from "@/core/components/loader/loader";
+import PopularMerchantsCard from "../components/popularMerchantsCard";
 
 const PopularMerchants = () => {
   const { data: session } = useSession();
@@ -32,7 +33,6 @@ const PopularMerchants = () => {
         }),
     });
 
-  console.log(getMerchantsPopular);
   if (getMerchantsPopularLoading) {
     return <Loader />;
   }
@@ -40,21 +40,17 @@ const PopularMerchants = () => {
   return (
     <div className="w-full ">
       <div className="flex justify-between">
-        <h2 className="text-xl sm:text-2xl font-bold pb-10 sm:pb-0  flex items-center gap-2">
-          Teknisi Terpopular{" "}
-          <span className="text-2xl">
-            <StarsIcon fill="orange" strokeWidth={1} />
-          </span>
+        <h2 className="text-xl sm:text-2xl font-bold  flex items-center gap-2">
+          Teknisi Terpopular <span className="text-2xl">🌟</span>
         </h2>
       </div>
-
-      <div className="flex items-start justify-center">
-        <div className="grid gap-4 px-2 md:pt-10">
+      <div className="max-w-full">
+        <div className="flex overflow-x-auto gap-8 w-full no-scrollbar">
           {getMerchantsPopular &&
             getMerchantsPopular.map((value: TMerchantModel) => {
               return (
                 <div key={value.merchantId}>
-                  <MerchantsCard
+                  <PopularMerchantsCard
                     imgSource={value.merchantPhotoUrl}
                     imgAlt={value.merchantName}
                     location={value.merchantCity}
@@ -64,18 +60,11 @@ const PopularMerchants = () => {
                       value.merchantRating ? value.merchantRating : 0
                     }
                     serviceCategory={value.merchantCategory}
+                    merchantReviewCt={value.merchantReviewCt}
                   />
                 </div>
               );
             })}
-        </div>
-        <div className="hidden lg:block">
-          <Image
-            src={"/Electrician-rafiki.svg"}
-            alt="Electrician-rafiki"
-            width={500}
-            height={500}
-          />
         </div>
       </div>
     </div>
