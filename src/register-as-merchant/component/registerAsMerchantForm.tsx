@@ -494,7 +494,7 @@ const RegisterAsMerchantForm = () => {
               type="submit"
               variant="secondary"
               className={
-                " bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+                " bg-yellow-400 hover:bg-yellow-300 text-black  transition duration-500 flex gap-4 items-center"
               }
             />
           </div>

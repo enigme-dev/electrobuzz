@@ -24,7 +24,7 @@ const RegisterAsMerchantStart = ({ onNext }: RegisterAsMerchantStartProps) => {
       <h2 className="text-3xl ">ElectroBu⚡z</h2>
       <Button
         variant={"default"}
-        className="text-black bg-yellow-400 dark:text-white hover:bg-yellow-300"
+        className="text-black bg-yellow-400  hover:bg-yellow-300"
         onClick={() => onNext()}
       >
         Mulai Sekarang
