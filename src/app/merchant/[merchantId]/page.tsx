@@ -93,8 +93,6 @@ const MerchantDetailPage = () => {
         }),
     });
 
-  console.log(getMerchantBenefits);
-
   const { isLoading: getMerchantAlbumsloading, data: merchantAlbums } =
     useQuery({
       queryKey: ["getMerchantAlbum", merchantId],
