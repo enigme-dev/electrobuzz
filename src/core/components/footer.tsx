@@ -43,12 +43,7 @@ export default function Footer() {
   ];
 
   return (
-    <div className="w-full p-3 border-t border-solid border-t-[#cecece] bg-white dark:border-t-[#383838] dark:bg-slate-950 z-50">
-      {pathname.startsWith("/merchant/dashboard") && (
-        <div className="sm:hidden fixed z-50 bottom-20 left-1/2 transform -translate-x-1/2">
-          <SheetSide buttonTrigger={<AlignCenter />} />
-        </div>
-      )}
+    <div className="w-full p-3 border-t border-solid border-t-[#cecece] bg-white dark:border-t-[#383838] dark:bg-slate-950 z-50 sm:hidden">
       <div className="wrapper flex justify-around items-center ">
         {footerNavLink.map((value, index) => (
           <div key={index}>

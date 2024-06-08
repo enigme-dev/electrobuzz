@@ -6,7 +6,7 @@ import NextAuthProvider from "@/core/components/next-auth-provider";
 import Header from "@/core/components/header";
 import TanstackQueryProvider from "@/core/components/tanstack-query";
 import Footer from "@/core/components/footer";
-import { Toaster } from "@/core/components/ui/toaster";
+import ClientSheetSide from "@/core/components/clientSheetSide";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,7 +35,8 @@ export default function RootLayout({
                 <Header />
               </header>
               <main> {children}</main>
-              <footer className="fixed bottom-0 left-0 w-full z-50 sm:hidden">
+              <footer className="fixed bottom-0 left-0 w-full z-50 ">
+                <ClientSheetSide />
                 <Footer />
               </footer>
             </TanstackQueryProvider>
