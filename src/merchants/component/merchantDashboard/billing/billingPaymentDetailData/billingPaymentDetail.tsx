@@ -167,15 +167,15 @@ const BillingPaymentDetail = () => {
                 >
                   Open Payment Link
                 </a>
-              ) : (
-                <Button
-                  onClick={() => getRedirectUrl()}
-                  className="bg-yellow-600 border-yellow-600 w-[200px] hover:bg-yellow-500"
-                >
-                  Bayar
-                </Button>
-              )
-            ) : null}
+              ) : null
+            ) : (
+              <Button
+                onClick={() => getRedirectUrl()}
+                className="bg-yellow-600 border-yellow-600 w-[200px] hover:bg-yellow-500"
+              >
+                Bayar
+              </Button>
+            )}
           </p>
         </div>
       </div>
