@@ -62,7 +62,7 @@ const BillingPaymentDetail = () => {
         router.push(response.data.data.redirect_url);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
 

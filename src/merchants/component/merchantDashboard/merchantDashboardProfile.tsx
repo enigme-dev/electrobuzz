@@ -399,7 +399,6 @@ const MerchantDashboardProfile = () => {
     );
   }
 
-  console.log(myMerchantBenefits);
   return (
     <div className="pt-10 px-4 sm:px-8 w-screen lg:w-full pb-20">
       <h1 className="font-bold text-lg sm:text-2xl">Profile Mitra</h1>
