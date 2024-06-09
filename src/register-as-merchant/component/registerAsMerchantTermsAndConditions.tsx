@@ -73,6 +73,7 @@ export function RegisterAsMerchantTermsAndConditions({
             <Button
               variant={"default"}
               className="bg-yellow-400 hover:bg-yellow-300 text-black"
+
               onClick={() => onPrevious()}
             >
               Kembali
