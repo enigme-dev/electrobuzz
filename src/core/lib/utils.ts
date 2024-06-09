@@ -12,6 +12,7 @@ export function parseParams(searchParams: URLSearchParams) {
   if (status === "all" || status === "" || status === null) {
     status = undefined;
   }
+  const filterBy = searchParams.get("filter-by") ?? "created_at";
 
   const startDateParam = z.coerce
     .string()
@@ -31,7 +32,7 @@ export function parseParams(searchParams: URLSearchParams) {
     endDate.setHours(23, 59, 59);
   }
 
-  return { query, page, skip, startDate, endDate, status: status };
+  return { query, page, skip, startDate, endDate, status, filterBy };
 }
 
 export const SearchParams = z.object({
@@ -42,6 +43,7 @@ export const SearchParams = z.object({
   status: z.string().optional(),
   toggle: z.boolean().optional(),
   perPage: z.number().optional(),
+  filterBy: z.string().optional(),
 });
 
 export type SearchParams = z.infer<typeof SearchParams>;
@@ -77,7 +79,7 @@ export function buildRes(data: string | ResponseSchema) {
 }
 
 export function fileInputToDataURL(
-  input: HTMLInputElement | File
+  input: HTMLInputElement | File,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

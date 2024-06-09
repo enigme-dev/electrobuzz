@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
   const token = await getToken({ req });
 
   const searchParams = req.nextUrl.searchParams;
-  const { page, skip, startDate, endDate, status } = parseParams(searchParams);
+  const { page, skip, startDate, endDate, status, filterBy } =
+    parseParams(searchParams);
 
   const userId = z.string().cuid().safeParse(token?.sub);
   if (!userId.success) {
@@ -25,6 +26,7 @@ export async function GET(req: NextRequest) {
       startDate,
       endDate,
       status,
+      filterBy,
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -32,7 +34,7 @@ export async function GET(req: NextRequest) {
         return buildErr(
           "ErrForbidden",
           403,
-          "user is not registered as merchant"
+          "user is not registered as merchant",
         );
       }
     }

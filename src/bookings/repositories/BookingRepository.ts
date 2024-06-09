@@ -31,6 +31,15 @@ export class BookingRepository extends BaseRepository {
   }
 
   static findByMerchantId(merchantId: string, options?: SearchParams) {
+    let filterBy: any = {
+      bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
+    };
+    if (options?.filterBy === "schedule") {
+      filterBy = {
+        bookingSchedule: { gte: options?.startDate, lte: options?.endDate },
+      };
+    }
+
     return this.db.$transaction([
       this.db.booking.findMany({
         orderBy: [
@@ -42,8 +51,8 @@ export class BookingRepository extends BaseRepository {
         take: options?.perPage ?? PER_PAGE,
         where: {
           merchantId,
-          bookingCreatedAt: { gte: options?.startDate, lte: options?.endDate },
           bookingStatus: options?.status,
+          ...filterBy,
         },
         select: {
           bookingId: true,
@@ -176,7 +185,7 @@ export class BookingRepository extends BaseRepository {
 
   static updateManyStatus(
     status: BookStatusEnum,
-    where: Prisma.BookingWhereInput
+    where: Prisma.BookingWhereInput,
   ) {
     return this.db.booking.updateMany({
       data: { bookingStatus: status },
@@ -188,7 +197,7 @@ export class BookingRepository extends BaseRepository {
     merchantId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
-    data: Prisma.BookingUpdateInput
+    data: Prisma.BookingUpdateInput,
   ) {
     return this.db.$transaction(
       async (tx) => {
@@ -210,7 +219,7 @@ export class BookingRepository extends BaseRepository {
           data,
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
   }
 
@@ -218,7 +227,7 @@ export class BookingRepository extends BaseRepository {
     userId: string,
     bookingId: string,
     prevStatus: BookStatusEnum[],
-    data: Prisma.BookingUpdateInput
+    data: Prisma.BookingUpdateInput,
   ) {
     return this.db.$transaction(
       async (tx) => {
@@ -240,7 +249,7 @@ export class BookingRepository extends BaseRepository {
           data,
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
   }
 }
