@@ -7,7 +7,7 @@ export const MONTHLY_FEES = 5000;
 export async function createBilling(
   merchantId: string,
   billingAmount: number,
-  billingQty: number
+  billingQty: number,
 ) {
   return await BillingRepository.create({
     merchantId,
@@ -33,16 +33,19 @@ export async function getBillings(options?: SearchParams) {
 
 export async function getMerchantBilling(
   merchantId: string,
-  billingId: string
+  billingId: string,
 ) {
   const billing = await BillingRepository.findOne(merchantId, billingId);
-  const result: TBillingDetailSchema = {
+  let result: TBillingDetailSchema = {
     billingId: billing.billingId,
     billingPaid: billing.billingPaid,
     billingAmount: billing.billingAmount,
     billingQty: billing.billingQty,
     billingCreatedAt: billing.billingCreatedAt,
-    payment: {
+  };
+
+  if (billing.payment.length > 0) {
+    result.payment = {
       paymentId: billing.payment[0].paymentId,
       paymentStatus: billing.payment[0].paymentStatus,
       paymentAmount: billing.payment[0].paymentAmount,
@@ -50,14 +53,14 @@ export async function getMerchantBilling(
       paymentBank: billing.payment[0].paymentBank,
       paymentDate: billing.payment[0].paymentDate,
       paymentCreatedAt: billing.payment[0].paymentCreatedAt,
-    },
-  };
+    };
+  }
   return result;
 }
 
 export async function getMerchantBillings(
   merchantId: string,
-  options?: SearchParams
+  options?: SearchParams,
 ) {
   let toggle;
   if (options?.status === "paid") {
@@ -74,7 +77,7 @@ export async function getMerchantBillings(
 
 export async function updateBillingPaid(
   billingId: string,
-  billingPaid: boolean
+  billingPaid: boolean,
 ) {
   return await BillingRepository.update(billingId, { billingPaid });
 }
