@@ -55,9 +55,9 @@ export class MidtransSnap {
   private static serverKey = process.env.MIDTRANS_SERVER_KEY as string;
 
   private static getSnapEndpoint() {
-    if (process.env.NODE_ENV === "production") {
-      return MIDTRANS_SNAP_PROD_ENDPOINT;
-    }
+    // if (process.env.NODE_ENV === "production") {
+    //   return MIDTRANS_SNAP_PROD_ENDPOINT;
+    // }
     return MIDTRANS_SNAP_SB_ENDPOINT;
   }
 
