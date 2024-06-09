@@ -62,15 +62,15 @@ export class MidtransSnap {
   }
 
   private static getEndpoint() {
-    if (process.env.NODE_ENV === "production") {
-      return MIDTRANS_PROD_ENDPOINT;
-    }
+    // if (process.env.NODE_ENV === "production") {
+    //   return MIDTRANS_PROD_ENDPOINT;
+    // }
     return MIDTRANS_SB_ENDPOINT;
   }
 
   static async createTransaction(
     billingId: string,
-    amount: number
+    amount: number,
   ): Promise<TMTCreateTransactionResponse> {
     return new Promise((resolve, reject) => {
       axios
@@ -82,7 +82,7 @@ export class MidtransSnap {
               gross_amount: amount,
             },
           },
-          { auth: { username: this.serverKey, password: "" } }
+          { auth: { username: this.serverKey, password: "" } },
         )
         .then((res) => {
           const result = MTCreateTransactionResponse.safeParse(res.data);
@@ -106,7 +106,7 @@ export class MidtransSnap {
   }
 
   static async verifyTransaction(
-    response: any
+    response: any,
   ): Promise<TMTVerifPaymentResult> {
     return new Promise((resolve, reject) => {
       const data = MTAfterPaymentResponse.safeParse(response);
