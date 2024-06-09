@@ -8,9 +8,13 @@ export async function createPayment(merchantId: string, billingId: string) {
   return await PaymentRepository.create(merchantId, billingId);
 }
 
+export async function getPayment(merchantId: string, paymentId: string) {
+  return await PaymentRepository.findOne(merchantId, paymentId);
+}
+
 export async function updatePayment(
   paymentId: string,
-  data: TUpdatePaymentSchema
+  data: TUpdatePaymentSchema,
 ) {
   return await PaymentRepository.update(paymentId, data);
 }
@@ -33,6 +37,6 @@ export function verifyPayment(response: any) {
       }
     })
     .catch((err) =>
-      Logger.error("payment", "midtrans verification error", err)
+      Logger.error("payment", "midtrans verification error", err),
     );
 }

@@ -49,7 +49,7 @@ export class PaymentRepository extends BaseRepository {
 
         const transaction = await MidtransSnap.createTransaction(
           payment.paymentId,
-          billing.billingAmount
+          billing.billingAmount,
         );
 
         await tx.payment.update({
@@ -59,8 +59,28 @@ export class PaymentRepository extends BaseRepository {
 
         return transaction;
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
+  }
+
+  static findOne(merchantId: string, paymentId: string) {
+    return this.db.payment.findUniqueOrThrow({
+      where: {
+        paymentId,
+        billing: {
+          merchantId,
+        },
+      },
+      select: {
+        paymentId: true,
+        paymentStatus: true,
+        paymentAmount: true,
+        paymentBank: true,
+        paymentMethod: true,
+        paymentDate: true,
+        billingId: true,
+      },
+    });
   }
 
   static update(paymentId: string, data: TUpdatePaymentSchema) {
