@@ -44,6 +44,9 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
+RUN touch error.log & chown nextjs:nodejs error.log
+RUN touch combined.log & chown nextjs:nodejs combined.log
+
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
