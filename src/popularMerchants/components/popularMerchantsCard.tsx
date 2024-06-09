@@ -40,12 +40,12 @@ const PopularMerchantsCard: React.FC<Props> = ({
 
   return (
     <div
-      className="mt-10 hover:cursor-pointer"
+      className="mt-10 hover:cursor-pointer "
       onClick={() => {
         router.push(`/merchant/${merchantId}`);
       }}
     >
-      <div className="sm:w-[20rem] w-[15rem] h-[20rem] sm:h-[25rem] bg-white border rounded-lg shadow dark:bg-slate-950">
+      <div className="sm:w-[20rem] w-[15rem] h-[20rem] sm:h-[25rem] bg-white border rounded-lg shadow dark:bg-slate-950 ">
         <Image
           className="rounded-t-lg object-cover object-center h-[150px] w-full "
           src={imgSource}

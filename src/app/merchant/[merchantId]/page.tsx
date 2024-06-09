@@ -153,19 +153,29 @@ const MerchantDetailPage = () => {
   return (
     <div className="wrapper pb-20 ">
       <div className="relative flex flex-col gap-4 items-start justify-end w-full">
-        <div className="w-full bg-white shadow-md sm:mt-10 rounded-lg ">
-          <Image
-            src={
-              merchantDetails && merchantDetails.merchantBanner
-                ? merchantDetails.merchantBanner
-                : ""
-            }
-            alt={merchantDetails ? merchantDetails.merchantName : ""}
-            width={300}
-            height={300}
-            className="object-cover w-full h-[40vh] brightness-50 object-center sm:rounded-lg"
-          />
-        </div>
+        {merchantDetails?.merchantBanner ? (
+          <div className="w-full  shadow-md sm:mt-10 rounded-lg ">
+            <Image
+              src={merchantDetails.merchantBanner}
+              alt={merchantDetails ? merchantDetails.merchantName : ""}
+              width={300}
+              height={300}
+              className="object-cover w-full h-[40vh] brightness-50 object-center sm:rounded-lg"
+            />
+          </div>
+        ) : (
+          <div className="w-full  shadow-md sm:mt-10 rounded-lg ">
+            <Image
+              src={"/AdamSucipto.svg"}
+              alt={
+                merchantDetails ? merchantDetails.merchantName : "Electrobuzz"
+              }
+              width={300}
+              height={300}
+              className="object-cover w-full h-[40vh] brightness-50 object-center sm:rounded-lg"
+            />
+          </div>
+        )}
         <div className="flex absolute p-5 gap-2 items-center">
           <div className="">
             <Image
@@ -234,7 +244,7 @@ const MerchantDetailPage = () => {
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-10 border h-full w-full border-gray-200 shadow-md rounded-lg p-4 sticky top-0">
+        <div className="flex flex-col gap-10 border h-full w-full shadow-md rounded-lg p-4 sticky top-0">
           <div>
             <h1 className=" text-lg font-bold flex items-center gap-4">
               Tentang Mitra{" "}
@@ -245,14 +255,14 @@ const MerchantDetailPage = () => {
                 {ceiledRating !== 0 ? (
                   <p className=" text-sm font-semibold">
                     Rating:{" "}
-                    <span className="text-sm font-normal text-gray-600">
+                    <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                       {ceiledRating}, ({merchantDetails?.merchantReviewCt})
                     </span>{" "}
                   </p>
                 ) : (
                   <p className=" text-sm font-semibold">
                     Rating:{" "}
-                    <span className="text-sm font-normal text-gray-600">
+                    <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                       Belum ada rating
                     </span>{" "}
                   </p>
@@ -265,7 +275,7 @@ const MerchantDetailPage = () => {
                       <Hammer size={15} />
                       <p className=" text-sm font-semibold">
                         Pengalaman:{" "}
-                        <span className="text-sm font-normal text-gray-600">
+                        <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                           {value.benefitBody}
                         </span>
                       </p>
@@ -276,7 +286,7 @@ const MerchantDetailPage = () => {
                       <CheckCircle size={15} />
                       <p className=" text-sm font-semibold">
                         Garansi:{" "}
-                        <span className="text-sm font-normal text-gray-600">
+                        <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                           {value.benefitBody}
                         </span>
                       </p>
@@ -289,7 +299,7 @@ const MerchantDetailPage = () => {
                 <MapPinIcon size={15} />
                 <p className=" text-sm font-semibold max-w-[250px] sm:max-w-full break-words">
                   Lokasi:{" "}
-                  <span className="text-sm font-normal text-gray-600 ">
+                  <span className="text-sm font-normal text-gray-600 dark:text-gray-400 ">
                     {merchantDetails?.merchantCity},{" "}
                     {merchantDetails?.merchantProvince}
                   </span>

@@ -13,17 +13,9 @@ import { toggleTheme } from "@/core/lib/shadcn";
 import Link from "next/link";
 import { AuthBar } from "./auth-bar";
 import { usePathname } from "next/navigation";
-import { SheetSide } from "./sheetBottom";
 
 export default function Footer() {
   const { setTheme, theme } = useTheme();
-  const pathname = usePathname();
-
-  const handleToggleTheme = () => {
-    const selectedTheme = toggleTheme(theme);
-    setTheme(selectedTheme);
-  };
-
   const footerNavLink = [
     {
       icon: <Home strokeWidth={2} size={20} />,

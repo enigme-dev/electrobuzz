@@ -40,12 +40,12 @@ const PopularMerchants = () => {
   return (
     <div className="w-full ">
       <div className="flex justify-between">
-        <h2 className="text-xl sm:text-2xl font-bold  flex items-center gap-2">
+        <h2 className="text-xl sm:text-2xl font-bold  flex items-center gap-2 ">
           Teknisi Terpopular <span className="text-2xl">🌟</span>
         </h2>
       </div>
       <div className="max-w-full">
-        <div className="flex overflow-x-auto gap-8 w-full no-scrollbar">
+        <div className="flex overflow-x-auto gap-8 w-full no-scrollbar p-3">
           {getMerchantsPopular &&
             getMerchantsPopular.map((value: TMerchantModel) => {
               return (
