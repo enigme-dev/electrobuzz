@@ -72,14 +72,15 @@ export function RegisterAsMerchantTermsAndConditions({
           <div className="flex justify-between pt-5">
             <Button
               variant={"default"}
-              className="bg-yellow-400 hover:bg-yellow-300 text-black "
+              className="bg-yellow-400 hover:bg-yellow-300 text-black"
+
               onClick={() => onPrevious()}
             >
               Kembali
             </Button>
             <Button
               variant={"default"}
-              className="bg-yellow-400 hover:bg-yellow-300 text-black "
+              className="bg-yellow-400 hover:bg-yellow-300 text-black"
               type="submit"
             >
               Lanjut
