@@ -336,36 +336,9 @@ const RegisterAsMerchantForm = () => {
             )}
           />
 
-          <div className="flex items-start justify-start gap-10 flex-col-reverse sm:flex-row">
-            <div className="flex flex-col gap-5">
-              <FormField
-                control={form.control}
-                name="merchantLat"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lat</FormLabel>
-                    <FormControl>
-                      <Input disabled placeholder="Lat" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="merchantLong"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lng</FormLabel>
-                    <FormControl>
-                      <Input disabled placeholder="Lng" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="pt-8">
+          <div className="w-full space-y-2">
+            <h1 className="pb-2 font-semibold">Lokasi Detail</h1>
+            <div className="">
               <Autocomplete
                 onLoad={onLoad}
                 options={options}
@@ -376,7 +349,7 @@ const RegisterAsMerchantForm = () => {
               <p className="italic text-gray-400 pt-5 text-sm">
                 geser marker untuk mendapatkan lokasi detailmu
               </p>
-              <div>
+              <div className="relative w-full">
                 <MyMapComponent
                   isLoaded={isLoaded}
                   locLatLng={validLocation}

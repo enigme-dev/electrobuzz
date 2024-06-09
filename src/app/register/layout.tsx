@@ -18,19 +18,19 @@ export default function RegisterLayout({
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["profile", userId],
     queryFn: () => getData(`/api/user/${userId}`),
     enabled: !!userId,
   });
 
   useEffect(() => {
-    if (!session?.user?.id) {
+    if (status === "unauthenticated") {
       router.push("/login");
     }
-  }, [session, router]);
+  }, [session, router, status]);
 
-  if (isLoading || status === "loading") {
+  if (status === "loading") {
     return <Loader />;
   }
 

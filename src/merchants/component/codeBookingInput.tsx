@@ -36,12 +36,19 @@ const CodeBookingInput = ({ bookingId }: { bookingId: string }) => {
     resolver: zodResolver(CheckBookingCodeSchema),
   });
 
-  const { mutate: updateCodeStatus, isPending: updateLoading } = useMutation({
-    mutationFn: () =>
-      axios.get(`/api/merchant/booking/${bookingId}/edit/in_progress`),
+  const { mutate: checkCodeValid, isPending: updateLoading } = useMutation({
+    mutationFn: (value: TCheckBookingCodeSchema) =>
+      axios.patch(`/api/merchant/booking/${bookingId}/edit/in_progress`, value),
     onSuccess: () => {
       toast({ title: "Verifikasi Berhasil!" });
       queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
+    },
+    onError: (error: any) => {
+      if (error.response.data.status === "ErrBookWrongSchedule")
+        return toast({
+          title: "Input kode hanya bisa pada tanggal perjanjian!",
+          variant: "destructive",
+        });
     },
   });
 
@@ -53,9 +60,9 @@ const CodeBookingInput = ({ bookingId }: { bookingId: string }) => {
     }
   }
 
-  async function checkCodeValid(values: TCheckBookingCodeSchema) {
+  async function updateCodeStatus() {
     await axios
-      .post("/api/merchant/", values)
+      .get("/api/merchant")
       .then((response) => {
         return response.data.status;
       })
