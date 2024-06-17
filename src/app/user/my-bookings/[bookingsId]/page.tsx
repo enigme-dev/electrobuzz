@@ -20,7 +20,6 @@ import React from "react";
 const BookingDetail = () => {
   const { data: session } = useSession();
   const pathname = usePathname();
-  const status = "done";
   const getLastPathSegment = (pathname: string): string => {
     const segments = pathname.split("/");
     return segments[segments.length - 1] || segments[segments.length - 2];
@@ -68,7 +67,7 @@ const BookingDetail = () => {
           />
         </>
       )}
-      {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
+      {bookingDetailData?.bookingStatus == "in_progress" && (
         <>
           <UserBookingInProgress bookingDetailData={bookingDetailData} />
         </>

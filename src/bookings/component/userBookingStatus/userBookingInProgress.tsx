@@ -74,10 +74,6 @@ const UserBookingInProgress = ({
             Service sedang berjalan...
           </h1>
         </div>
-        <p className=" text-sm sm:text-lg text-red-500 italic text-center">
-          *Merchant akan datang pada tanggal yang dijanjikan ke alamatmu, mohon
-          konfirmasi lebih lanjut melalui nomor dibawah ini.
-        </p>
 
         <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
@@ -137,7 +133,7 @@ const UserBookingInProgress = ({
             </p>
           </div>
         </div>
-        <div className="shadow-lg border border-gray-100 p-5 rounded-lg space-y-5">
+        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl  text-center">
             Respon Merchant
           </h2>

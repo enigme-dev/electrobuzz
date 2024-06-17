@@ -52,7 +52,7 @@ const MerchantDashboardTransactionDetail = () => {
         bookingDetailData?.bookingStatus == "in_progress_requested") && (
         <MerchantBookingAccepted bookingDetailData={bookingDetailData} />
       )}
-      {bookingDetailData?.bookingStatus == "in_progress_accepted" && (
+      {bookingDetailData?.bookingStatus == "in_progress" && (
         <MerchantBookingInProgress bookingDetailData={bookingDetailData} />
       )}
       {bookingDetailData?.bookingStatus == "done" && (

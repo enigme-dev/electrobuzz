@@ -42,10 +42,8 @@ const MerchantBookingInProgress = ({
           </h1>
         </div>
         <p className=" text-sm sm:text-lg text-red-500 italic text-center">
-          *Merchant akan datang pada tanggal yang dijanjikan ke alamatmu, mohon
-          konfirmasi lebih lanjut melalui nomor dibawah ini.
+          *Service status hanya bisa di selesaikan oleh user.
         </p>
-
         <div className="shadow-lg border  p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">
             Data User
