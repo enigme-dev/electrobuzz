@@ -11,14 +11,18 @@ export class Logger {
         format: winston.format.json(),
         transports: [
           new winston.transports.File({
-            filename: "error.log",
+            filename: "logs/error.log",
             level: "error",
           }),
-          new winston.transports.File({ filename: "combined.log" }),
+          new winston.transports.File({
+            filename: "logs/combined.log",
+            level: "info",
+          }),
         ],
       });
 
       if (process.env.NODE_ENV !== "production") {
+        Logger.instance.configure({ level: "debug" });
         Logger.instance.add(
           new winston.transports.Console({
             format: winston.format.simple(),
@@ -28,6 +32,10 @@ export class Logger {
     }
 
     return Logger.instance;
+  }
+
+  public static debug(message: any) {
+    Logger.init().debug(message);
   }
 
   public static error(service: string, message: string, error?: any) {
@@ -46,5 +54,16 @@ export class Logger {
     }
 
     Logger.init().error(message, { service });
+  }
+
+  public static info(service: string, message?: any) {
+    if (typeof message === "string") {
+      Logger.init().info(message, { service });
+    } else {
+      Logger.init().info({
+        service,
+        ...message,
+      });
+    }
   }
 }
