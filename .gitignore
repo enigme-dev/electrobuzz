@@ -18,4 +18,4 @@ prisma/migrations
 .idea
 .env
 .env.local
-*.log
+logs
