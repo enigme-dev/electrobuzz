@@ -8,7 +8,6 @@ const createJestConfig = nextJest({
 const config: Config = {
   coverageProvider: "v8",
   modulePaths: ["<rootDir>/src"],
-  collectCoverage: false,
   collectCoverageFrom: [
     "**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",
