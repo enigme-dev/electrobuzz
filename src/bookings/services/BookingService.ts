@@ -246,6 +246,7 @@ export async function getUserBooking(userId: string, bookingId: string) {
 }
 
 export async function getUserBookings(userId: string, options?: SearchParams) {
+  console.log("called");
   return await BookingRepository.findByUserId(userId, options);
 }
 

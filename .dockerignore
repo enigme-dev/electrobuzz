@@ -7,3 +7,5 @@ README.md
 .next
 .git
 .env*
+.swc
+__test__
