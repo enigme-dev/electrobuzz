@@ -8,4 +8,5 @@ README.md
 .git
 .env*
 .swc
-__test__
+**/__test__
+coverage
