@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/core/components/ui/button";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Card } from "@/core/components/ui/card";
@@ -72,13 +72,13 @@ const EditProfile = () => {
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
 
-  const handlePrev = () => {
-    if (step > 0) setStep((prev) => prev - 1);
-  };
+  const handleNext = useCallback(() => {
+    setStep((prevStep) => prevStep + 1);
+  }, []);
 
-  const handleNext = () => {
-    if (step < 1) setStep((prev) => prev + 1);
-  };
+  const handlePrev = useCallback(() => {
+    setStep((prevStep) => prevStep - 1);
+  }, []);
 
   function handleOpenChange(
     open: boolean,
