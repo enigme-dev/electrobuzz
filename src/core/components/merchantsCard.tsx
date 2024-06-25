@@ -32,11 +32,13 @@ const MerchantsCard: React.FC<Props> = ({
 }: Props) => {
   const router = useRouter();
 
-  const parsedDistance = distance
-    ? distance
-    : 0 >= 1000
-    ? `${(distance ? distance : 0 / 1000).toFixed(1)}km`
-    : `${distance} m`;
+  const parsedDistance = () => {
+    if (!distance || distance <= 0) return "0 m";
+
+    if (distance >= 1000) return `${(distance / 1000).toFixed(1)} km`;
+
+    return `${distance} m`;
+  };
 
   const renderedCategories = serviceCategory.slice(0, 5).join(", ");
 
@@ -67,7 +69,7 @@ const MerchantsCard: React.FC<Props> = ({
               </h1>
               {distance ? (
                 <p className="text-[0.6rem] sm:text-xs text-gray-400">
-                  {parsedDistance}
+                  {parsedDistance()}
                 </p>
               ) : (
                 ""
