@@ -117,6 +117,9 @@ export class MerchantRepository extends BaseRepository {
             contains: options?.query,
             mode: "insensitive",
           },
+          merchantIdentity: {
+            identityStatus: options?.status,
+          },
         },
         include: {
           merchantIdentity: {
@@ -131,6 +134,9 @@ export class MerchantRepository extends BaseRepository {
           merchantName: {
             contains: options?.query,
             mode: "insensitive",
+          },
+          merchantIdentity: {
+            identityStatus: options?.status,
           },
         },
       }),
