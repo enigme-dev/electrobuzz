@@ -13,6 +13,7 @@ import {
   getMerchant,
   updateMerchantVerified,
 } from "@/merchants/services/MerchantService";
+import { createNotification } from "@/notifications/services/NotificationService";
 
 export async function addMerchantIdentity(
   merchantId: string,
@@ -80,13 +81,31 @@ export async function editMerchantIdentity(
     if (identity?.identityDocs) {
       await deleteImg(identity.identityDocs, "vault");
     }
+
+    createNotification(merchantId, {
+      service: "identity",
+      title: "Identitas Mitra Anda ditolak",
+      level: "error",
+    });
   } else if (status === IdentityStatuses.Enum.verified) {
     const merchant = await getMerchant(merchantId);
     await updateMerchantVerified(merchantId, true);
     await addMerchantIndex(merchant);
+
+    createNotification(merchantId, {
+      service: "identity",
+      title: "Identitas Mitra Anda diterima",
+      level: "success",
+    });
   } else if (status === IdentityStatuses.Enum.suspended) {
     await updateMerchantVerified(merchantId, false);
     await deleteMerchantIndex(merchantId);
+
+    createNotification(merchantId, {
+      service: "identity",
+      title: "Akun Mitra Anda dibekukan",
+      level: "error",
+    });
   }
 }
 
