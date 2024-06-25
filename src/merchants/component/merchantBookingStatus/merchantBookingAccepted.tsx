@@ -72,6 +72,10 @@ const MerchantBookingAccepted = ({
         <div className=" flex justify-center">
           <CodeBookingInput bookingId={bookingDetailData.bookingId} />
         </div>
+        <p className=" text-sm sm:text-lg text-red-500 italic text-center">
+          *Mohon datang pada tanggal yang dijanjikan ke alamat user, mohon
+          konfirmasi lebih lanjut melalui nomor dibawah ini.
+        </p>
         <p className="text-xs text-red-400 italic text-center">
           *Isi kode saat mau mulai pengerjaan
         </p>
@@ -141,7 +145,7 @@ const MerchantBookingAccepted = ({
         </div>
         <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl  text-center">
-            Respon Merchant
+            Respon Mitra
           </h2>
           <div>
             <p className="text-sm sm:text-xl text-left">Estimasi Harga:</p>
