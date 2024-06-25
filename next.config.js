@@ -2,7 +2,16 @@
 const nextConfig = {
   output: "standalone",
   images: {
-    domains: ["assets.electrobuzz.id", "lh3.googleusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "assets.electrobuzz.id",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+    ],
   },
 };
 
