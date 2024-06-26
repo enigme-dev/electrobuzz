@@ -36,7 +36,7 @@ export default function MerchantList() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin/merchants", query, identityStatus, page],
     queryFn: async () => {
-      const data = axios.get<MerchantsResponse>("/api/admin/merchants", {
+      const data = axios.get<MerchantsResponse>("/api/admin/merchant", {
         params: { query, status: identityStatus, page },
         withCredentials: true,
       });
