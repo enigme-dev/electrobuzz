@@ -127,25 +127,8 @@ const AddressForm = ({
     }
   }
 
-  function getCityByProvinceId(value?: {
-    item: string;
-    value: string;
-    id?: string;
-  }) {
-    const selectedValue: any = provinceOptions.filter((item: any) => {
-      return item.value === value;
-    });
-    if (selectedValue.length > 0) {
-      const id = selectedValue[0].id;
-      getCityLocation(id);
-    } else {
-      return undefined;
-    }
-  }
-
   useEffect(() => {
     getProvince();
-    getCityLocation();
   }, [isEditing]);
 
   function onSubmitAddressForm(AddressForm: AddressModel) {
@@ -201,7 +184,7 @@ const AddressForm = ({
                           defaultValue={field.value}
                           onValueChange={(value) => {
                             field.onChange(value);
-                            getCityByProvinceId(value);
+                            getCityLocation(value);
                           }}
                         />
                       </FormControl>

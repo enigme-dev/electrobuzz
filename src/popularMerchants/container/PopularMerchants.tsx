@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
-import MerchantsCard from "../../core/components/merchantsCard";
 import { useGeoLocation } from "@/core/hooks/useGeolocation";
 import {
   Configure,
@@ -19,11 +18,17 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { TMerchantModel } from "@/merchants/types";
 import Loader from "@/core/components/loader/loader";
-import PopularMerchantsCard from "../components/popularMerchantsCard";
+import PopularMerchantsCard from "../../core/components/merchantCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/core/components/ui/carousel";
+import MerchantCard from "../../core/components/merchantCard";
 
 const PopularMerchants = () => {
-  const { data: session } = useSession();
-
   const { data: getMerchantsPopular, isLoading: getMerchantsPopularLoading } =
     useQuery({
       queryKey: ["getMerchantsPopular"],
@@ -38,35 +43,39 @@ const PopularMerchants = () => {
   }
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="flex justify-between">
         <h2 className="text-xl sm:text-2xl font-bold  flex items-center gap-2 ">
-          Teknisi Terpopular <span className="text-2xl">🌟</span>
+          <span className="text-2xl">🌟</span> Teknisi Terpopuler
         </h2>
       </div>
-      <div className="max-w-full">
-        <div className="flex overflow-x-auto gap-8 w-full no-scrollbar p-3">
+      <Carousel className="w-full mt-10">
+        <CarouselContent className="-ml-1">
           {getMerchantsPopular &&
-            getMerchantsPopular.map((value: TMerchantModel) => {
-              return (
-                <div key={value.merchantId}>
-                  <PopularMerchantsCard
-                    imgSource={value.merchantPhotoUrl}
-                    imgAlt={value.merchantName}
-                    location={value.merchantCity}
-                    merchName={value.merchantName}
-                    merchantId={value.merchantId ? value.merchantId : ""}
-                    merchantRating={
-                      value.merchantRating ? value.merchantRating : 0
-                    }
-                    serviceCategory={value.merchantCategory}
-                    merchantReviewCt={value.merchantReviewCt}
-                  />
-                </div>
-              );
-            })}
-        </div>
-      </div>
+            getMerchantsPopular.map((value: TMerchantModel) => (
+              <CarouselItem
+                key={value.merchantId}
+                className="basis-[75%] py-2 lg:basis-1/3"
+              >
+                <MerchantCard
+                  imgSource={value.merchantPhotoUrl}
+                  imgAlt={value.merchantName}
+                  location={value.merchantCity}
+                  merchName={value.merchantName}
+                  merchantId={value.merchantId ? value.merchantId : ""}
+                  merchantRating={
+                    value.merchantRating ? value.merchantRating : 0
+                  }
+                  serviceCategory={value.merchantCategory}
+                  banner={value.merchantBanner}
+                  merchantReviewCt={value.merchantReviewCt}
+                />
+              </CarouselItem>
+            ))}
+        </CarouselContent>
+        <CarouselPrevious className="hidden sm:inline-flex" />
+        <CarouselNext className="hidden sm:inline-flex" />
+      </Carousel>
     </div>
   );
 };
