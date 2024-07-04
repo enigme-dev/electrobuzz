@@ -58,6 +58,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/core/components/ui/select";
+import CategoryBadge from "@/core/components/categoryBadge";
 
 const MerchantIdentityResponse = z.object({ data: MerchantIdentitiesSchema });
 type MerchantIdentityResponse = z.infer<typeof MerchantIdentityResponse>;
@@ -313,14 +314,10 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
                     <ul className="flex flex-wrap gap-1">
                       {merchant.data?.data.merchantCategory.map(
                         (category: any) => (
-                          <li
+                          <CategoryBadge
                             key={category}
-                            className="bg-blue-500 rounded-md px-2 pb-[2px]"
-                          >
-                            <span className="text-xs font-semibold text-white">
-                              {category}
-                            </span>
-                          </li>
+                            categoryName={category}
+                          />
                         )
                       )}
                     </ul>
