@@ -18,8 +18,8 @@ export async function GET(req: NextRequest) {
   const { page, skip } = parseParams(searchParams);
 
   try {
-    merchants = Cache.get(`merchants/${page}`);
-    merchantsCt = Cache.get("merchantsCt") as number;
+    merchants = await Cache.get(`merchants/${page}`);
+    merchantsCt = (await Cache.get("merchantsCt")) as number;
 
     if (merchants && merchantsCt) {
       return buildRes({ data: merchants, page, total: merchantsCt });

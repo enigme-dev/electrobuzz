@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: IdParam) {
   }
 
   try {
-    merchant = Cache.get(`merchant/${merchantId.data}`);
+    merchant = await Cache.get(`merchant/${merchantId.data}`);
     if (merchant) {
       return buildRes({ data: merchant });
     }
