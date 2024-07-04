@@ -197,7 +197,7 @@ export async function updateMerchantProfile(
   // delete cached merchants
   Cache.delete(`merchant/${merchantId}`);
   Cache.delete("merchantsCt");
-  Cache.deleteWithPrefix(`merchants/`);
+  Cache.deleteWithPrefix("merchants/*");
 }
 
 export async function updateMerchantVerified(
@@ -207,6 +207,6 @@ export async function updateMerchantVerified(
   // delete cached merchants
   Cache.delete(`merchant/${merchantId}`);
   Cache.delete("merchantsCt");
-  Cache.deleteWithPrefix(`merchants/`);
+  Cache.deleteWithPrefix("merchants/*");
   return MerchantRepository.update(merchantId, { merchantVerified });
 }
