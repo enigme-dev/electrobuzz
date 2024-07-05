@@ -1,36 +1,33 @@
-import NodeCache from "node-cache";
+import { CacheClient } from "../adapters/redis";
+import { Logger } from "./logger";
 
 export class Cache {
-  private static instance: NodeCache;
-
-  private static init(): NodeCache {
-    if (!Cache.instance) {
-      Cache.instance = new NodeCache({ checkperiod: 120 });
+  public static set(key: string, val: any, ttl = 3600) {
+    if (typeof val != "string") {
+      val = JSON.stringify(val);
     }
 
-    return Cache.instance;
+    if (ttl) {
+      CacheClient.set(key, val as string, "EX", ttl);
+    } else {
+      CacheClient.set(key, val);
+    }
   }
 
-  public static set(key: string, val: any, ttl = 3600) {
-    Cache.init().set(key, val, ttl);
+  public static async get(key: string) {
+    const data = await CacheClient.get(key);
+    if (!data || data === "") return;
+
+    return JSON.parse(data);
   }
 
-  public static get(key: string) {
-    return Cache.init().get(key);
+  public static async delete(key: string) {
+    return await CacheClient.del(key);
   }
 
-  public static getTTL(key: string) {
-    return Cache.init().getTtl(key);
-  }
-
-  public static delete(key: string) {
-    Cache.init().del(key);
-  }
-
-  public static deleteWithPrefix(prefix: string) {
-    const keys = Cache.init()
-      .keys()
-      .filter((key) => key.startsWith(prefix));
-    Cache.init().del(keys);
+  public static async deleteWithPrefix(pattern: string) {
+    const keys = await CacheClient.keys(pattern);
+    Logger.debug(keys);
+    return await CacheClient.del(keys);
   }
 }

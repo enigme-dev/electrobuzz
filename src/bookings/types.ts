@@ -247,13 +247,18 @@ export const GetUserBookingDone = GetUserBooking.extend({
 export type TGetUserBookingDone = z.infer<typeof GetUserBookingDone>;
 
 export const CreateBookingSchema = z.object({
-  bookingPhotoUrl: z.string({ required_error: "photo can not be empty" }),
-  bookingComplain: z.string({ required_error: "complain can not be empty" }),
+  bookingPhotoUrl: z.string({
+    required_error: "foto keluhan tidak boleh kosong",
+  }),
+  bookingComplain: z
+    .string({ required_error: "deskripsi keluhan tidak boleh kosong" })
+    .min(16, "deskripsi keluhan harus antara 16 sampai 200 karakter")
+    .max(200, "deskripsi keluhan harus antara 16 sampai 200 karakter"),
   bookingSchedule: z
-    .string({ required_error: "schedule can not be empty" })
+    .string({ required_error: "jadwal servis tidak boleh kosong" })
     .datetime("schedule must be a datetime string"),
   addressId: z
-    .string({ required_error: "address id can not be empty" })
+    .string({ required_error: "alamat tidak boleh kosong" })
     .cuid("address id must be a cuid"),
 });
 

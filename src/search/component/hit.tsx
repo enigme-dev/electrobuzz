@@ -1,4 +1,5 @@
-import MerchantsCard from "@/core/components/merchantsCard";
+import MerchantListCard from "@/search/component/merchantsListCard";
+import MerchantsCard from "@/search/component/merchantsListCard";
 import { z } from "zod";
 
 const SearchItem = z.object({
@@ -16,7 +17,7 @@ type SearchItem = z.infer<typeof SearchItem>;
 
 export function Hit({ hit }: Readonly<{ hit: SearchItem }>) {
   return (
-    <MerchantsCard
+    <MerchantListCard
       imgSource={hit.merchantPhotoUrl}
       imgAlt={hit.merchantName}
       merchName={hit.merchantName}

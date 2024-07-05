@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "./ui/button";
-import Loader from "./loader/loader";
 import ButtonLoader from "./buttonLoader";
 
 interface ButtonWithLoaderProps {
@@ -13,11 +12,10 @@ interface ButtonWithLoaderProps {
     | "outline"
     | "secondary"
     | "ghost"
-    | null
-    | undefined;
+    | null;
   className?: string;
-  type: "button" | "submit" | "reset" | undefined;
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+  type?: "button" | "submit" | "reset";
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const ButtonWithLoader = ({

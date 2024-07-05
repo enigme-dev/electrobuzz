@@ -48,7 +48,7 @@ export async function createReview(
   });
 
   // delete cached merchant reviews
-  Cache.deleteWithPrefix(`merchant_reviews/${merchant.merchantId}`);
+  Cache.deleteWithPrefix(`merchant_reviews/${merchant.merchantId}*`);
 }
 
 export async function getMerchantReviews(

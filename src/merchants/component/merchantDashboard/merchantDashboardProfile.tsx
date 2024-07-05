@@ -25,25 +25,30 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import {
   Camera,
+  ImageIcon,
+  MapPin,
   PlusIcon,
-  Settings,
-  Upload,
+  Search,
+  SquareArrowOutUpRight,
   UploadIcon,
+  User,
   XIcon,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
-
 import { getData } from "@/core/lib/service";
 import { SelectOption } from "@/core/components/select-option";
-import { DialogGeneral } from "@/core/components/general-dialog";
 import {
   TBenefitType,
   TMerchantBenefitModel,
-  TMerchantIdentityModel,
   TMerchantModel,
   TUpdateMerchantSchema,
   UpdateMerchantSchema,
@@ -53,8 +58,9 @@ import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { Switch } from "@/core/components/ui/switch";
 import { Separator } from "@/core/components/ui/separator";
 import { Button } from "@/core/components/ui/button";
-import { updateMerchantVerified } from "@/merchants/services/MerchantService";
-import { Textarea } from "@/core/components/ui/textarea";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import Link from "next/link";
 
 export interface MerchantAlbum {
   albumPhotoUrl: string;
@@ -82,24 +88,38 @@ interface FileObject {
 }
 
 export enum Tab {
-  Profile = "Profile",
-  Location = "Location",
+  Profile = "Profil",
+  Location = "Lokasi",
   Album = "Album",
 }
 
+export type TProvinceResult = {
+  item: string;
+  value: string;
+  id: string;
+};
+
 const experience = [
-  { item: "Lebih dari 1 tahun", value: "Lebih dari 1 tahun" },
   { item: "Kurang dari 1 tahun", value: "Kurang dari 1 tahun" },
+  { item: "1 - 3 tahun", value: "1 - 3 tahun" },
+  { item: "3 - 5 tahun", value: "3 - 5 tahun" },
+  { item: "5 - 10 tahun", value: "5 - 10 tahun" },
+  { item: "Lebih dari 10 tahun", value: "Lebih dari 10 tahun" },
 ];
 
 const warranty = [
   { item: "Tidak ada garansi", value: "Tidak ada garansi" },
-  { item: "1 Bulan", value: "1 Bulan" },
+  { item: "7 Hari", value: "7 Hari" },
+  { item: "14 Hari", value: "14 Hari" },
+  { item: "30 Hari", value: "30 Hari" },
   { item: "2 Bulan", value: "2 Bulan" },
   { item: "3 Bulan", value: "3 Bulan" },
-  { item: "4 Bulan", value: "4 Bulan" },
-  { item: "5 Bulan", value: "5 Bulan" },
   { item: "6 Bulan", value: "6 Bulan" },
+];
+
+const serviceTypes = [
+  { item: "Drop-In", value: "Drop-In" },
+  { item: "Home Service", value: "Home Service" },
 ];
 
 const libraries: LoadScriptProps["libraries"] = ["places"];
@@ -108,6 +128,10 @@ const MerchantDashboardProfile = () => {
   const { data: session, status } = useSession();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const ReactQuill = useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
 
   const { isLoading: getMerchantDetailsloading, data: myMerchantDetails } =
     useQuery({
@@ -145,8 +169,8 @@ const MerchantDashboardProfile = () => {
     lat: myMerchantDetails?.merchantLat || null,
     lng: myMerchantDetails?.merchantLong || null,
   });
-  const [provinceOptions, setProvinceOptions] = useState([]);
-
+  const [provinceOptions, setProvinceOptions] = useState<TProvinceResult[]>([]);
+  const [cityOptions, setCityOptions] = useState([]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Profile);
 
   const handleTabClick = (tab: Tab) => {
@@ -305,20 +329,54 @@ const MerchantDashboardProfile = () => {
       },
     });
 
+  const onEditorChange = (data: string) => {
+    console.log("data");
+    form.setValue("merchantDesc", data);
+  };
+
+  const editorContent = form.watch("merchantDesc");
+
   function onSubmit(data: TUpdateMerchantSchema) {
     updateMerchantProfile(data);
   }
 
-  async function getProvince() {
-    const provinceResponse = await getData(
-      "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+  async function getProvince(): Promise<TProvinceResult[]> {
+    return new Promise((resolve, reject) => {
+      getData("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+        .then((res) => {
+          const provinceOptions: TProvinceResult[] = res.map(
+            (province: any) => ({
+              item: province.name,
+              value: province.name,
+              id: province.id,
+            })
+          );
+          setProvinceOptions(provinceOptions);
+          resolve(provinceOptions);
+        })
+        .catch(() => reject("error"));
+    });
+  }
+
+  const getProvinceByName = (list: TProvinceResult[], name: string) => {
+    const result = list.filter(
+      (province: TProvinceResult) => name === province.value
     );
-    const provinceOptions = provinceResponse.map((province: any) => ({
-      item: province.name,
-      value: province.name,
-      id: province.id,
-    }));
-    setProvinceOptions(provinceOptions);
+
+    return result;
+  };
+
+  async function getCityLocation(id?: string) {
+    const cityResponse = await getData(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`
+    );
+    if (id) {
+      const cityOptions = cityResponse?.map((city: any) => ({
+        item: city.name,
+        value: city.name,
+      }));
+      setCityOptions(cityOptions);
+    }
   }
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -357,33 +415,31 @@ const MerchantDashboardProfile = () => {
     deleteMerchantAlbum(photoId);
   };
 
-  const handleValueChange = (type?: string, value?: string) => {
-    if (type === "experience") {
-      updateMerchantProfile({
-        benefits: [
-          {
-            benefitType: "experience",
-            benefitBody: value ? value : "",
-          },
-        ],
-      });
-    } else if (type === "warranty") {
-      updateMerchantProfile({
-        benefits: [
-          {
-            benefitType: "warranty",
-            benefitBody: value ? value : "",
-          },
-        ],
-      });
-    }
+  const handleValueChange = (type: TBenefitType, value: string) => {
+    updateMerchantProfile({
+      benefits: [
+        {
+          benefitType: type,
+          benefitBody: value,
+        },
+      ],
+    });
   };
 
   useEffect(() => {
     if (session) {
-      getProvince();
+      getProvince().then((res) => {
+        const currentProvince = getProvinceByName(
+          res,
+          myMerchantDetails?.merchantProvince || ""
+        );
+
+        if (currentProvince.length > 0) {
+          getCityLocation(currentProvince[0].id);
+        }
+      });
     }
-  }, [session]);
+  }, [session, myMerchantDetails]);
 
   if (
     getMerchantDetailsloading ||
@@ -399,13 +455,24 @@ const MerchantDashboardProfile = () => {
     );
   }
 
+  const getBenefits = (type: string) => {
+    if (myMerchantBenefits) {
+      const result = myMerchantBenefits.filter(
+        (benefit) => benefit.benefitType === type
+      );
+      if (result.length === 1) {
+        return result[0];
+      }
+    }
+  };
+
   return (
-    <div className="pt-10 px-4 sm:px-8 w-screen lg:w-full pb-20">
-      <h1 className="font-bold text-lg sm:text-2xl">Profile Mitra</h1>
+    <div className="px-4 sm:px-8 w-screen lg:w-full pb-20">
+      <h1 className="mt-6 my-4 font-bold text-2xl">Profile Mitra</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex items-start gap-4 pt-10 flex-col sm:flex-row"
+          className="flex items-start gap-4 flex-col sm:flex-row"
         >
           <div className="border rounded-lg shadow-md w-full sm:w-[40vw]">
             <label
@@ -460,7 +527,7 @@ const MerchantDashboardProfile = () => {
               </label>
             </div>
             <FormDescription className="text-gray-400 text-center">
-              *.jpeg, *.jpg, *.png
+              *.jpeg, *.jpg, *.png, *.webp
             </FormDescription>
             <div className="flex justify-around pt-10">
               <FormField
@@ -494,7 +561,7 @@ const MerchantDashboardProfile = () => {
             </div>
           </div>
 
-          <div className="border p-8 rounded-lg shadow-md space-y-4 w-full">
+          <div className="border p-4 rounded-lg shadow-md space-y-4 w-full">
             <div className="flex sm:gap-4">
               {Object.values(Tab).map((tab) => (
                 <Button
@@ -506,9 +573,22 @@ const MerchantDashboardProfile = () => {
                   }`}
                   onClick={() => handleTabClick(tab)}
                 >
+                  {tab === Tab.Profile && <User size={18} className="mr-2" />}
+                  {tab === Tab.Location && (
+                    <MapPin size={18} className="mr-2" />
+                  )}
+                  {tab === Tab.Album && (
+                    <ImageIcon size={18} className="mr-2" />
+                  )}
                   {tab}
                 </Button>
               ))}
+              <div className="grow"></div>
+              <Button variant="ghost" asChild>
+                <Link href={`/merchant/${myMerchantDetails?.merchantId}`}>
+                  <SquareArrowOutUpRight size={15} />
+                </Link>
+              </Button>
             </div>
             <Separator />
             {activeTab === Tab.Profile && (
@@ -526,38 +606,54 @@ const MerchantDashboardProfile = () => {
                     </FormItem>
                   )}
                 />
-                {myMerchantBenefits?.map((value, index) => (
-                  <div key={index} className="space-y-4">
-                    <div className="space-y-2">
-                      {value.benefitType === "experience" && (
-                        <>
-                          <FormLabel>Pengalaman</FormLabel>
-                          <SelectOption
-                            selectList={experience}
-                            defaultValue={value.benefitBody}
-                            onValueChange={(value) =>
-                              handleValueChange("experience", value)
-                            }
-                            placeholder="Pilih Pengalaman"
-                          />
-                        </>
-                      )}
-                      {value.benefitType === "warranty" && (
-                        <>
-                          <FormLabel>Garansi</FormLabel>
-                          <SelectOption
-                            selectList={warranty}
-                            defaultValue={value.benefitBody}
-                            onValueChange={(value) =>
-                              handleValueChange("warranty", value)
-                            }
-                            placeholder="Pilih Pengalaman"
-                          />
-                        </>
-                      )}
-                    </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <FormLabel>Pengalaman</FormLabel>
+                    <SelectOption
+                      selectList={experience}
+                      defaultValue={
+                        getBenefits("experience")
+                          ? getBenefits("experience")?.benefitBody
+                          : ""
+                      }
+                      onValueChange={(value) =>
+                        handleValueChange("experience", value)
+                      }
+                      placeholder="Pilih Pengalaman"
+                    />
                   </div>
-                ))}
+                  <div className="space-y-2">
+                    <FormLabel>Garansi</FormLabel>
+                    <SelectOption
+                      selectList={warranty}
+                      defaultValue={
+                        getBenefits("warranty")
+                          ? getBenefits("warranty")?.benefitBody
+                          : ""
+                      }
+                      onValueChange={(value) =>
+                        handleValueChange("warranty", value)
+                      }
+                      placeholder="Pilih Kebijakan Garansi"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel>Tipe Layanan Servis</FormLabel>
+                    <SelectOption
+                      selectList={serviceTypes}
+                      defaultValue={
+                        getBenefits("service_type")
+                          ? getBenefits("service_type")?.benefitBody
+                          : ""
+                      }
+                      onValueChange={(value) =>
+                        handleValueChange("service_type", value)
+                      }
+                      placeholder="Pilih Tipe Layanan Servis"
+                    />
+                  </div>
+                </div>
 
                 <FormField
                   control={form.control}
@@ -592,13 +688,14 @@ const MerchantDashboardProfile = () => {
                           }
                         />
                       </FormControl>
-                      <FormDescription>
-                        isi kategori sesuai dengan keahlianmu
+                      <FormDescription className="italic">
+                        * isi sesuai dengan keahlianmu
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="merchantDesc"
@@ -606,12 +703,29 @@ const MerchantDashboardProfile = () => {
                     <FormItem>
                       <FormLabel>Deskripsi</FormLabel>
                       <FormControl>
-                        <Textarea
-                          placeholder="Deskripsikan tentang tokomu..."
-                          className=""
-                          {...field}
+                        <ReactQuill
+                          theme="snow"
+                          value={field.value}
+                          onChange={field.onChange}
+                          modules={{
+                            toolbar: [
+                              [{ header: [2, false] }],
+                              ["bold", "italic", "underline"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                            ],
+                          }}
                         />
                       </FormControl>
+                      <FormDescription
+                        className={`text-sm ${
+                          (field.value?.length || 0) < 32 ||
+                          (field.value?.length || 0) > 1200
+                            ? "text-destructive"
+                            : ""
+                        }`}
+                      >
+                        {field.value?.length || 0}/1200 karakter
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -619,7 +733,7 @@ const MerchantDashboardProfile = () => {
 
                 <div className="w-full flex justify-end pt-10">
                   <ButtonWithLoader
-                    buttonText="Save Changes"
+                    buttonText="Simpan"
                     type="submit"
                     className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
                     isLoading={updateMerchantLoadingProfile}
@@ -689,6 +803,9 @@ const MerchantDashboardProfile = () => {
                           defaultValue={myMerchantDetails?.merchantProvince}
                           onValueChange={(value) => {
                             field.onChange(value);
+                            getCityLocation(
+                              getProvinceByName(provinceOptions, value)[0].id
+                            );
                           }}
                         />
                       </FormControl>
@@ -696,19 +813,27 @@ const MerchantDashboardProfile = () => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="merchantCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="pb-2">Kota</FormLabel>
+                      <FormLabel>Kota</FormLabel>
                       <FormControl>
-                        <Input placeholder="Kota" {...field} />
+                        <SelectOption
+                          placeholder="Pilih Kota"
+                          selectList={cityOptions}
+                          defaultValue={myMerchantDetails?.merchantCity}
+                          onValueChange={field.onChange}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <div className="pt-8">
                   {isLoaded ? (
                     <>
@@ -717,7 +842,14 @@ const MerchantDashboardProfile = () => {
                         options={options}
                         onPlaceChanged={handlePlaceChanged}
                       >
-                        <Input placeholder="Enter a location" />
+                        <div className="grow flex items-center gap-2 h-10 rounded-md border bg-background px-3 py-2 ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                          <Search size={18} className="text-slate-500" />
+                          <input
+                            type="text"
+                            placeholder="Cari nama tempat..."
+                            className="w-full text-sm placeholder:text-muted-foreground focus-visible:outline-none"
+                          />
+                        </div>
                       </Autocomplete>
                       <p className="italic text-gray-400 pt-5 text-sm">
                         geser marker untuk mendapatkan lokasi detailmu
@@ -749,7 +881,7 @@ const MerchantDashboardProfile = () => {
                 </div>
                 <div className="w-full flex justify-end pt-10">
                   <ButtonWithLoader
-                    buttonText="Save Changes"
+                    buttonText="Simpan"
                     type="submit"
                     className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
                     isLoading={updateMerchantLoadingProfile}
