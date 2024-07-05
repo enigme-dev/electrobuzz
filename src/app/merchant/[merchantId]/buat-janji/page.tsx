@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { date, z } from "zod";
 import {
   Form,
   FormControl,
@@ -21,21 +19,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/core/components/ui/popover";
-import { CalendarIcon, PlusIcon, Settings } from "lucide-react";
+import { CalendarIcon, PlusIcon, Settings, SquarePen } from "lucide-react";
 import { Calendar } from "@/core/components/ui/calendar";
 import { cn } from "@/core/lib/shadcn";
 import { format, parseISO } from "date-fns";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
-import {
-  BookingModel,
-  CreateBookingSchema,
-  TBookingModel,
-  TCreateBookingSchema,
-} from "@/bookings/types";
+import { CreateBookingSchema, TCreateBookingSchema } from "@/bookings/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { Select } from "@/core/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { Card } from "@/core/components/ui/card";
 import { DialogGeneral } from "@/core/components/general-dialog";
@@ -44,6 +36,7 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { fileInputToDataURL } from "@/core/lib/utils";
 import Loader from "@/core/components/loader/loader";
+import { Label } from "@/core/components/ui/label";
 
 interface AddressData {
   addressCity: string;
@@ -141,15 +134,15 @@ const BuatJanjiPage = () => {
 
   return (
     <div className="wrapper pb-20 pt-10 sm:py-10 px-4">
-      <h1 className="font-bold text-xl pb-10">Form Buat Janji</h1>
+      <h1 className="font-bold text-2xl pb-4">Form Buat Janji</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
             name="bookingComplain"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Keluhan</FormLabel>
+              <FormItem className="md:max-w-[700px]">
+                <FormLabel>Deskripsi Keluhan</FormLabel>
                 <FormControl>
                   <Input placeholder="Deskripsikan keluhanmu" {...field} />
                 </FormControl>
@@ -161,8 +154,8 @@ const BuatJanjiPage = () => {
             control={form.control}
             name="bookingPhotoUrl"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Foto</FormLabel>
+              <FormItem className="md:max-w-[700px]">
+                <FormLabel>Foto Keluhan</FormLabel>
                 <FormControl>
                   <Input
                     onChange={(e) => handleFileInputChange(e, field)}
@@ -170,7 +163,6 @@ const BuatJanjiPage = () => {
                     type="file"
                   />
                 </FormControl>
-                <FormDescription>Foto keluhanmu </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -184,100 +176,94 @@ const BuatJanjiPage = () => {
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
+                    defaultValue={
+                      addressData && addressData.length > 0
+                        ? addressData[0].addressId
+                        : ""
+                    }
+                    className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4"
                   >
                     {addressData !== undefined &&
                       (addressData?.length !== 0 ? (
-                        addressData.map(
-                          (option: AddressData, index: number) => (
-                            <FormItem
-                              key={index}
-                              className="flex items-center space-x-3 space-y-0"
+                        addressData.map((option: AddressData) => (
+                          <div key={option.addressId}>
+                            <RadioGroupItem
+                              value={option.addressId}
+                              id={option.addressId}
+                              aria-label={option.addressId}
+                              className="sr-only peer"
+                            />
+                            <Label
+                              htmlFor={option.addressId}
+                              className="grow flex justify-between h-full rounded-lg border-2 border-accent peer-data-[state=checked]:border-blue-500 [&:has([data-state=checked])]:border-blue-500"
                             >
-                              <FormControl>
-                                <RadioGroupItem
-                                  className="rounded-full"
-                                  value={option.addressId}
+                              <div className="flex flex-col gap-2 p-4">
+                                <span>{option.addressDetail}</span>
+                                <span>{`${option.addressCity}, ${option.addressProvince}`}</span>
+                                <span>{option.addressZipCode}</span>
+                              </div>
+                              <div>
+                                <DialogGeneral
+                                  dialogTitle="Edit Alamat"
+                                  onOpen={onOpen}
+                                  onOpenChange={handleOpenChange}
+                                  dialogContent={
+                                    <AddressForm
+                                      handleOnCloseDialog={() =>
+                                        setOnOpenDialog(false)
+                                      }
+                                      initialAddressData={{
+                                        addressDetail: option.addressDetail,
+                                        addressId: option.addressId,
+                                        addressCity: option.addressCity,
+                                        addressProvince: option.addressProvince,
+                                        addressZipCode: option.addressZipCode,
+                                      }}
+                                      isEditing={true}
+                                    />
+                                  }
+                                  dialogTrigger={
+                                    <Button
+                                      variant="link"
+                                      className="text-gray-500"
+                                      onClick={() => setOnOpenDialog(true)}
+                                    >
+                                      <SquarePen size={18} />
+                                    </Button>
+                                  }
                                 />
-                              </FormControl>
-                              <Card className="p-3 w-screen flex items-center justify-between">
-                                <div className="text-xs sm:text-md ">
-                                  {option.addressDetail}, {option.addressCity}
-                                  ,&nbsp;
-                                  {option.addressProvince},{" "}
-                                  {option.addressZipCode}
-                                </div>
-                                <div className="flex items-center">
-                                  <DialogGeneral
-                                    dialogTitle="Edit Alamat"
-                                    onOpen={onOpen}
-                                    onOpenChange={handleOpenChange}
-                                    dialogContent={
-                                      <>
-                                        <AddressForm
-                                          handleOnCloseDialog={() =>
-                                            setOnOpenDialog(false)
-                                          }
-                                          initialAddressData={{
-                                            addressDetail: option.addressDetail,
-                                            addressId: option.addressId,
-                                            addressCity: option.addressCity,
-                                            addressProvince:
-                                              option.addressProvince,
-                                            addressZipCode:
-                                              option.addressZipCode,
-                                          }}
-                                          isEditing={true}
-                                        />
-                                      </>
-                                    }
-                                    dialogTrigger={
-                                      <Button
-                                        variant={"outline"}
-                                        onClick={() => setOnOpenDialog(true)}
-                                      >
-                                        Ubah
-                                      </Button>
-                                    }
-                                  />
-                                </div>
-                              </Card>
-                            </FormItem>
-                          )
-                        )
+                              </div>
+                            </Label>
+                          </div>
+                        ))
                       ) : (
-                        <>
-                          <DialogGeneral
-                            dialogTitle={"Edit Profile"}
-                            onOpen={onOpen}
-                            onOpenChange={handleOpenChange}
-                            dialogContent={
-                              <>
-                                <AddressForm
-                                  handleOnCloseDialog={handleOpenChange}
-                                  isEditing={false}
-                                />
-                              </>
-                            }
-                            dialogTrigger={
-                              <Card
-                                className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
-                                onClick={() => {
-                                  setOnOpenDialog(true);
-                                }}
-                              >
-                                <PlusIcon
-                                  className="p-1 rounded-full hover:cursor-pointer"
-                                  size={20}
-                                />
-                                <p className="text-xs sm:text-sm ">
-                                  Tambah alamat
-                                </p>
-                              </Card>
-                            }
-                          />
-                        </>
+                        <DialogGeneral
+                          dialogTitle={"Edit Profile"}
+                          onOpen={onOpen}
+                          onOpenChange={handleOpenChange}
+                          dialogContent={
+                            <AddressForm
+                              handleOnCloseDialog={handleOpenChange}
+                              isEditing={false}
+                            />
+                          }
+                          dialogTrigger={
+                            <Card
+                              className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
+                              onClick={() => {
+                                setOnOpenDialog(true);
+                              }}
+                            >
+                              <PlusIcon
+                                className="p-1 rounded-full hover:cursor-pointer"
+                                size={20}
+                              />
+                              <p className="text-xs sm:text-sm ">
+                                Tambah alamat
+                              </p>
+                            </Card>
+                          }
+                        />
                       ))}
                   </RadioGroup>
                 </FormControl>
@@ -289,22 +275,22 @@ const BuatJanjiPage = () => {
             control={form.control}
             name="bookingSchedule"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Tanggal janji</FormLabel>
+              <FormItem className="flex flex-col md:max-w-[700px]">
+                <FormLabel>Tanggal Servis</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
+                          "pl-3 text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
                       >
                         {field.value ? (
                           format(parseISO(field.value), "PPP")
                         ) : (
-                          <span>input tanggal</span>
+                          <span>Masukkan tanggal servis</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -322,19 +308,18 @@ const BuatJanjiPage = () => {
                     />
                   </PopoverContent>
                 </Popover>
-                <FormDescription>
-                  Kamu dapat memilih tanggal minimal satu hari setelah pembuatan
-                  janji
+                <FormDescription className="italic">
+                  * minimal satu hari dari tanggal janji dibuat
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-end md:max-w-[700px]">
             <ButtonWithLoader
-              className=" bg-yellow-400 hover:bg-yellow-300 text-black dark:text-black transition duration-500 flex gap-4 items-center"
+              className="flex gap-4 items-center w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-black"
               isLoading={createBookingAppointmentLoading}
-              buttonText="Submit"
+              buttonText="Buat janji"
               type="submit"
             />
           </div>
