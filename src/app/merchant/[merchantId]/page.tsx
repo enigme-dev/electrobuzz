@@ -20,6 +20,7 @@ import {
   Hammer,
   MapPinIcon,
   Star,
+  Truck,
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -307,7 +308,7 @@ const MerchantDetailPage = () => {
         <div className="sm:sticky top-6 flex flex-col gap-6 border h-full min-w-[360px] shadow-md rounded-lg p-4">
           <div>
             <h1 className="text-lg font-bold">Tentang Mitra</h1>
-            <div className="mt-3 border-b border-slate-300 dark:border-accent"></div>
+            <div className="my-3 border-b border-slate-300 dark:border-accent"></div>
             <div className="grid place-items-start gap-2">
               <div className="flex items-center gap-2">
                 <Star size={15} className="shrink-0" />
@@ -346,6 +347,17 @@ const MerchantDetailPage = () => {
                       <CheckCircle size={15} className="shrink-0" />
                       <p className=" text-sm font-semibold">
                         Garansi:{" "}
+                        <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                          {value.benefitBody}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                  {value.benefitType === "service_type" && (
+                    <div className="flex items-center gap-2">
+                      <Truck size={15} className="shrink-0" />
+                      <p className=" text-sm font-semibold">
+                        Tipe Layanan:{" "}
                         <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                           {value.benefitBody}
                         </span>
