@@ -91,7 +91,7 @@ const MerchantDetailPage = () => {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["getAllUserRatingInMerchantDetail", params],
+    queryKey: ["userReviews", merchantId, params],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get<UserReviewData>(
         `/api/merchant/${merchantId}/review`,
@@ -233,7 +233,7 @@ const MerchantDetailPage = () => {
 
           <div className="mt-6 p-4 max-w-full border rounded-lg shadow-md">
             <h1 className="text-lg font-semibold">Ulasan Pengguna</h1>
-            <div className="my-3 border-b border-slate-300 dark:border-accent"></div>
+            <div className="mt-3 border-b border-slate-300 dark:border-accent"></div>
             <ul className="grid">
               {userReviewData?.pages.map((page, pageIndex) => (
                 <React.Fragment key={pageIndex}>
@@ -243,16 +243,16 @@ const MerchantDetailPage = () => {
                         key={value.bookingId}
                         className="flex flex-col sm:flex-row gap-2 sm:gap-4 p-4 first:border-t-0 border-t border-accent"
                       >
-                        <div className="flex sm:grid sm:justify-center justify-items-center items-center gap-2 sm:gap-0 sm:w-[140px]">
+                        <div className="flex justify-items-center items-center gap-2 sm:min-w-[120px] sm:shrink-0">
                           <Image
                             src={value.user ? value.user.image : ""}
                             width={80}
                             height={80}
                             alt={value.user.name}
-                            className="h-9 sm:h-16 w-9 sm:w-16 object-cover rounded-full"
+                            className="h-9 w-9 object-cover rounded-full"
                           />
-                          <div className="grid items-center sm:text-center">
-                            <span className="sm:mt-2 sm:w-[140px] text-center font-medium truncate">
+                          <div className="grid items-center">
+                            <span className="sm:w-[120px] font-medium truncate">
                               {value.user.name}
                             </span>
                             <span className="text-xs text-gray-400">
@@ -263,14 +263,14 @@ const MerchantDetailPage = () => {
                           </div>
                         </div>
 
-                        <div className="grow sm:p-4">
-                          <div className="flex gap-1 items-center sm:mb-2">
+                        <div className="grow sm:pt-1">
+                          <div className="flex gap-1">
                             {Array(5)
                               .fill(0)
                               .map((_, index) => (
                                 <Star
                                   key={index}
-                                  size={15}
+                                  size={16}
                                   strokeWidth={1}
                                   fill={
                                     index + 1 <= value.reviewStars
@@ -307,7 +307,7 @@ const MerchantDetailPage = () => {
         <div className="sm:sticky top-6 flex flex-col gap-6 border h-full min-w-[360px] shadow-md rounded-lg p-4">
           <div>
             <h1 className="text-lg font-bold">Tentang Mitra</h1>
-            <div className="my-3 border-b border-slate-300 dark:border-accent"></div>
+            <div className="mt-3 border-b border-slate-300 dark:border-accent"></div>
             <div className="grid place-items-start gap-2">
               <div className="flex items-center gap-2">
                 <Star size={15} className="shrink-0" />
