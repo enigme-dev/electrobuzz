@@ -152,7 +152,6 @@ const AddressForm = ({
         getCityLocation(currentProvince[0].id);
       }
     });
-    getProvince();
   }, [isEditing]);
 
   function onSubmitAddressForm(AddressForm: AddressModel) {
