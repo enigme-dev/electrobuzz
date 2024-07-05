@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode } from "react";
-import { getRoundedRating } from "../lib/utils";
+import { getRoundedRating } from "../../core/lib/utils";
 
 interface Props {
   imgSource: string;
@@ -20,7 +20,7 @@ interface Props {
   merchantRating: number;
 }
 
-const MerchantsCard: React.FC<Props> = ({
+const MerchantListCard: React.FC<Props> = ({
   imgSource,
   imgAlt,
   merchName,
@@ -108,4 +108,4 @@ const MerchantsCard: React.FC<Props> = ({
   );
 };
 
-export default MerchantsCard;
+export default MerchantListCard;

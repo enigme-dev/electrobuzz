@@ -29,6 +29,7 @@ import DOMPurify from "dompurify";
 import CarouselImage from "@/core/components/CarouselImage";
 import dayjs from "dayjs";
 import StarRating from "@/core/components/starRating";
+import CategoryBadge from "@/core/components/categoryBadge";
 
 interface UserReviewData {
   page: number;
@@ -366,16 +367,9 @@ const MerchantDetailPage = () => {
               </div>
             </div>
             {(merchantDetails?.merchantCategory.length || 0) > 0 && (
-              <ul className="flex gap-1 overflow-hidden mt-2">
+              <ul className="flex gap-1 flex-wrap mt-2">
                 {merchantDetails?.merchantCategory.map((category) => (
-                  <li
-                    key={category}
-                    className="bg-blue-500 rounded-md px-2 pb-[2px]"
-                  >
-                    <span className="text-xs font-semibold text-white">
-                      {category}
-                    </span>
-                  </li>
+                  <CategoryBadge key={category} categoryName={category} />
                 ))}
               </ul>
             )}

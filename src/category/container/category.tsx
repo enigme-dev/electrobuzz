@@ -91,7 +91,7 @@ const Category = () => {
   return (
     <div className="w-full">
       <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-        Kategori <span className="text-2xl"> 💡</span>
+        <span className="text-2xl"> 💡</span> Kategori
       </h1>
       <div className="pt-10 w-full overflow-visible">
         <div className="flex flex-row gap-6  overflow-x-scroll pb-4 no-scrollbar">
