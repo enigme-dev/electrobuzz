@@ -93,12 +93,6 @@ export enum Tab {
   Album = "Album",
 }
 
-const TabIcons = [
-  <User size={18} className="mr-2" />,
-  <MapPin size={18} className="mr-2" />,
-  <ImageIcon size={18} className="mr-2" />,
-];
-
 export type TProvinceResult = {
   item: string;
   value: string;
@@ -569,7 +563,7 @@ const MerchantDashboardProfile = () => {
 
           <div className="border p-4 rounded-lg shadow-md space-y-4 w-full">
             <div className="flex sm:gap-4">
-              {Object.values(Tab).map((tab, index) => (
+              {Object.values(Tab).map((tab) => (
                 <Button
                   variant={"ghost"}
                   key={tab}
@@ -579,7 +573,13 @@ const MerchantDashboardProfile = () => {
                   }`}
                   onClick={() => handleTabClick(tab)}
                 >
-                  {TabIcons[index]}
+                  {tab === Tab.Profile && <User size={18} className="mr-2" />}
+                  {tab === Tab.Location && (
+                    <MapPin size={18} className="mr-2" />
+                  )}
+                  {tab === Tab.Album && (
+                    <ImageIcon size={18} className="mr-2" />
+                  )}
                   {tab}
                 </Button>
               ))}
