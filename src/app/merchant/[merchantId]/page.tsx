@@ -2,14 +2,8 @@
 
 import Loader from "@/core/components/loader/loader";
 import Modal from "@/core/components/modal";
-import ReviewCard from "@/core/components/reviewCard";
 import { Button } from "@/core/components/ui/button";
-import { Card } from "@/core/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/core/components/ui/carousel";
+import { CarouselItem } from "@/core/components/ui/carousel";
 import { MerchantAlbum } from "@/merchants/component/merchantDashboard/merchantDashboardProfile";
 import { TMerchantBenefitModel, TMerchantModel } from "@/merchants/types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -29,8 +23,8 @@ import { useInView } from "react-intersection-observer";
 import DOMPurify from "dompurify";
 import CarouselImage from "@/core/components/CarouselImage";
 import dayjs from "dayjs";
-import StarRating from "@/core/components/starRating";
 import CategoryBadge from "@/core/components/categoryBadge";
+import Page404NotFound from "@/core/components/page404NotFound";
 
 interface UserReviewData {
   page: number;
@@ -58,15 +52,18 @@ const MerchantDetailPage = () => {
     page: pageFromQueryParams,
   };
 
-  const { isLoading: getMerchantDetailsloading, data: merchantDetails } =
-    useQuery({
-      queryKey: ["getMerchantDetails", merchantId],
-      queryFn: async () =>
-        await axios.get(`/api/merchant/${merchantId}`).then((response) => {
-          return response.data.data as TMerchantModel;
-        }),
-      enabled: !!merchantId,
-    });
+  const {
+    isLoading: getMerchantDetailsloading,
+    data: merchantDetails,
+    status: getMerchantDetailsStatus,
+  } = useQuery({
+    queryKey: ["getMerchantDetails", merchantId],
+    queryFn: async () =>
+      await axios.get(`/api/merchant/${merchantId}`).then((response) => {
+        return response.data.data as TMerchantModel;
+      }),
+    enabled: !!merchantId,
+  });
   const { data: getMerchantBenefits, isLoading: getMerchantBenefitsLoading } =
     useQuery({
       queryKey: ["getMerchantBenefits", merchantId],
@@ -134,6 +131,9 @@ const MerchantDetailPage = () => {
     return <Loader />;
   }
 
+  if (getMerchantDetailsStatus === "error") {
+    return <Page404NotFound />;
+  }
   return (
     <div className="wrapper pb-20">
       <div className="relative flex flex-col gap-4 items-start justify-end w-full">
