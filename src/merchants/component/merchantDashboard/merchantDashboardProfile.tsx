@@ -329,13 +329,6 @@ const MerchantDashboardProfile = () => {
       },
     });
 
-  const onEditorChange = (data: string) => {
-    console.log("data");
-    form.setValue("merchantDesc", data);
-  };
-
-  const editorContent = form.watch("merchantDesc");
-
   function onSubmit(data: TUpdateMerchantSchema) {
     updateMerchantProfile(data);
   }
@@ -847,7 +840,7 @@ const MerchantDashboardProfile = () => {
                           <input
                             type="text"
                             placeholder="Cari nama tempat..."
-                            className="w-full text-sm placeholder:text-muted-foreground focus-visible:outline-none"
+                            className="w-full text-sm bg-background placeholder:text-muted-foreground focus-visible:outline-none"
                           />
                         </div>
                       </Autocomplete>

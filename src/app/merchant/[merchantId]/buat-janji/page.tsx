@@ -174,18 +174,13 @@ const BuatJanjiPage = () => {
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
                 <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={
-                      addressData && addressData.length > 0
-                        ? addressData[0].addressId
-                        : ""
-                    }
-                    className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4"
-                  >
-                    {addressData !== undefined &&
-                      (addressData?.length !== 0 ? (
-                        addressData.map((option: AddressData) => (
+                  {addressData &&
+                    (addressData.length > 0 ? (
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4"
+                      >
+                        {addressData.map((option: AddressData) => (
                           <div key={option.addressId}>
                             <RadioGroupItem
                               value={option.addressId}
@@ -235,37 +230,35 @@ const BuatJanjiPage = () => {
                               </div>
                             </Label>
                           </div>
-                        ))
-                      ) : (
-                        <DialogGeneral
-                          dialogTitle={"Edit Profile"}
-                          onOpen={onOpen}
-                          onOpenChange={handleOpenChange}
-                          dialogContent={
-                            <AddressForm
-                              handleOnCloseDialog={handleOpenChange}
-                              isEditing={false}
+                        ))}
+                      </RadioGroup>
+                    ) : (
+                      <DialogGeneral
+                        dialogTitle={"Edit Profile"}
+                        onOpen={onOpen}
+                        onOpenChange={handleOpenChange}
+                        dialogContent={
+                          <AddressForm
+                            handleOnCloseDialog={handleOpenChange}
+                            isEditing={false}
+                          />
+                        }
+                        dialogTrigger={
+                          <Card
+                            className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
+                            onClick={() => {
+                              setOnOpenDialog(true);
+                            }}
+                          >
+                            <PlusIcon
+                              className="p-1 rounded-full hover:cursor-pointer"
+                              size={20}
                             />
-                          }
-                          dialogTrigger={
-                            <Card
-                              className=" flex items-center  w-fit  px-2 py-1 hover:cursor-pointer dark:text-black bg-yellow-400 hover:bg-yellow-300"
-                              onClick={() => {
-                                setOnOpenDialog(true);
-                              }}
-                            >
-                              <PlusIcon
-                                className="p-1 rounded-full hover:cursor-pointer"
-                                size={20}
-                              />
-                              <p className="text-xs sm:text-sm ">
-                                Tambah alamat
-                              </p>
-                            </Card>
-                          }
-                        />
-                      ))}
-                  </RadioGroup>
+                            <p className="text-xs sm:text-sm ">Tambah alamat</p>
+                          </Card>
+                        }
+                      />
+                    ))}
                 </FormControl>
                 <FormMessage />
               </FormItem>
