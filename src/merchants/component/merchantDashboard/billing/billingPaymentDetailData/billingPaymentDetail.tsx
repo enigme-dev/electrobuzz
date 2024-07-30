@@ -98,11 +98,23 @@ const BillingPaymentDetail = () => {
             </div>
             <div className="p-5 bg-blue-100 rounded-lg text-center">
               <DollarSign className="text-blue-600" />
-              <p className="md:text-2xl lg:text-3xl text-lg py-2 font-extrabold text-blue-700">
-                Rp.5000
-              </p>
-              <h2 className="text-blue-600 text-sm sm:text-base">
-                Fee Per Transaksi
+              <div className="py-2">
+                {getBillingsDetailData ? (
+                  getBillingsDetailData.billingPaid ? (
+                    <p className="md:text-2xl lg:text-3xl text-lg  font-extrabold text-blue-600">
+                      Sudah Bayar
+                    </p>
+                  ) : (
+                    <p className="md:text-2xl lg:text-3xl text-lg  font-extrabold text-red-600">
+                      Belum Bayar
+                    </p>
+                  )
+                ) : (
+                  <p className="text-gray-400 italic">Belum ada transaksi</p>
+                )}
+              </div>
+              <h2 className="text-blue-600 text-xs sm:text-sm">
+                Status Pembayaran
               </h2>
             </div>
           </div>
@@ -119,26 +131,7 @@ const BillingPaymentDetail = () => {
               Pembayaran
             </h1>
           </div>
-          <div className="">
-            <h2 className="text-yellow-600 text-xs sm:text-sm font-bold text-start pt-5">
-              Status Pembayaran
-            </h2>
-            <div className="pt-3">
-              {getBillingsDetailData ? (
-                getBillingsDetailData.billingPaid ? (
-                  <CustomBadge status="success" title="Sudah Bayar" />
-                ) : (
-                  <CustomBadge status="failed" title="Belum Bayar" />
-                )
-              ) : (
-                <p className="text-gray-400 italic">Belum ada transaksi</p>
-              )}
-            </div>
-          </div>
           <ul className="grid gap-2 py-5">
-            <h2 className="text-yellow-600 text-xs sm:text-sm font-bold text-start py-2">
-              Total Tagihan
-            </h2>
             <li className="flex items-center justify-between">
               <p className="text-xs text-yellow-600">Total Transaksi</p>
               <p className="text-xs text-yellow-600">

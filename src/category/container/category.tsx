@@ -13,6 +13,13 @@ import {
   WashingMachineIcon,
 } from "lucide-react";
 import CategoryCard from "../components/categoryCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/core/components/ui/carousel";
 
 const CategoryData = [
   {
@@ -93,20 +100,24 @@ const Category = () => {
       <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
         <span className="text-2xl"> 💡</span> Kategori
       </h1>
-      <div className="pt-10 w-full overflow-visible">
-        <div className="flex flex-row gap-6  overflow-x-scroll pb-4 no-scrollbar">
+
+      <Carousel className="w-full mt-10">
+        <CarouselContent className="-ml-1">
           {CategoryData.map((item, index) => (
-            <div key={index}>
+            <CarouselItem key={index} className="basis-[25%] py-2 lg:basis-1/6">
               <CategoryCard
                 categoryIcon={item.categoryIcon}
                 categoryName={item.categoryName}
               />
-            </div>
+            </CarouselItem>
           ))}
-        </div>
-        <div className="w-full flex justify-center ">
-          <MoveHorizontal strokeWidth={1} className="text-gray-400" />
-        </div>
+        </CarouselContent>
+        <CarouselPrevious className="hidden sm:inline-flex" />
+        <CarouselNext className="hidden sm:inline-flex" />
+      </Carousel>
+
+      <div className="w-full flex justify-center ">
+        <MoveHorizontal strokeWidth={1} className="text-gray-400 lg:hidden" />
       </div>
     </div>
   );

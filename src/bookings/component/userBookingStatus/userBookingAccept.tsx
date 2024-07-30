@@ -6,6 +6,7 @@ import {
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import Loader from "@/core/components/loader/loader";
+import Modal from "@/core/components/modal";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
 import { toast } from "@/core/components/ui/use-toast";
@@ -35,6 +36,7 @@ const radioOptionsForCancelReason = [
 
 const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
   const queryClient = useQueryClient();
+  const [imageFullscreen, setImageFullscreen] = useState(false);
 
   const [bookingCode, setBookingCode] = useState<BookingCode>({
     status: "",
@@ -106,8 +108,8 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
   }
 
   return (
-    <div className="wrapper">
-      <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center mt-10 gap-10 lg:gap-20 flex-col lg:flex-row">
+      <div className="max-w-[350px]">
         <Image
           src="/Light bulb-cuate.svg"
           alt="bookDetailBanner"
@@ -115,8 +117,7 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
           width={900}
           height={500}
         />
-      </div>
-      <div className="grid gap-5">
+
         <div className="pb-5 flex justify-center">
           <h1 className="w-fit text-lg sm:text-xl font-bold text-center  rounded-lg p-3">
             Selamat mitra telah menerima keluhanmu!
@@ -136,17 +137,18 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
             {bookingCode ? bookingCode?.data.code : ""}
           </span>
           <span>{/* Expired pada {bookingCode ? } */}</span>
-          <p className=" text-sm sm:text-lg text-red-500 italic text-center pt-5">
+          <p className=" text-sm sm:text-md text-red-500 italic text-center pt-5">
             *Mohon jangan berikan kode ini kepada mitra jika mitra belum mulai
             mengerjakan!
           </p>
-          <p className=" text-sm sm:text-lg text-red-500 italic text-center pt-5">
+          <p className=" text-sm sm:text-md text-red-500 italic text-center pt-5">
             *Merchant akan datang pada tanggal yang dijanjikan ke alamatmu,
             mohon konfirmasi lebih lanjut melalui nomor dibawah ini.
           </p>
         </div>
-
-        <div className="shadow-lg border p-5 rounded-lg space-y-5">
+      </div>
+      <div>
+        <div className="shadow-lg border p-5 rounded-lg space-y-5 max-h-[700px] overflow-scroll">
           <h2 className="font-semibold text-md sm:text-xl text-center">
             Data Merchant
           </h2>
@@ -162,49 +164,48 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
               {bookingDetailData.merchant.user.phone}
             </p>
           </div>
-        </div>
-        <div className="shadow-lg border p-5 rounded-lg space-y-5">
+
           <h1 className="font-semibold text-md sm:text-xl text-center">
             Keluhan User
           </h1>
           <div>
-            <h2 className="pt-2 text-center text-sm sm:text-xl">
-              Foto Keluhan:
-            </h2>
-            <div className="flex justify-center">
+            <h2 className="pt-2 text-sm sm:text-xl">Foto Keluhan:</h2>
+            <div
+              onClick={() => setImageFullscreen(true)}
+              className="flex justify-center max-w-[200px] max-h-[200px] relative group pt-5 hover:opacity-50 cursor-pointer"
+            >
               <Image
                 src={bookingDetailData.bookingPhotoUrl}
                 alt={bookingDetailData.bookingPhotoUrl}
-                className="pt-5"
+                className=""
                 width={500}
                 height={500}
               />
             </div>
+            <div>
+              <h2 className="pt-2 text-left text-sm sm:text-xl">Keluhan:</h2>
+              <p className=" text-left text-sm sm:text-lg font-semibold">
+                {bookingDetailData.bookingComplain}
+              </p>
+            </div>
+            <div>
+              <h2 className="pt-2 text-left text-sm sm:text-xl">
+                Tanggal Janji:
+              </h2>
+              <p className=" text-left text-sm sm:text-lg font-semibold">
+                {format(bookingDetailData.bookingSchedule.toString(), "PPP")}
+              </p>
+            </div>
+            <div>
+              <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
+              <p className=" text-left text-sm sm:text-lg font-semibold">
+                {bookingDetailData.addressDetail},{" "}
+                {bookingDetailData.addressCity},{" "}
+                {bookingDetailData.addressProvince},{" "}
+                {bookingDetailData.addressZipCode}
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="pt-2 text-left text-sm sm:text-xl">Keluhan:</h2>
-            <p className=" text-left text-sm sm:text-lg font-semibold">
-              {bookingDetailData.bookingComplain}
-            </p>
-          </div>
-          <div>
-            <h2 className="pt-2 text-left text-sm sm:text-xl">
-              Tanggal Janji:
-            </h2>
-            <p className=" text-left text-sm sm:text-lg font-semibold">
-              {format(bookingDetailData.bookingSchedule.toString(), "PPP")}
-            </p>
-          </div>
-          <div>
-            <h1 className="text-left text-sm sm:text-xl">Alamat:</h1>
-            <p className=" text-left text-sm sm:text-lg font-semibold">
-              {bookingDetailData.addressDetail}, {bookingDetailData.addressCity}
-              , {bookingDetailData.addressProvince},{" "}
-              {bookingDetailData.addressZipCode}
-            </p>
-          </div>
-        </div>
-        <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl  text-center">
             Respon Merchant
           </h2>
@@ -221,34 +222,32 @@ const UserBookingAccept = ({ bookingDetailData }: UserBookingAcceptProps) => {
               {bookingDetailData.bookingDesc}
             </p>
           </div>
-        </div>
-        <div className="flex gap-10 justify-center items-center pt-5">
-          <Link href={"/user/my-bookings"}>
-            <Button variant={"outline"}>Kembali</Button>
-          </Link>
-          <DialogGeneral
-            dialogTitle="Alasan Penolakan"
-            dialogContent={
-              <RadioGroupForm
-                options={radioOptionsForCancelReason}
-                onSubmitRadio={(value) => updateCancelBooking(value)}
-                defaultValue={radioOptionsForCancelReason[0].option ?? ""}
-                onSubmitLoading={updateCancelBookingLoading}
-              />
-            }
-            dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
-          />
+          <div className="flex gap-10 justify-center items-center pt-5">
+            <Link href={"/user/my-bookings"}>
+              <Button variant={"outline"}>Kembali</Button>
+            </Link>
+            <DialogGeneral
+              dialogTitle="Alasan Penolakan"
+              dialogContent={
+                <RadioGroupForm
+                  options={radioOptionsForCancelReason}
+                  onSubmitRadio={(value) => updateCancelBooking(value)}
+                  defaultValue={radioOptionsForCancelReason[0].option ?? ""}
+                  onSubmitLoading={updateCancelBookingLoading}
+                />
+              }
+              dialogTrigger={<Button variant={"destructive"}>Cancel</Button>}
+            />
+          </div>
         </div>
       </div>
-      {/* {bookingDetailData.bookingStatus === "in_progress_requested" && (
-        <AlertDialogComponent
-          alertDialogSubmitTitle="Ya"
-          defaultOpen={true}
-          dialogDescription="Apakah benar service sedang berjalan? (tekan kembali jika service sedang tidak berjalan)"
-          dialogTitle=""
-          submitAction={updateBookingToInProgress}
+      <div>
+        <Modal
+          imageUrl={bookingDetailData.bookingPhotoUrl}
+          setShowModal={setImageFullscreen}
+          showModal={imageFullscreen}
         />
-      )} */}
+      </div>
     </div>
   );
 };

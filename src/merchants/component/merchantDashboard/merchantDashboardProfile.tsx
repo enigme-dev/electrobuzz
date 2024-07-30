@@ -692,36 +692,40 @@ const MerchantDashboardProfile = () => {
                 <FormField
                   control={form.control}
                   name="merchantDesc"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deskripsi</FormLabel>
-                      <FormControl>
-                        <ReactQuill
-                          theme="snow"
-                          value={field.value}
-                          onChange={field.onChange}
-                          modules={{
-                            toolbar: [
-                              [{ header: [2, false] }],
-                              ["bold", "italic", "underline"],
-                              [{ list: "ordered" }, { list: "bullet" }],
-                            ],
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription
-                        className={`text-sm ${
-                          (field.value?.length || 0) < 32 ||
-                          (field.value?.length || 0) > 1200
-                            ? "text-destructive"
-                            : ""
-                        }`}
-                      >
-                        {field.value?.length || 0}/1200 karakter
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const plainText = field.value
+                      ? field.value.replace(/<[^>]+>/g, "")
+                      : "";
+                    const plainTextLength = plainText.trim().length;
+
+                    return (
+                      <FormItem>
+                        <FormLabel>Deskripsi</FormLabel>
+                        <FormControl>
+                          <ReactQuill
+                            theme="snow"
+                            value={field.value}
+                            onChange={field.onChange}
+                            modules={{
+                              toolbar: [
+                                [{ header: [2, false] }],
+                                ["bold", "italic", "underline"],
+                                [{ list: "ordered" }, { list: "bullet" }],
+                              ],
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription
+                          className={`text-sm ${
+                            plainTextLength < 32 ? "text-destructive" : ""
+                          }`}
+                        >
+                          {plainTextLength}/1200 karakter
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <div className="w-full flex justify-end pt-10">

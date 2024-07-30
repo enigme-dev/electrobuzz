@@ -23,7 +23,7 @@ const LoginPage = () => {
             Sign in to ElectroBu⚡z
           </h1>
           <div className="flex justify-center items-center">
-            <Button onClick={() => signIn("google")}>
+            <Button onClick={() => signIn("google")} className="text-black">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="mr-2"
