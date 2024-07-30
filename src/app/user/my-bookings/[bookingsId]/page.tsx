@@ -18,7 +18,6 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 const BookingDetail = () => {
-  const { data: session } = useSession();
   const pathname = usePathname();
   const getLastPathSegment = (pathname: string): string => {
     const segments = pathname.split("/");
@@ -40,7 +39,7 @@ const BookingDetail = () => {
     return <Loader />;
   }
   return (
-    <main className="sm:wrapper pb-20 px-4">
+    <main className="sm:wrapper px-4 pb-20 lg:pb-0">
       {bookingDetailData?.bookingStatus == "pending" && (
         <>
           <UserBookingPending bookingDetailData={bookingDetailData} />
@@ -51,8 +50,7 @@ const BookingDetail = () => {
           <UserBookingReject bookingDetailData={bookingDetailData} />
         </>
       )}
-      {(bookingDetailData?.bookingStatus == "accepted" ||
-        bookingDetailData?.bookingStatus == "in_progress_requested") && (
+      {bookingDetailData?.bookingStatus == "accepted" && (
         <>
           <UserBookingAccept bookingDetailData={bookingDetailData} />
         </>

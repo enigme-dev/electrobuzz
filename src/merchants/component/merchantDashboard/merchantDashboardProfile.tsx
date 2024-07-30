@@ -329,13 +329,6 @@ const MerchantDashboardProfile = () => {
       },
     });
 
-  const onEditorChange = (data: string) => {
-    console.log("data");
-    form.setValue("merchantDesc", data);
-  };
-
-  const editorContent = form.watch("merchantDesc");
-
   function onSubmit(data: TUpdateMerchantSchema) {
     updateMerchantProfile(data);
   }
@@ -699,36 +692,40 @@ const MerchantDashboardProfile = () => {
                 <FormField
                   control={form.control}
                   name="merchantDesc"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deskripsi</FormLabel>
-                      <FormControl>
-                        <ReactQuill
-                          theme="snow"
-                          value={field.value}
-                          onChange={field.onChange}
-                          modules={{
-                            toolbar: [
-                              [{ header: [2, false] }],
-                              ["bold", "italic", "underline"],
-                              [{ list: "ordered" }, { list: "bullet" }],
-                            ],
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription
-                        className={`text-sm ${
-                          (field.value?.length || 0) < 32 ||
-                          (field.value?.length || 0) > 1200
-                            ? "text-destructive"
-                            : ""
-                        }`}
-                      >
-                        {field.value?.length || 0}/1200 karakter
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const plainText = field.value
+                      ? field.value.replace(/<[^>]+>/g, "")
+                      : "";
+                    const plainTextLength = plainText.trim().length;
+
+                    return (
+                      <FormItem>
+                        <FormLabel>Deskripsi</FormLabel>
+                        <FormControl>
+                          <ReactQuill
+                            theme="snow"
+                            value={field.value}
+                            onChange={field.onChange}
+                            modules={{
+                              toolbar: [
+                                [{ header: [2, false] }],
+                                ["bold", "italic", "underline"],
+                                [{ list: "ordered" }, { list: "bullet" }],
+                              ],
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription
+                          className={`text-sm ${
+                            plainTextLength < 32 ? "text-destructive" : ""
+                          }`}
+                        >
+                          {plainTextLength}/1200 karakter
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <div className="w-full flex justify-end pt-10">
@@ -847,7 +844,7 @@ const MerchantDashboardProfile = () => {
                           <input
                             type="text"
                             placeholder="Cari nama tempat..."
-                            className="w-full text-sm placeholder:text-muted-foreground focus-visible:outline-none"
+                            className="w-full text-sm bg-background placeholder:text-muted-foreground focus-visible:outline-none"
                           />
                         </div>
                       </Autocomplete>

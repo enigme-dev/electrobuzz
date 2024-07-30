@@ -6,6 +6,7 @@ import {
 import { AlertDialogComponent } from "@/core/components/alert-dialog";
 import { DialogGeneral } from "@/core/components/general-dialog";
 import Loader from "@/core/components/loader/loader";
+import Modal from "@/core/components/modal";
 import { RadioGroupForm } from "@/core/components/radio-group";
 import { Button } from "@/core/components/ui/button";
 import { toast } from "@/core/components/ui/use-toast";
@@ -14,23 +15,17 @@ import axios from "axios";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 interface UserBookingAcceptProps {
   bookingDetailData: TGetUserBooking;
 }
 
-const radioOptionsForCancelReason = [
-  { option: "Budjet tidak cukup", label: "Budjet tidak cukup" },
-  { option: "Mau cari teknisi lain", label: "Mau cari teknisi lain" },
-  { option: "Mau ubah jadwal", label: "Mau ubah jadwal" },
-  { option: "", label: "Other" },
-];
-
 const UserBookingInProgress = ({
   bookingDetailData,
 }: UserBookingAcceptProps) => {
   const queryClient = useQueryClient();
+  const [imageFullscreen, setImageFullscreen] = useState(false);
 
   const {
     mutate: updateBookingToDone,
@@ -100,11 +95,14 @@ const UserBookingInProgress = ({
             <h2 className="pt-2 text-center text-sm sm:text-xl">
               Foto Keluhan:
             </h2>
-            <div className="flex justify-center">
+            <div
+              onClick={() => setImageFullscreen(true)}
+              className="flex justify-center max-w-[200px] max-h-[200px] relative group pt-5 hover:opacity-50 cursor-pointer"
+            >
               <Image
                 src={bookingDetailData.bookingPhotoUrl}
                 alt={bookingDetailData.bookingPhotoUrl}
-                className="pt-5"
+                className=""
                 width={500}
                 height={500}
               />
@@ -160,6 +158,13 @@ const UserBookingInProgress = ({
             submitAction={() => updateBookingToDone()}
           />
         </div>
+      </div>
+      <div>
+        <Modal
+          imageUrl={bookingDetailData.bookingPhotoUrl}
+          setShowModal={setImageFullscreen}
+          showModal={imageFullscreen}
+        />
       </div>
     </div>
   );

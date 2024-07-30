@@ -19,6 +19,7 @@ import {
   ShieldX,
   Star,
   Store,
+  Truck,
 } from "lucide-react";
 import TabButton from "@/users/components/admin/TabButton";
 import {
@@ -59,6 +60,7 @@ import {
   SelectValue,
 } from "@/core/components/ui/select";
 import CategoryBadge from "@/core/components/categoryBadge";
+import DOMPurify from "dompurify";
 
 const MerchantIdentityResponse = z.object({ data: MerchantIdentitiesSchema });
 type MerchantIdentityResponse = z.infer<typeof MerchantIdentityResponse>;
@@ -288,7 +290,7 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
                         {value.benefitType === "experience" && (
                           <>
                             <Hammer size={16} />
-                            <p className="text-sm">
+                            <p className="text-sm font-semibold">
                               Pengalaman:{" "}
                               <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                                 {value.benefitBody}
@@ -299,13 +301,24 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
                         {value.benefitType === "warranty" && (
                           <>
                             <CheckCircle size={16} />
-                            <p className="text-sm">
+                            <p className="text-sm font-semibold">
                               Garansi:{" "}
                               <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
                                 {value.benefitBody}
                               </span>
                             </p>
                           </>
+                        )}
+                        {value.benefitType === "service_type" && (
+                          <div className="flex items-center gap-2">
+                            <Truck size={15} className="shrink-0" />
+                            <p className=" text-sm font-semibold">
+                              Tipe Layanan:{" "}
+                              <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                                {value.benefitBody}
+                              </span>
+                            </p>
+                          </div>
                         )}
                       </span>
                     )
@@ -381,9 +394,14 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
                   Deskripsi
                 </span>
                 <Separator className="mt-2 mb-4" />
-                <div>
-                  <span>{merchant.data?.data.merchantDesc}</span>
-                </div>
+                <div
+                  className="description"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      merchant?.data?.data.merchantDesc || ""
+                    ),
+                  }}
+                />
               </div>
             </section>
           </main>

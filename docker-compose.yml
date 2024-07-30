@@ -23,7 +23,7 @@ services:
   redis:
     image: redis:7.2-alpine
     container_name: eb-redis
-    restart: unless_stopped
+    restart: unless-stopped
     expose:
       - 6379
     volumes:
