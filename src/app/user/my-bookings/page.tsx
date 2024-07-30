@@ -198,7 +198,7 @@ const BookingPage = () => {
         }  z-50 bg-white dark:bg-slate-950 pt-10 pb-5`}
       >
         <h1 className="text-xl sm:text-2xl font-bold mb-5">Riwayat Pesanan</h1>
-        <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[50vw]">
+        <div className="flex items-center justify-between sm:justify-start gap-8 mb-5 sm:w-[500px]">
           <DatePickerWithRange
             onSelect={handleDateRangeAndFilterSelection}
             selected={selectedRange}
@@ -240,13 +240,7 @@ const BookingPage = () => {
                         : ""
                     }
                     imgAlt={value.merchant.merchantName}
-                    orderId={
-                      value.bookingId
-                        ? value.bookingId
-                        : ""
-                        ? value.bookingId
-                        : ""
-                    }
+                    orderId={value.bookingId ? value.bookingId : ""}
                     merchName={value.merchant.merchantName}
                     bookingSchedule={value.bookingSchedule.toString()}
                     bookingCreatedAt={
