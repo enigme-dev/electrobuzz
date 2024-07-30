@@ -303,7 +303,7 @@ const EditProfile = () => {
         </div>
         <div className="flex gap-8 pt-5 flex-col lg:flex-row items-center w-full justify-evenly">
           {userAddressData &&
-            Object.entries(userAddressData).map(([key, value], index) => {
+            Object.entries(userAddressData).map(([key, value]) => {
               return (
                 <AddressCard
                   key={key}

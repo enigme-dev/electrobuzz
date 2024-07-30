@@ -128,11 +128,17 @@ const AddressForm = ({
     });
   }
 
-  async function getCityLocation(id?: string) {
+  async function getCityLocation(id?: string, provinceName?: string) {
+    const provinceData = await getProvince();
+    const province = provinceData.find((res) => res.value === provinceName);
+    const provinceId = province ? province.id : null;
+
     const cityResponse = await getData(
-      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${id}.json`
+      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${
+        id ? id : provinceId
+      }.json`
     );
-    if (id) {
+    if (id || provinceId) {
       const cityOptions = cityResponse?.map((city: any) => ({
         item: city.name,
         value: city.name,
@@ -148,11 +154,11 @@ const AddressForm = ({
           province.value === initialAddressData?.addressProvince
       );
 
-      if (currentProvince.length > 0) {
+      if (currentProvince.length > 0 && isEditing) {
         getCityLocation(currentProvince[0].id);
       }
     });
-  }, [isEditing]);
+  }, [isEditing, cityOptions]);
 
   function onSubmitAddressForm(AddressForm: AddressModel) {
     try {
@@ -209,7 +215,7 @@ const AddressForm = ({
                           }
                           onValueChange={(value) => {
                             field.onChange(value);
-                            getCityLocation(value);
+                            getCityLocation(undefined, value);
                           }}
                         />
                       </FormControl>
