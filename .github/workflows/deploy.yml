@@ -42,20 +42,11 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: production
     steps:
       - name: Spin up docker image
-        uses: appleboy/ssh-action@v0.1.10
-        env:
-          CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          envs: CF_TUNNEL_TOKEN
-          script: |
+      - run: |
             cd ~/deploy
             docker pull alkuinvito/electrobuzz:latest
             docker compose up -d --force-recreate
