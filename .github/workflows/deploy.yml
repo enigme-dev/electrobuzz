@@ -46,7 +46,7 @@ jobs:
     environment: production
     steps:
       - name: Spin up docker image
-      - run: |
+        run: |
             cd ~/deploy
             docker pull alkuinvito/electrobuzz:latest
             docker compose up -d --force-recreate
