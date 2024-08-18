@@ -13,7 +13,7 @@ const PaymentPage = () => {
 
   const getMerchantPaymentBillingStatus = () => {
     axios
-      .get(`api/merchant/billing/payment/${orderId}`)
+      .get(`/api/merchant/billing/payment/${orderId}`)
       .then((response) => {
         const billingId = response.data.data.billingId;
         const paymentStatus = response.data.data.paymentStatus;
