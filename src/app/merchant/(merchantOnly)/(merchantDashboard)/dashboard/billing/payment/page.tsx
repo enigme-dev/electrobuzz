@@ -1,10 +1,8 @@
 "use client";
 
 import Loader from "@/core/components/loader/loader";
-import { Logger } from "@/core/lib/logger";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 
 const PaymentPage = () => {
