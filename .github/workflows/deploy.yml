@@ -47,6 +47,6 @@ jobs:
     steps:
       - name: Deploy Docker Compose
         run: |
-            cd /home/ubuntu/deploy
-            echo ${{ secrets.USER_PASSWORD }} | sudo -S docker pull alkuinvito/electrobuzz:latest
-            echo ${{ secrets.USER_PASSWORD }} | sudo -S docker compose up -d
+         cd /home/ubuntu/deploy
+         echo ${{ secrets.USER_PASSWORD }} | sudo -S docker pull alkuinvito/electrobuzz:latest
+         echo ${{ secrets.USER_PASSWORD }} | sudo -S docker compose up -d

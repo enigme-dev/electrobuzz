@@ -62,6 +62,8 @@ export async function POST(req: NextRequest, { params }: IdParam) {
             429,
             "can not have more than 5 pending booking"
           );
+        case "phone is not registered":
+          return buildErr("ErrForbidden", 403, e.message);
       }
     }
 

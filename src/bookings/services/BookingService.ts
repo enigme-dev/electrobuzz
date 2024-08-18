@@ -31,6 +31,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { createNotification } from "@/notifications/services/NotificationService";
 import { generateOTP } from "@/users/lib/verification";
 import { RedisClient } from "@/core/adapters/redis";
+import { getPrivateProfile } from "@/users/services/UserService";
 
 export async function addBooking(
   userId: string,
@@ -46,6 +47,11 @@ export async function addBooking(
   const merchant = await getMerchant(merchantId);
   if (!merchant.merchantAvailable || !merchant.merchantVerified)
     throw new Error(ErrorCode.ErrNotFound);
+
+  const user = await getPrivateProfile(userId);
+  if (!user.phone || !user.phoneVerified) {
+    throw new Error("phone is not registered");
+  }
 
   const address = await getAddress(userId, input.addressId);
 
