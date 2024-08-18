@@ -136,7 +136,7 @@ const RegisterAsMerchantForm = () => {
           description: "mohon menunggu konfirmasi admin",
         });
         update({
-          isMerchant: true,
+          isMerchant: "pending",
         });
       },
       onError: (error) => {

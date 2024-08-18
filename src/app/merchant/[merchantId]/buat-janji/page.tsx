@@ -37,6 +37,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { fileInputToDataURL } from "@/core/lib/utils";
 import Loader from "@/core/components/loader/loader";
 import { Label } from "@/core/components/ui/label";
+import { Logger } from "@/core/lib/logger";
 
 interface AddressData {
   addressCity: string;
@@ -119,13 +120,15 @@ const BuatJanjiPage = () => {
   };
 
   const handleDateChange = (date: Date | undefined, field: any) => {
+    console.log(date?.toISOString());
     if (date) {
       field.onChange(date.toISOString());
     }
   };
 
   function onSubmit(data: TCreateBookingSchema) {
-    createBookingAppointment(data);
+    // createBookingAppointment(data);
+    Logger.debug(data);
   }
 
   if (isAddressLoading) {

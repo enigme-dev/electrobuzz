@@ -41,6 +41,8 @@ const RegisterForm = ({
 }: RegisterProps) => {
   const { data: session, update } = useSession();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const form = useForm<UpdateProfileModel>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
@@ -50,8 +52,6 @@ const RegisterForm = ({
       phone: isEditing ? initialFormValues.phone : "",
     },
   });
-
-  const queryClient = useQueryClient();
 
   const { mutate: updateProfile, isPending: updateLoading } = useMutation({
     mutationFn: (values: UpdateProfileModel) =>
@@ -67,11 +67,10 @@ const RegisterForm = ({
     },
   });
 
-  console.log(isEditing, isEditPhone);
-
   function onSubmit(values: UpdateProfileModel) {
     try {
       if (isEditing && isEditName) {
+        console.log(values);
         updateProfile(values);
         handleCloseDialog();
       } else if (isEditing && isEditPhone) {
