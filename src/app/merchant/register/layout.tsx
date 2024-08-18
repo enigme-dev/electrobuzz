@@ -17,7 +17,7 @@ const RegisterAsMerchantLayout = ({
     if (status === "unauthenticated") {
       router.push("/login");
     }
-    if (session?.user?.isMerchant) {
+    if (session?.user?.isMerchant !== "unregistered") {
       router.push("/merchant/dashboard/profile");
     }
   }, [status, router, session]);

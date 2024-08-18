@@ -94,9 +94,9 @@ export function AuthBar() {
                   </div>
                 ))}
                 <ul className="flex justify-between gap-5">
-                  {session.user.isMerchant ? (
+                  {session.user.isMerchant != "unregistered" ? (
                     <li className="pt-5 text-center">
-                      <Link href="/merchant/dashboard-start">
+                      <Link href="/merchant/dashboard/profile">
                         <Button
                           variant="outline"
                           className="bg-yellow-400 hover:bg-yellow-300 dark:text-black text-black"

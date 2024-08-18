@@ -13,8 +13,23 @@ const MerchantLayout = ({ children }: any) => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
-    if (session?.user?.isMerchant === false) {
-      router.push("/merchant/register");
+
+    switch (session?.user?.isMerchant) {
+      case "unregistered":
+        router.push("/merchant/register");
+        break;
+      case "verified":
+        router.push("/merchant/dashboard/profile");
+        break;
+      case "rejected":
+        router.push("/merchant/rejected");
+        break;
+      case "pending":
+        router.push("/merchant/pending");
+        break;
+      case "suspended":
+        router.push("/merchant/suspended");
+        break;
     }
   }, [status, router, session]);
 
