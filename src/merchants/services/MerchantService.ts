@@ -29,10 +29,10 @@ export async function chargeMonthlyFees() {
     .toDate();
   const lastDayOfMonth = dayjs(firstDayOfMonth).endOf("month").toDate();
 
-  const merchants = await MerchantRepository.countBookings(
-    BookStatusEnum.Enum.done,
-    { startDate: firstDayOfMonth, endDate: lastDayOfMonth }
-  );
+  const merchants = await MerchantRepository.countBookingsDone({
+    startDate: firstDayOfMonth,
+    endDate: lastDayOfMonth,
+  });
 
   let billings: TCreateBillingsSchema = [];
   merchants.forEach((merchant) => {
