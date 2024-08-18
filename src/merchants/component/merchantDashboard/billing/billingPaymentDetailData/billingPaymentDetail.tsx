@@ -42,7 +42,6 @@ const BillingPaymentDetail = () => {
 
   const {
     isLoading: getBillingsDetailDataLoading,
-    error: getBillingsDetailDataError,
     data: getBillingsDetailData,
   } = useQuery({
     queryKey: ["getBillingDetailData", session?.user?.id, billingId],

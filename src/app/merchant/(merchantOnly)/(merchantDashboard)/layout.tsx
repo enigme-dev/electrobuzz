@@ -11,7 +11,7 @@ const layout = ({ children }: { children: ReactNode }) => {
         <div className="sticky top-0 left-0 right-0 h-full grow">
           <MerchantDashboardSideBar />
         </div>
-        <main className="w-[calc(100%-280px)]">{children}</main>
+        <main className="sm:w-[calc(100%-280px)]">{children}</main>
       </div>
     </Suspense>
   );

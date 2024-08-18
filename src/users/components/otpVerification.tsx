@@ -154,7 +154,7 @@ const OTPVerification = ({
         break;
       case "ErrOTPNotRegistered":
         toast({
-          title: "Nomor HP belum terdaftar",
+          title: "Nomor HP sudah terdaftar",
           variant: "destructive",
         });
         break;
