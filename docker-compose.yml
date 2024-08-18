@@ -8,6 +8,8 @@ services:
       - 3000
     volumes:
       - /home/ubuntu/deploy/logs:/app/logs
+    depends_on:
+      - eb-redis
     networks:
       enigme-net:
         ipv4_address: 10.44.0.3
@@ -17,10 +19,12 @@ services:
     restart: unless-stopped
     command: tunnel run
     env_file: .env
+    depends_on:
+      - nextjs
     networks:
       enigme-net:
         ipv4_address: 10.44.0.2
-  redis:
+  eb-redis:
     image: redis:7.2-alpine
     container_name: eb-redis
     restart: unless-stopped
@@ -31,6 +35,17 @@ services:
     networks:
       enigme-net:
         ipv4_address: 10.44.0.4
+  eb-cache:
+    image: redis:7.2-alpine
+    container_name: eb-cache
+    restart: unless-stopped
+    expose:
+      - 6379
+    volumes:
+      - /home/ubuntu/deploy/cache.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      enigme-net:
+        ipv4_address: 10.44.0.5
 
 networks:
   enigme-net:
