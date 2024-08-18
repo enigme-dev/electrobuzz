@@ -1,7 +1,9 @@
+"use client";
+
 import Loader from "@/core/components/loader/loader";
 import { Logger } from "@/core/lib/logger";
 import axios from "axios";
-import { redirect, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
