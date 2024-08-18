@@ -94,11 +94,20 @@ const BuatJanjiPage = () => {
       });
       router.push("/user/my-bookings");
     },
-    onError: () => {
-      toast({
-        title: "Keluhan anda gagal terkirim!",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      const errorMessage = error.response.data.data;
+      if (errorMessage === "phone is not registered") {
+        toast({
+          title: "Keluhan anda gagal terkirim!",
+          description: "Mohon verifikasi nomor hp",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Keluhan anda gagal terkirim!",
+          variant: "destructive",
+        });
+      }
     },
   });
 

@@ -18,9 +18,11 @@ const PaymentPage = () => {
         const billingId = response.data.data.billingId;
         const paymentStatus = response.data.data.paymentStatus;
         if (paymentStatus === "success") {
-          router.push(`/merchant/billing/${billingId}?status=success`);
+          router.push(
+            `/merchant/dashboard/billing/${billingId}?status=success`
+          );
         } else if (paymentStatus === "failed") {
-          router.push(`/merchant/billing/${billingId}?status=failed`);
+          router.push(`/merchant/dashboard/billing/${billingId}?status=failed`);
         }
       })
       .catch((error) => {
