@@ -132,7 +132,6 @@ const AddressForm = ({
     const provinceData = await getProvince();
     const province = provinceData.find((res) => res.value === provinceName);
     const provinceId = province ? province.id : null;
-
     const cityResponse = await getData(
       `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${
         id ? id : provinceId
@@ -158,7 +157,7 @@ const AddressForm = ({
         getCityLocation(currentProvince[0].id);
       }
     });
-  }, [isEditing, cityOptions]);
+  }, []);
 
   function onSubmitAddressForm(AddressForm: AddressModel) {
     try {
