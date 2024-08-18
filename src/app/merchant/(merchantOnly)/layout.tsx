@@ -15,20 +15,20 @@ const MerchantLayout = ({ children }: any) => {
     }
 
     switch (session?.user?.isMerchant) {
-      case "unregistered":
-        router.push("/merchant/register");
-        break;
       case "verified":
         router.push("/merchant/dashboard/profile");
-        break;
-      case "rejected":
-        router.push("/merchant/rejected");
         break;
       case "pending":
         router.push("/merchant/pending");
         break;
       case "suspended":
         router.push("/merchant/suspended");
+        break;
+      case "rejected":
+        router.push("/merchant/rejected");
+        break;
+      default:
+        router.push("/merchant/register");
         break;
     }
   }, [status, router, session]);
