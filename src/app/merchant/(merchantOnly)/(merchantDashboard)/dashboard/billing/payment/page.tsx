@@ -26,7 +26,7 @@ const PaymentPage = () => {
         }
       })
       .catch((error) => {
-        Logger.debug(error);
+        console.error(error);
       });
   };
 

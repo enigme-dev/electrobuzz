@@ -127,8 +127,7 @@ const BuatJanjiPage = () => {
   };
 
   function onSubmit(data: TCreateBookingSchema) {
-    // createBookingAppointment(data);
-    Logger.debug(data);
+    createBookingAppointment(data);
   }
 
   if (isAddressLoading) {
