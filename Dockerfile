@@ -1,4 +1,6 @@
 FROM node:18-alpine AS base
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Jakarta
 
 # Install dependencies only when needed
 FROM base AS deps
