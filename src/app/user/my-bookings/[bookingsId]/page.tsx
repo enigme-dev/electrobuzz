@@ -46,26 +46,17 @@ const BookingDetail = () => {
     <main className="sm:wrapper px-4 pb-20 lg:pb-0">
       {bookingDetailData?.bookingStatus == "pending" && (
         <>
-          <UserBookingPending
-            bookingDetailData={bookingDetailData}
-            refetch={refetch}
-          />
+          <UserBookingPending bookingDetailData={bookingDetailData} />
         </>
       )}
       {bookingDetailData?.bookingStatus == "rejected" && (
         <>
-          <UserBookingReject
-            bookingDetailData={bookingDetailData}
-            refetch={refetch}
-          />
+          <UserBookingReject bookingDetailData={bookingDetailData} />
         </>
       )}
       {bookingDetailData?.bookingStatus == "accepted" && (
         <>
-          <UserBookingAccept
-            bookingDetailData={bookingDetailData}
-            refetch={refetch}
-          />
+          <UserBookingAccept bookingDetailData={bookingDetailData} />
         </>
       )}
       {bookingDetailData?.bookingStatus == "canceled" && (
@@ -75,32 +66,22 @@ const BookingDetail = () => {
               ...bookingDetailData,
               bookingReason: bookingDetailData.bookingReason,
             }}
-            refetch={refetch}
           />
         </>
       )}
       {bookingDetailData?.bookingStatus == "in_progress" && (
         <>
-          <UserBookingInProgress
-            bookingDetailData={bookingDetailData}
-            refetch={refetch}
-          />
+          <UserBookingInProgress bookingDetailData={bookingDetailData} />
         </>
       )}
       {bookingDetailData?.bookingStatus == "done" && (
         <>
-          <UserBookingDone
-            bookingDetailData={bookingDetailData}
-            refetch={refetch}
-          />
+          <UserBookingDone bookingDetailData={bookingDetailData} />
         </>
       )}
       {bookingDetailData?.bookingStatus == "expired" && (
         <>
-          <UserBookingExpired
-            bookingDetailData={bookingDetailData}
-            refetch={refetch}
-          />
+          <UserBookingExpired bookingDetailData={bookingDetailData} />
         </>
       )}
     </main>
