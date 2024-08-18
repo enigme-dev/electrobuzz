@@ -10,10 +10,11 @@ import { prisma } from "@/core/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
 import { getPrivateProfile } from "@/users/services/UserService";
 import { getMerchant } from "@/merchants/services/MerchantService";
+import { getMerchantIdentity } from "@/merchants/services/MerchantIdentityService";
 
 interface IUser extends DefaultUser {
   isAdmin?: boolean;
-  isMerchant?: boolean;
+  isMerchant?: string;
 }
 
 declare module "next-auth" {
@@ -43,11 +44,14 @@ export const authOptions: NextAuthOptions = {
         token.isAdmin = profile?.isAdmin;
 
         // check if user is registered as merchant
-        let merchant;
+        let merchant, merchantIdentity;
         try {
           merchant = await getMerchant(user.id);
+          if (merchant) {
+            merchantIdentity = await getMerchantIdentity(user.id);
+          }
         } catch (e) {}
-        token.isMerchant = Boolean(merchant?.merchantId);
+        token.isMerchant = merchantIdentity?.identityStatus || "unregistered";
       }
 
       if (trigger === "update") {
