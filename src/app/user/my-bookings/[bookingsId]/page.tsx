@@ -26,7 +26,11 @@ const BookingDetail = () => {
 
   const bookingId = getLastPathSegment(pathname);
 
-  const { data: bookingDetailData, isLoading } = useQuery({
+  const {
+    data: bookingDetailData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["getBookingDetailData", bookingId],
     queryFn: async () =>
       await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
@@ -42,17 +46,26 @@ const BookingDetail = () => {
     <main className="sm:wrapper px-4 pb-20 lg:pb-0">
       {bookingDetailData?.bookingStatus == "pending" && (
         <>
-          <UserBookingPending bookingDetailData={bookingDetailData} />
+          <UserBookingPending
+            bookingDetailData={bookingDetailData}
+            refetch={refetch}
+          />
         </>
       )}
       {bookingDetailData?.bookingStatus == "rejected" && (
         <>
-          <UserBookingReject bookingDetailData={bookingDetailData} />
+          <UserBookingReject
+            bookingDetailData={bookingDetailData}
+            refetch={refetch}
+          />
         </>
       )}
       {bookingDetailData?.bookingStatus == "accepted" && (
         <>
-          <UserBookingAccept bookingDetailData={bookingDetailData} />
+          <UserBookingAccept
+            bookingDetailData={bookingDetailData}
+            refetch={refetch}
+          />
         </>
       )}
       {bookingDetailData?.bookingStatus == "canceled" && (
@@ -62,22 +75,32 @@ const BookingDetail = () => {
               ...bookingDetailData,
               bookingReason: bookingDetailData.bookingReason,
             }}
+            refetch={refetch}
           />
         </>
       )}
       {bookingDetailData?.bookingStatus == "in_progress" && (
         <>
-          <UserBookingInProgress bookingDetailData={bookingDetailData} />
+          <UserBookingInProgress
+            bookingDetailData={bookingDetailData}
+            refetch={refetch}
+          />
         </>
       )}
       {bookingDetailData?.bookingStatus == "done" && (
         <>
-          <UserBookingDone bookingDetailData={bookingDetailData} />
+          <UserBookingDone
+            bookingDetailData={bookingDetailData}
+            refetch={refetch}
+          />
         </>
       )}
       {bookingDetailData?.bookingStatus == "expired" && (
         <>
-          <UserBookingExpired bookingDetailData={bookingDetailData} />
+          <UserBookingExpired
+            bookingDetailData={bookingDetailData}
+            refetch={refetch}
+          />
         </>
       )}
     </main>

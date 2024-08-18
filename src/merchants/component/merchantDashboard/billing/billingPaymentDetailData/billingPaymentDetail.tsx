@@ -3,25 +3,20 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import React, { useEffect } from "react";
 import { BillingData } from "../billingHistory/tableComponent/column";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { TransactionDoneDataTable } from "./tableComponent/dataTable";
 import { Separator } from "@/core/components/ui/separator";
 import { Button } from "@/core/components/ui/button";
 import Link from "next/link";
 import { IconLeft } from "react-day-picker";
-import {
-  ArrowBigLeft,
-  ArrowLeft,
-  ArrowLeftFromLine,
-  CreditCard,
-  DollarSign,
-  FormInput,
-  Handshake,
-  Receipt,
-} from "lucide-react";
-import { Card } from "@/core/components/ui/card";
+import { ArrowLeft, CreditCard, DollarSign, Handshake } from "lucide-react";
 import Loader from "@/core/components/loader/loader";
-import CustomBadge from "@/core/components/CustomBadge";
+import { useToast } from "@/core/components/ui/use-toast";
 
 export interface BillingDetailData {
   billingId: string;
@@ -33,7 +28,10 @@ export interface BillingDetailData {
 }
 
 const BillingPaymentDetail = () => {
+  const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const paymentStatus = searchParams.get("status");
   const pathname = usePathname();
   const { data: session } = useSession();
   const getLastPathSegment = (pathname: string): string => {
@@ -65,6 +63,14 @@ const BillingPaymentDetail = () => {
         console.error(error);
       });
   };
+
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      toast({ title: "Pembayaran berhasil!", variant: "default" });
+    } else if (paymentStatus === "failed") {
+      toast({ title: "Pembayaran gagal!", variant: "destructive" });
+    }
+  }, [paymentStatus]);
 
   const getStatusBilling = getBillingsDetailData?.payment;
 

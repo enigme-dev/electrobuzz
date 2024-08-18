@@ -241,6 +241,7 @@ const EditProfile = () => {
             dialogTrigger={
               <Button
                 variant={"ghost"}
+                className={data?.data.data.phone ? "block" : "hidden"}
                 onClick={() => {
                   startEditing();
                   startEditPhone();
