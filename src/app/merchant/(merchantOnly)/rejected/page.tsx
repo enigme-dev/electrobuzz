@@ -8,7 +8,7 @@ const MerchantDashboardRejected = () => {
     <div className="grid place-items-center place-content-center h-[80vh] gap-5">
       <div className="text-center">
         <h1 className="font-bold sm:text-4xl text-md mb-2">
-          Mohon maaf form pendaftaranmu telah di tolak Admin!
+          Mohon maaf form pendaftaranmu telah ditolak Admin!
         </h1>
         <h2 className="font-semibold sm:text-2xl text-md">
           Mohon daftar kembali dengan data data yang jelas...
