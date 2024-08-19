@@ -15,7 +15,7 @@ import { BookStatusEnum } from "@/bookings/types";
 import dayjs from "dayjs";
 import { MONTHLY_FEES, createBillings, getBillings } from "./BillingService";
 import { createNotification } from "@/notifications/services/NotificationService";
-import { editMerchantIdentity } from "./MerchantIdentityService";
+import { editMerchantIdentityStatus } from "./MerchantIdentityService";
 import { upsertMerchantBenefits } from "./MerchantBenefitService";
 
 export async function addMerchantIndex(data: any) {
@@ -146,7 +146,7 @@ export async function suspendUnpaidMerchant() {
       actionUrl: merchant.billingId,
     });
 
-    await editMerchantIdentity(
+    await editMerchantIdentityStatus(
       merchant.merchantId,
       IdentityStatuses.Enum.suspended
     );

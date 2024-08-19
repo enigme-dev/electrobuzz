@@ -9,7 +9,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, Suspense, useEffect } from "react";
 
-const layout = ({ children }: { children: ReactNode }) => {
+export default function MerchantOnlyLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -74,6 +78,4 @@ const layout = ({ children }: { children: ReactNode }) => {
       </div>
     </Suspense>
   );
-};
-
-export default layout;
+}
