@@ -14,6 +14,7 @@ import {
   updateMerchantVerified,
 } from "@/merchants/services/MerchantService";
 import { createNotification } from "@/notifications/services/NotificationService";
+import { Logger } from "@/core/lib/logger";
 
 export async function addMerchantIdentity(
   merchantId: string,
@@ -24,8 +25,10 @@ export async function addMerchantIdentity(
 
   try {
     merchantIdentity = await MerchantIdentityRepository.findOne(merchantId);
-  } catch (e) {}
-  if (merchantIdentity) {
+  } catch (e) {
+    Logger.error("MerchantIdentity", "Update identity", e);
+  }
+  if (merchantIdentity?.identityStatus != "rejected") {
     throw new Error(ErrorCode.ErrConflict);
   }
 

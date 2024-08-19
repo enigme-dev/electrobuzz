@@ -32,6 +32,30 @@ export class MerchantRepository extends BaseRepository {
     });
   }
 
+  static countBookingsDone(options?: SearchParams) {
+    return this.db.merchant.findMany({
+      where: {
+        merchantVerified: true,
+      },
+      select: {
+        merchantId: true,
+        _count: {
+          select: {
+            bookings: {
+              where: {
+                bookingStatus: "done",
+                bookingSchedule: {
+                  gte: options?.startDate,
+                  lte: options?.endDate,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   static create(userId: string, data: TRegisterMerchantSchema) {
     return this.db.merchant.create({
       data: {

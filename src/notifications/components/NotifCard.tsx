@@ -4,6 +4,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import NotifIcon from "./NotifIcon";
 import { twMerge } from "tailwind-merge";
+import Link from "next/link";
 
 dayjs.extend(relativeTime);
 

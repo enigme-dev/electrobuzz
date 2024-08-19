@@ -51,11 +51,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (e.message === ErrorCode.ErrConflict) {
-        return buildErr(
-          "ErrConflict",
-          409,
-          "identities has been submitted and being verified"
-        );
+        return buildErr("ErrConflict", 409, "identities has not been rejected");
       }
     }
 

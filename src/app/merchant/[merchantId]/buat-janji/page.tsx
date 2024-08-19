@@ -129,7 +129,6 @@ const BuatJanjiPage = () => {
   };
 
   const handleDateChange = (date: Date | undefined, field: any) => {
-    console.log(date?.toISOString());
     if (date) {
       field.onChange(date.toISOString());
     }
