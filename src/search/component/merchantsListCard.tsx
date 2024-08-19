@@ -63,8 +63,8 @@ const MerchantListCard: React.FC<Props> = ({
             />
           </div>
           <div className="grid place-items-start">
-            <div className="flex items-center gap-4 w-[100%]">
-              <h1 className="text-xs sm:text-sm font-semibold max-w-[150px] overflow-hidden whitespace-nowrap">
+            <div className="flex items-center gap-4 sm:w-[600px] w-40">
+              <h1 className="text-xs sm:text-sm font-semibold max-w-full  truncate whitespace-nowrap">
                 {merchName}
               </h1>
               {distance ? (

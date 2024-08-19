@@ -34,6 +34,7 @@ import { SelectOption } from "@/core/components/select-option";
 import { useSession } from "next-auth/react";
 import ButtonWithLoader from "@/core/components/buttonWithLoader";
 import { Textarea } from "@/core/components/ui/textarea";
+import { useRouter } from "next/navigation";
 
 const OPTIONS: Option[] = [
   { label: "AC", value: "AC" },
@@ -52,6 +53,7 @@ interface latLng {
 const RegisterAsMerchantForm = () => {
   const { update } = useSession();
   const { toast } = useToast();
+  const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState<latLng>({
     lat: null,
     lng: null,
@@ -138,6 +140,7 @@ const RegisterAsMerchantForm = () => {
         update({
           isMerchant: "pending",
         });
+        router.push("/merchant/pending");
       },
       onError: (error) => {
         handleError(error);

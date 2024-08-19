@@ -35,7 +35,7 @@ const VerifikasiUlang = () => {
   const { mutate: addMerchantIdentity, isPending: addMerchantIdentityLoading } =
     useMutation({
       mutationFn: (values: TMerchantIdentityModel) =>
-        axios.post(`/api/merchant/identity`, values),
+        axios.patch(`/api/merchant/identity`, values),
       onSuccess: () => {
         toast({
           title: "Formulir anda telah terkirim!",

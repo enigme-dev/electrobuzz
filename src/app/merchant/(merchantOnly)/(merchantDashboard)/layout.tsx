@@ -2,6 +2,9 @@
 
 import Loader from "@/core/components/loader/loader";
 import MerchantDashboardSideBar from "@/merchants/component/merchantDashboard/merchatDashboardSideBar";
+import { TMerchantIdentityModel } from "@/merchants/types";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, Suspense, useEffect } from "react";
@@ -13,6 +16,33 @@ const layout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
+    }
+
+    const { data: getMerchantIdentities } = useQuery({
+      queryKey: ["getMerchantIdentity", session?.user?.id],
+      queryFn: async () =>
+        await axios.get(`/api/merchant/identity`).then((response) => {
+          return response.data.data as TMerchantIdentityModel;
+        }),
+      enabled: !!session?.user?.id,
+    });
+
+    switch (getMerchantIdentities?.identityStatus) {
+      case "verified":
+        router.push("/merchant/dashboard/profile");
+        break;
+      case "pending":
+        router.push("/merchant/pending");
+        break;
+      case "suspended":
+        router.push("/merchant/suspended");
+        break;
+      case "rejected":
+        router.push("/merchant/rejected");
+        break;
+      default:
+        router.push("/merchant/register");
+        break;
     }
 
     switch (session?.user?.isMerchant) {
