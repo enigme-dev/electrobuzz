@@ -48,24 +48,6 @@ export default function MerchantOnlyLayout({
         router.push("/merchant/register");
         break;
     }
-
-    switch (session?.user?.isMerchant) {
-      case "verified":
-        router.push("/merchant/dashboard/profile");
-        break;
-      case "pending":
-        router.push("/merchant/pending");
-        break;
-      case "suspended":
-        router.push("/merchant/suspended");
-        break;
-      case "rejected":
-        router.push("/merchant/rejected");
-        break;
-      default:
-        router.push("/merchant/register");
-        break;
-    }
   }, [status, router, session]);
 
   return (

@@ -12,12 +12,27 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { TMerchantIdentityModel } from "@/merchants/types";
 
 export function AuthBar() {
   const { data: session } = useSession();
   const handleSignOut = () => {
     signOut();
   };
+  const {
+    isLoading: getMerchantIdentitiesLoading,
+    error: getMerchantIdentitiesError,
+    data: getMerchantIdentities,
+  } = useQuery({
+    queryKey: ["getMerchantIdentity", session?.user?.id],
+    queryFn: async () =>
+      await axios.get(`/api/merchant/identity`).then((response) => {
+        return response.data.data as TMerchantIdentityModel;
+      }),
+    enabled: !!session?.user?.id,
+  });
   const isAdmin = session?.user?.isAdmin;
   const navList = [
     {
@@ -94,7 +109,7 @@ export function AuthBar() {
                   </div>
                 ))}
                 <ul className="flex justify-between gap-5">
-                  {session.user.isMerchant != "unregistered" ? (
+                  {getMerchantIdentities?.identityStatus != "unregistered" ? (
                     <li className="pt-5 text-center">
                       <Link href="/merchant/dashboard/profile">
                         <Button

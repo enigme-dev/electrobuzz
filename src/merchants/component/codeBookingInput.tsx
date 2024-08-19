@@ -41,7 +41,9 @@ const CodeBookingInput = ({ bookingId }: { bookingId: string }) => {
       axios.patch(`/api/merchant/booking/${bookingId}/edit/in_progress`, value),
     onSuccess: () => {
       toast({ title: "Verifikasi Berhasil!" });
-      queryClient.invalidateQueries({ queryKey: ["user", session?.user?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["getBookingDetailData", session?.user?.id],
+      });
     },
     onError: (error: any) => {
       if (error.response.data.status === "ErrBookWrongSchedule")

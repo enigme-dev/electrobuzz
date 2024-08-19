@@ -14,7 +14,6 @@ import { getMerchantIdentity } from "@/merchants/services/MerchantIdentityServic
 
 interface IUser extends DefaultUser {
   isAdmin?: boolean;
-  isMerchant?: string;
 }
 
 declare module "next-auth" {
@@ -39,25 +38,13 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        // check if user is admin
         const profile = await getPrivateProfile(user.id);
         token.isAdmin = profile?.isAdmin;
-
-        // check if user is registered as merchant
-        let merchant, merchantIdentity;
-        try {
-          merchant = await getMerchant(user.id);
-          if (merchant) {
-            merchantIdentity = await getMerchantIdentity(user.id);
-          }
-        } catch (e) {}
-        token.isMerchant = merchantIdentity?.identityStatus || "unregistered";
       }
 
       if (trigger === "update") {
         if (session?.name) token.name = session.name;
         if (session?.image) token.picture = session.image;
-        if (session?.isMerchant) token.isMerchant = session.isMerchant;
       }
 
       return token;
@@ -66,7 +53,6 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token) {
         session.user.id = token.sub ?? "";
         session.user.isAdmin = token.isAdmin;
-        session.user.isMerchant = token.isMerchant;
       }
 
       return session;
