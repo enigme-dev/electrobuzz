@@ -32,9 +32,6 @@ export default function MerchantOnlyLayout({
     }
     if (getMerchantIdentities?.identityStatus) {
       switch (getMerchantIdentities.identityStatus) {
-        case "verified":
-          router.push("/merchant/dashboard/profile");
-          break;
         case "pending":
           router.push("/merchant/pending");
           break;
@@ -44,7 +41,7 @@ export default function MerchantOnlyLayout({
         case "rejected":
           router.push("/merchant/rejected");
           break;
-        default:
+        case "unregistered":
           router.push("/merchant/register");
           break;
       }
