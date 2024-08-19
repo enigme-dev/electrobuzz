@@ -19,7 +19,7 @@ import {
 } from "@/merchants/types";
 import MultipleSelector, { Option } from "@/core/components/multi-select";
 import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fileInputToDataURL } from "@/core/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import MyMapComponent from "@/core/components/google-maps";
@@ -60,7 +60,7 @@ const RegisterAsMerchantForm = () => {
   });
   const [provinceOptions, setProvinceOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
-
+  const queryClient = useQueryClient();
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const libraries: LoadScriptProps["libraries"] = ["places"];
 
@@ -133,11 +133,13 @@ const RegisterAsMerchantForm = () => {
       mutationFn: (values: TRegisterMerchantSchema) =>
         axios.post(`/api/merchant`, values),
       onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["getMerchantIdentities"],
+        });
         toast({
           title: "Formulir anda telah terkirim!",
           description: "mohon menunggu konfirmasi admin",
         });
-
         router.push("/merchant/pending");
       },
       onError: (error) => {
@@ -391,6 +393,24 @@ const RegisterAsMerchantForm = () => {
           <FormField
             control={form.control}
             name="merchantPhotoUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Foto Profil</FormLabel>
+                <FormControl>
+                  <Input
+                    onChange={(e) => handleFileInputChange(e, field)}
+                    id="picture"
+                    type="file"
+                  />
+                </FormControl>
+                <FormDescription>Foto Profilmu nanti</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="merchantBanner"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto Banner</FormLabel>

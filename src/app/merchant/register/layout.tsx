@@ -33,10 +33,24 @@ const RegisterAsMerchantLayout = ({
     if (status === "unauthenticated") {
       router.push("/login");
     }
-    if (getMerchantIdentities?.identityStatus === "verified") {
-      router.push("/merchant/dashboard/profile");
-    } else if (getMerchantIdentities?.identityStatus === "suspended") {
-      router.push("/merchant/suspended");
+    if (getMerchantIdentities?.identityStatus) {
+      switch (getMerchantIdentities.identityStatus) {
+        case "pending":
+          router.push("/merchant/pending");
+          break;
+        case "verified":
+          router.push("/merchant/dashboard/profile");
+          break;
+        case "suspended":
+          router.push("/merchant/suspended");
+          break;
+        case "rejected":
+          router.push("/merchant/rejected");
+          break;
+        case "unregistered":
+          router.push("/merchant/register");
+          break;
+      }
     }
   }, [status, router, session]);
 
