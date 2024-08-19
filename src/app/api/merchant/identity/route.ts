@@ -7,7 +7,7 @@ import { z } from "zod";
 import { MerchantIdentitiesSchema } from "@/merchants/types";
 import {
   editMerchantIdentity,
-  getMerchantIdentity,
+  getMerchantIdentityStatus,
 } from "@/merchants/services/MerchantIdentityService";
 import { Logger } from "@/core/lib/logger";
 
@@ -21,15 +21,11 @@ export async function GET(req: NextRequest) {
 
   let merchantIdentity;
   try {
-    merchantIdentity = await getMerchantIdentity(userId.data);
+    merchantIdentity = await getMerchantIdentityStatus(userId.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
-        return buildErr(
-          "ErrForbidden",
-          403,
-          "user is not registered as merchant"
-        );
+        return buildRes({ data: { identityStatus: "unregistered" } });
       }
     }
 
@@ -37,7 +33,7 @@ export async function GET(req: NextRequest) {
     return buildErr("ErrUnknown", 500);
   }
 
-  return buildRes({ data: merchantIdentity });
+  return buildRes({ data: { identityStatus: merchantIdentity } });
 }
 
 export async function PATCH(req: NextRequest) {

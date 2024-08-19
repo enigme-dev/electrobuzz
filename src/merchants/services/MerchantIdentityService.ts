@@ -190,3 +190,10 @@ export async function getMerchantIdentity(merchantId: string) {
 
   return result;
 }
+
+export async function getMerchantIdentityStatus(merchantId: string) {
+  const result = await MerchantIdentityRepository.findOne(merchantId);
+  if (!result) return "unregistered";
+
+  return result.identityStatus;
+}
