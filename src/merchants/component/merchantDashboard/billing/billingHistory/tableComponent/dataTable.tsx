@@ -1,188 +1,60 @@
 "use client";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 
-import { endOfDay, startOfDay, subDays } from "date-fns";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { BillingData, BillingColumns } from "./column";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/core/components/ui/table";
-import Loader from "@/core/components/loader/loader";
-import { DatePickerWithRange } from "@/core/components/dateRangePicker";
+import { BillingDetailSchema, MerchantModel } from "@/merchants/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useSession } from "next-auth/react";
-import { Billing } from "@prisma/client";
+import { z } from "zod";
 
-export function BillingHistoryDataTable({
-  data,
-  isLoading,
-}: {
-  data: BillingData[];
-  isLoading: boolean;
-}) {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+import { useState, ChangeEvent, useCallback } from "react";
+import debounce from "lodash.debounce";
+import { Search } from "lucide-react";
+import TablePagination from "@/core/components/TablePagination";
+import { DataTable } from "@/core/components/DataTable";
+import { BillingColumns, BillingData } from "./column";
 
-  const pageFromQueryParams = searchParams.get("page");
-  const fromDateQueryParam = searchParams.get("from");
-  const toDateQueryParam = searchParams.get("to");
+const MerchantsResponse = z.object({
+  data: BillingData.array(),
+  total: z.number(),
+  page: z.number(),
+  length: z.number(),
+  perpage: z.number(),
+});
 
-  const initialValue = {
-    from: fromDateQueryParam ? new Date() : undefined,
-    to: toDateQueryParam ? new Date() : undefined,
-  };
+type MerchantsResponse = z.infer<typeof MerchantsResponse>;
 
-  const [selectedRange, setSelectedRange] = useState(initialValue);
+export default function BillingHistoryDetail() {
+  const [page, setPage] = useState(1);
 
-  const [currentPage, setCurrentPage] = useState<number>(
-    Number(pageFromQueryParams) || 1
-  );
-  const [totalPages, setTotalPages] = useState<number>(1);
-
-  const columns = BillingColumns();
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["billing", page],
+    queryFn: async () => {
+      const data = axios.get<MerchantsResponse>("/api/merchant/billing", {
+        params: { page },
+        withCredentials: true,
+      });
+      return data;
+    },
   });
-  const limit = 10;
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-    router.push(
-      `${pathname}?page=${currentPage - 1}&from=${selectedRange.from}&to=${
-        selectedRange.to
-      }`
-    );
-  };
-
-  const handleNextPage = () => {
-    if (currentPage <= totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-    router.push(
-      `${pathname}?page=${currentPage + 1}&from=${selectedRange.from}&to=${
-        selectedRange.to
-      }`
-    );
-  };
-
-  const handleReset = () => {
-    setSelectedRange({ from: undefined, to: undefined });
-    setCurrentPage(1);
-    router.push(`${pathname}`);
-  };
-
-  const handleDateRangeSelection = (range: { from: Date; to: Date }) => {
-    setSelectedRange(range);
-    setCurrentPage(1);
-    router.push(
-      `${pathname}?page=${currentPage}&from=${range.from}&to=${range.to}`
-    );
+  const handlePageChange = (target: number) => {
+    setPage(target);
   };
 
   return (
-    <div className="w-screen lg:w-full px-10 ">
-      <h1 className=" font-bold text-xl py-10">Tagihan</h1>
-      <div className="flex justify-between pb-10">
-        <DatePickerWithRange
-          onSelect={handleDateRangeSelection}
-          selected={selectedRange}
-          handleReset={handleReset}
-        />
-      </div>
-      <div className="rounded-md border shadow-md">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <Loader />
-                </TableCell>
-              </TableRow>
-            ) : (
-              <>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground pt-5">
-          {currentPage} of {totalPages} Page
-        </div>
-        {/* <PreviousNextButton
-          onPrev={handlePreviousPage}
-          page={currentPage}
-          onNext={handleNextPage}
-          totalPages={totalPages}
-        /> */}
-      </div>
+    <div className="w-screen lg:w-full pb-10 p-4">
+      <h1 className="sm:text-2xl text-lg text-bold py-5">Tagihan</h1>
+      <DataTable
+        columns={BillingColumns}
+        data={data?.data.data || []}
+        isLoading={isLoading}
+        isError={isError}
+      />
+      <TablePagination
+        length={data?.data.length || 0}
+        total={data?.data.total || 0}
+        page={data?.data.page || 1}
+        onChangePage={handlePageChange}
+      />
     </div>
   );
 }
