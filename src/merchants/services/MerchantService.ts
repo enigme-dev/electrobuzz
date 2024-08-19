@@ -206,7 +206,6 @@ export async function updateMerchantVerified(
 ) {
   // delete cached merchants
   Cache.delete(`merchant/${merchantId}`);
-  Cache.delete("merchantsCt");
   Cache.deleteWithPrefix("merchants/*");
   return MerchantRepository.update(merchantId, { merchantVerified });
 }
