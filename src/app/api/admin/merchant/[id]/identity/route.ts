@@ -1,6 +1,6 @@
 import { buildErr } from "@/core/lib/errors";
 import {
-  editMerchantIdentity,
+  editMerchantIdentityStatus,
   getMerchantIdentity,
 } from "@/merchants/services/MerchantIdentityService";
 import { NextRequest } from "next/server";
@@ -48,7 +48,10 @@ export async function PATCH(req: NextRequest, { params }: IdParam) {
   }
 
   try {
-    await editMerchantIdentity(merchantId.data, input.data.identityStatus);
+    await editMerchantIdentityStatus(
+      merchantId.data,
+      input.data.identityStatus
+    );
   } catch (e) {
     Logger.error("admin", "update merchant identity error", e);
     return buildErr("ErrUnknown", 500);
