@@ -26,11 +26,7 @@ const BookingDetail = () => {
 
   const bookingId = getLastPathSegment(pathname);
 
-  const {
-    data: bookingDetailData,
-    isLoading,
-    refetch,
-  } = useQuery({
+  const { data: bookingDetailData, isLoading } = useQuery({
     queryKey: ["getBookingDetailData", bookingId],
     queryFn: async () =>
       await axios.get(`/api/user/booking/${bookingId}`).then((response) => {
@@ -43,7 +39,7 @@ const BookingDetail = () => {
     return <Loader />;
   }
   return (
-    <main className="sm:wrapper px-4 pb-20 lg:pb-0">
+    <main className="sm:wrapper px-4 pb-20 lg:pb-10">
       {bookingDetailData?.bookingStatus == "pending" && (
         <>
           <UserBookingPending bookingDetailData={bookingDetailData} />
