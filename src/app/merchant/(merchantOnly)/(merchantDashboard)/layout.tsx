@@ -30,23 +30,24 @@ export default function MerchantOnlyLayout({
     if (status === "unauthenticated") {
       router.push("/login");
     }
-
-    switch (getMerchantIdentities?.identityStatus) {
-      case "verified":
-        router.push("/merchant/dashboard/profile");
-        break;
-      case "pending":
-        router.push("/merchant/pending");
-        break;
-      case "suspended":
-        router.push("/merchant/suspended");
-        break;
-      case "rejected":
-        router.push("/merchant/rejected");
-        break;
-      default:
-        router.push("/merchant/register");
-        break;
+    if (getMerchantIdentities?.identityStatus) {
+      switch (getMerchantIdentities.identityStatus) {
+        case "verified":
+          router.push("/merchant/dashboard/profile");
+          break;
+        case "pending":
+          router.push("/merchant/pending");
+          break;
+        case "suspended":
+          router.push("/merchant/suspended");
+          break;
+        case "rejected":
+          router.push("/merchant/rejected");
+          break;
+        default:
+          router.push("/merchant/register");
+          break;
+      }
     }
   }, [status, router, session]);
 
