@@ -111,8 +111,7 @@ export async function editMerchantIdentity(
     images.push(data.identitySKCK);
 
     if (data.identityDocs) {
-      const encryptedDocs = await encrypt(data.identityDocs);
-      data.identityDocs = await uploadImg(encryptedDocs, {
+      data.identityDocs = await uploadImg(data.identityDocs, {
         filename: `docs-${merchantId}`,
         bucket: "vault",
       });
@@ -138,13 +137,6 @@ export async function editMerchantIdentityStatus(
   if (status === IdentityStatuses.Enum.rejected) {
     await updateMerchantVerified(merchantId, false);
     await deleteMerchantIndex(merchantId);
-
-    const identity = await MerchantIdentityRepository.findOne(merchantId);
-    await deleteImg(identity?.identityKTP as string, "vault");
-    await deleteImg(identity?.identitySKCK as string, "vault");
-    if (identity?.identityDocs) {
-      await deleteImg(identity.identityDocs, "vault");
-    }
 
     createNotification(merchantId, {
       service: "identity",
