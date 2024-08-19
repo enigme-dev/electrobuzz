@@ -5,10 +5,38 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { MerchantIdentitiesSchema } from "@/merchants/types";
-import { addMerchantIdentity } from "@/merchants/services/MerchantIdentityService";
+import {
+  editMerchantIdentity,
+  getMerchantIdentityStatus,
+} from "@/merchants/services/MerchantIdentityService";
 import { Logger } from "@/core/lib/logger";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
+  const token = await getToken({ req });
+
+  const userId = z.string().cuid().safeParse(token?.sub);
+  if (!userId.success) {
+    return buildErr("ErrUnauthorized", 401);
+  }
+
+  let merchantIdentity;
+  try {
+    merchantIdentity = await getMerchantIdentityStatus(userId.data);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        return buildRes({ data: { identityStatus: "unregistered" } });
+      }
+    }
+
+    Logger.error("merchant-identity", "get merchant identity error", e);
+    return buildErr("ErrUnknown", 500);
+  }
+
+  return buildRes({ data: { identityStatus: merchantIdentity } });
+}
+
+export async function PATCH(req: NextRequest) {
   const token = await getToken({ req });
   let body;
 
@@ -29,7 +57,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await addMerchantIdentity(userId.data, input.data);
+    await editMerchantIdentity(userId.data, input.data);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025") {
@@ -55,7 +83,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    Logger.error("merchant-identity", "add merchant identity error", e);
+    Logger.error("merchant-identity", "edit merchant identity error", e);
     return buildErr("ErrUnknown", 500);
   }
 

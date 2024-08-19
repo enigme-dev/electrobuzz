@@ -44,7 +44,7 @@ const PopularMerchants = () => {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between">
+      <div className="flex justify-between relative">
         <h2 className="text-xl sm:text-2xl font-bold  flex items-center gap-2 ">
           <span className="text-2xl">🌟</span> Teknisi Terpopuler
         </h2>
@@ -55,7 +55,7 @@ const PopularMerchants = () => {
             getMerchantsPopular.map((value: TMerchantModel) => (
               <CarouselItem
                 key={value.merchantId}
-                className="basis-[75%] py-2 lg:basis-1/3"
+                className="basis-[75%] py-2 lg:basis-1/3 md:basis-1/2"
               >
                 <MerchantCard
                   imgSource={value.merchantPhotoUrl}

@@ -1,7 +1,7 @@
 "use client";
 
 import Loader from "@/core/components/loader/loader";
-import { useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import { z } from "zod";
@@ -61,6 +61,8 @@ import {
 } from "@/core/components/ui/select";
 import CategoryBadge from "@/core/components/categoryBadge";
 import DOMPurify from "dompurify";
+import { useToast } from "@/core/components/ui/use-toast";
+import ButtonWithLoader from "@/core/components/buttonWithLoader";
 
 const MerchantIdentityResponse = z.object({ data: MerchantIdentitiesSchema });
 type MerchantIdentityResponse = z.infer<typeof MerchantIdentityResponse>;
@@ -70,6 +72,10 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
   const [showModal, setShowModal] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState("");
   const [status, setStatus] = useState("");
+
+  const queryClient = useQueryClient();
+
+  const { toast } = useToast();
 
   const [identity, merchant, user] = useQueries({
     queries: [
@@ -109,21 +115,29 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
     setActiveTab(target);
   };
 
-  const handleStatusChange = (status: string) => {
-    axios
-      .patch(
-        `/api/admin/merchant/${params.id}/identity`,
-        { identityStatus: status },
-        { withCredentials: true }
-      )
-      .then(() => {
-        identity.refetch();
-        merchant.refetch();
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  };
+  const { mutate: handleStatusChange, isPending: handleStatusLoading } =
+    useMutation({
+      mutationFn: async (status: string) =>
+        await axios.patch(
+          `/api/admin/merchant/${params.id}/identity`,
+          { identityStatus: status },
+          { withCredentials: true }
+        ),
+      onSuccess: () => {
+        toast({ variant: "default", title: "Edit status mitra berhasil!" });
+        queryClient.invalidateQueries({
+          queryKey: [
+            "merchantIdentity",
+            "merchant",
+            "merchantUserProfile",
+            params.id,
+          ],
+        });
+      },
+      onError: () => {
+        toast({ variant: "default", title: "Edit status mitra gagal!" });
+      },
+    });
 
   const handleImageClick = (imageUrl: string) => {
     setCurrentImageUrl(imageUrl);
@@ -224,9 +238,13 @@ export default function Page({ params }: Readonly<{ params: { id: string } }>) {
                       <DialogClose asChild>
                         <Button variant="outline">Batal</Button>
                       </DialogClose>
-                      <Button onClick={() => handleStatusChange(status)}>
-                        Ubah status
-                      </Button>
+                      <ButtonWithLoader
+                        onClick={() => handleStatusChange(status)}
+                        buttonText="Ubah status"
+                        isLoading={handleStatusLoading}
+                        variant={"default"}
+                        className="text-black"
+                      />
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>

@@ -26,9 +26,13 @@ export async function addMerchantIdentity(
   try {
     merchantIdentity = await MerchantIdentityRepository.findOne(merchantId);
   } catch (e) {
-    Logger.error("MerchantIdentity", "Update identity", e);
+    Logger.error(
+      "merchant-identity",
+      "get merchant identity repository error",
+      e
+    );
   }
-  if (merchantIdentity?.identityStatus != "rejected") {
+  if (merchantIdentity) {
     throw new Error(ErrorCode.ErrConflict);
   }
 
@@ -69,6 +73,63 @@ export async function addMerchantIdentity(
 }
 
 export async function editMerchantIdentity(
+  merchantId: string,
+  data: TMerchantIdentityModel
+) {
+  let images = [],
+    merchantIdentity;
+
+  try {
+    merchantIdentity = await MerchantIdentityRepository.findOne(merchantId);
+  } catch (e) {
+    Logger.error(
+      "merchant-identity",
+      "get merchant identity repository error",
+      e
+    );
+  }
+
+  if (merchantIdentity?.identityStatus != "rejected") {
+    throw new Error(ErrorCode.ErrConflict);
+  }
+
+  data.identityStatus = IdentityStatuses.Enum.pending;
+  data.merchantId = merchantId;
+  try {
+    const encryptedKTP = await encrypt(data.identityKTP);
+    data.identityKTP = await uploadImg(encryptedKTP, {
+      filename: `ktp-${merchantId}`,
+      bucket: "vault",
+    });
+    images.push(data.identityKTP);
+
+    const encryptedSKCK = await encrypt(data.identitySKCK);
+    data.identitySKCK = await uploadImg(encryptedSKCK, {
+      filename: `skck-${merchantId}`,
+      bucket: "vault",
+    });
+    images.push(data.identitySKCK);
+
+    if (data.identityDocs) {
+      const encryptedDocs = await encrypt(data.identityDocs);
+      data.identityDocs = await uploadImg(encryptedDocs, {
+        filename: `docs-${merchantId}`,
+        bucket: "vault",
+      });
+      images.push(data.identityDocs);
+    }
+
+    await MerchantIdentityRepository.create(data);
+  } catch (e) {
+    images.map(async (image) => {
+      await deleteImg(image);
+    });
+
+    throw e;
+  }
+}
+
+export async function editMerchantIdentityStatus(
   merchantId: string,
   status: TIdentityStatuses
 ) {
@@ -128,4 +189,11 @@ export async function getMerchantIdentity(merchantId: string) {
   result.identitySKCK = await decrypt(skck);
 
   return result;
+}
+
+export async function getMerchantIdentityStatus(merchantId: string) {
+  const result = await MerchantIdentityRepository.findOne(merchantId);
+  if (!result) return "unregistered";
+
+  return result.identityStatus;
 }
