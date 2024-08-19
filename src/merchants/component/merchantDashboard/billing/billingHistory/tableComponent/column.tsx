@@ -2,16 +2,20 @@ import CustomBadge from "@/core/components/CustomBadge";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import BillingTableAction from "../billingTableAction";
+import { z } from "zod";
+import { BillingDetailData } from "../../billingPaymentDetailData/billingPaymentDetail";
 
-export interface BillingData {
-  billingId: string;
-  billingQty: string;
-  billingAmount: number;
-  billingCreatedAt: Date;
-  billingPaid: boolean;
-}
+export const BillingData = z.object({
+  billingId: z.string(),
+  billingQty: z.string(),
+  billingAmount: z.number(),
+  billingCreatedAt: z.date(),
+  billingPaid: z.boolean(),
+});
 
-export const BillingColumns: () => ColumnDef<BillingData>[] = () => [
+export type TBillingData = z.infer<typeof BillingData>;
+
+export const BillingColumns: ColumnDef<TBillingData>[] = [
   {
     accessorKey: "billingQty",
     header: "Jumlah Transaksi Selesai",
