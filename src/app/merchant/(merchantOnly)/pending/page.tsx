@@ -7,7 +7,7 @@ const MerchantDashboardPending = () => {
     <div className="grid place-items-center place-content-center h-[80vh] gap-5">
       <div className="text-center">
         <h1 className="font-bold sm:text-4xl text-md">
-          Form pendaftaranmu sedang di proses Admin
+          Form pendaftaranmu sedang diproses Admin
         </h1>
       </div>
       <Link href={"/"}>
