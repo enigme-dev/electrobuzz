@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-const MerchantLayout = ({ children }: any) => {
+const MerchantSuspendedLayout = ({ children }: any) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -34,8 +34,8 @@ const MerchantLayout = ({ children }: any) => {
         case "pending":
           router.push("/merchant/pending");
           break;
-        case "suspended":
-          router.push("/merchant/suspended");
+        case "verified":
+          router.push("/merchant/dashboard/profile");
           break;
         case "rejected":
           router.push("/merchant/rejected");
@@ -59,4 +59,4 @@ const MerchantLayout = ({ children }: any) => {
     );
 };
 
-export default MerchantLayout;
+export default MerchantSuspendedLayout;

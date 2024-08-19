@@ -37,11 +37,7 @@ const selectStatusFilter = [
     item: "Diterima mitra",
   },
   {
-    value: "in_progress_requested",
-    item: "Permohonan service",
-  },
-  {
-    value: "in_progress_accepted",
+    value: "in_progress",
     item: "Proses service",
   },
   {

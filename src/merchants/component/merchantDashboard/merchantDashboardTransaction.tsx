@@ -37,11 +37,7 @@ const selectStatusFilter = [
     item: "Diterima mitra",
   },
   {
-    value: "in_progress_requested",
-    item: "Permohonan service",
-  },
-  {
-    value: "in_progress_accepted",
+    value: "in_progress",
     item: "Proses service",
   },
   {
@@ -207,13 +203,7 @@ const MerchantDashboardTransaction = () => {
                     bookingComplaintDesc={value.bookingComplain}
                     imgSource={value.user ? value.user.image : ""}
                     imgAlt={value.user ? value.user.name : ""}
-                    orderId={
-                      value.bookingId
-                        ? value.bookingId
-                        : ""
-                        ? value.bookingId
-                        : ""
-                    }
+                    orderId={value.bookingId ? value.bookingId : ""}
                     merchName={value.user.name ? value.user.name : ""}
                     bookingSchedule={value.bookingSchedule.toString()}
                     bookingCreatedAt={
