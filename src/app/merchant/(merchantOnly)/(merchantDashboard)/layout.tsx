@@ -17,19 +17,19 @@ export default function MerchantOnlyLayout({
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  const { data: getMerchantIdentities } = useQuery({
+    queryKey: ["getMerchantIdentity", session?.user?.id],
+    queryFn: async () =>
+      await axios.get(`/api/merchant/identity`).then((response) => {
+        return response.data.data as TMerchantIdentityModel;
+      }),
+    enabled: !!session?.user?.id,
+  });
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
-
-    const { data: getMerchantIdentities } = useQuery({
-      queryKey: ["getMerchantIdentity", session?.user?.id],
-      queryFn: async () =>
-        await axios.get(`/api/merchant/identity`).then((response) => {
-          return response.data.data as TMerchantIdentityModel;
-        }),
-      enabled: !!session?.user?.id,
-    });
 
     switch (getMerchantIdentities?.identityStatus) {
       case "verified":
