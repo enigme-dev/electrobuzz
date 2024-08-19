@@ -3,8 +3,17 @@ import { TIdentityStatuses, TMerchantIdentityModel } from "@/merchants/types";
 
 export class MerchantIdentityRepository extends BaseRepository {
   static create(data: TMerchantIdentityModel) {
-    return this.db.merchantIdentity.create({
-      data: {
+    return this.db.merchantIdentity.upsert({
+      where: {
+        merchantId: data.merchantId,
+      },
+      update: {
+        identityKTP: data.identityKTP,
+        identitySKCK: data.identitySKCK,
+        identityDocs: data.identityDocs,
+        identityStatus: data.identityStatus,
+      },
+      create: {
         identityKTP: data.identityKTP,
         identitySKCK: data.identitySKCK,
         identityDocs: data.identityDocs,
