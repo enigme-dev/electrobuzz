@@ -117,7 +117,7 @@ const MerchantBookingAccepted = ({
             <h2 className="pt-2 text-sm sm:text-xl text-center">
               Foto Keluhan:
             </h2>
-            <div className="flex justify-center ">
+            <div className="flex justify-center max-w-[500px] max-h-[500px]">
               <Image
                 src={bookingDetailData.bookingPhotoUrl}
                 alt={bookingDetailData.bookingPhotoUrl}

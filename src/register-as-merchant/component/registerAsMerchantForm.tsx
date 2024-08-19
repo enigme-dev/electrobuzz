@@ -137,9 +137,7 @@ const RegisterAsMerchantForm = () => {
           title: "Formulir anda telah terkirim!",
           description: "mohon menunggu konfirmasi admin",
         });
-        update({
-          isMerchant: "pending",
-        });
+
         router.push("/merchant/pending");
       },
       onError: (error) => {

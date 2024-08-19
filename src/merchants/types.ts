@@ -8,6 +8,7 @@ export const IdentityStatuses = z.enum([
   "verified",
   "rejected",
   "suspended",
+  "unregistered",
 ]);
 
 export type TIdentityStatuses = z.infer<typeof IdentityStatuses>;

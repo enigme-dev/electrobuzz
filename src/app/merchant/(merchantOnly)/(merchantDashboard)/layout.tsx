@@ -17,39 +17,21 @@ export default function MerchantOnlyLayout({
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  const { data: getMerchantIdentities } = useQuery({
+    queryKey: ["getMerchantIdentity", session?.user?.id],
+    queryFn: async () =>
+      await axios.get(`/api/merchant/identity`).then((response) => {
+        return response.data.data as TMerchantIdentityModel;
+      }),
+    enabled: !!session?.user?.id,
+  });
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
 
-    const { data: getMerchantIdentities } = useQuery({
-      queryKey: ["getMerchantIdentity", session?.user?.id],
-      queryFn: async () =>
-        await axios.get(`/api/merchant/identity`).then((response) => {
-          return response.data.data as TMerchantIdentityModel;
-        }),
-      enabled: !!session?.user?.id,
-    });
-
     switch (getMerchantIdentities?.identityStatus) {
-      case "verified":
-        router.push("/merchant/dashboard/profile");
-        break;
-      case "pending":
-        router.push("/merchant/pending");
-        break;
-      case "suspended":
-        router.push("/merchant/suspended");
-        break;
-      case "rejected":
-        router.push("/merchant/rejected");
-        break;
-      default:
-        router.push("/merchant/register");
-        break;
-    }
-
-    switch (session?.user?.isMerchant) {
       case "verified":
         router.push("/merchant/dashboard/profile");
         break;

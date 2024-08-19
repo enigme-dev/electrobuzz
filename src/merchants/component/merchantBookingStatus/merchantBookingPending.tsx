@@ -212,7 +212,7 @@ const MerchantBookingPending = ({
         </div>
         <p className="text-xs text-red-400 italic text-center">
           *Mohon segera melakukan aksi tolak atau terima, Jika tidak maka akan
-          ada tenggang waktu pada order ini.
+          ada tenggang waktu 2 hari setelah order ini.
         </p>
         <div className="shadow-lg border p-5 rounded-lg space-y-5">
           <h2 className="font-semibold text-md sm:text-xl text-center">

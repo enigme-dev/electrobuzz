@@ -41,9 +41,6 @@ const VerifikasiUlang = () => {
           title: "Formulir anda telah terkirim!",
           description: "mohon menunggu konfirmasi admin",
         });
-        update({
-          isMerchant: "pending",
-        });
       },
       onError: (error) => {
         handleError(error);
